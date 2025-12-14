@@ -1,6 +1,6 @@
 # Project Starter Guide - Backlog
 
-**Last Updated**: 2025-11-18 (Test Coverage Excellence + CLAUDE.md Automation ✅)
+**Last Updated**: 2025-12-14 (Reprioritized by Value - MOB-002 promoted to P1)
 **Priority System**: P0 (Critical - Block Release) → P1 (Important - Fix Soon) → P2 (Nice-to-have) → P3 (Future)
 
 ## 🚨 P0 - Critical (Block Release)
@@ -316,6 +316,18 @@ All P0 items from previous review completed ✅ (2025-11-11)
 
 ## ⚠️ P1 - Important (Should Fix Soon)
 
+### MOB-002 | Upgrade mobile template to Expo SDK 54 | L | 🔴 Next Up
+**Category**: Mobile - Security Upgrade
+**Priority Rationale**: Security vulnerabilities are a liability - users copying template inherit 12 prod vulns
+**Related**: Resolves SEC-002 documented vulnerabilities
+**Files**: All mobile-app template files
+**Impact**: 12 production vulnerabilities (2 critical, 8 high) - documented but not fixed
+**Plan**: `docs/mobile-app-expo-upgrade-plan.md` already exists
+**Resolution**: Execute upgrade plan to eliminate documented security issues
+**Value**: HIGH - removes security liability from template
+
+---
+
 ### SEC-002 | Audit and fix mobile-app template vulnerabilities | L | 📝 Documented (Updated)
 **Category**: Security
 **Files**: `templates/mobile-app/package.json`, `templates/mobile-app/SECURITY.md`
@@ -492,34 +504,31 @@ All P0 items from previous review completed ✅ (2025-11-11)
 **Completed**: 2025-11-11
 **Commit**: da2a3e0
 
-## 🔧 P3 - Future Enhancements
+## 🔧 P3 - Future Enhancements (Prioritized by Value)
 
-### MOB-002 | Upgrade mobile template to Expo SDK 51 | L | 💡 Planned
-**Category**: Mobile - Upgrade
-**Related**: Addresses SEC-002 documented vulnerabilities
-**Files**: All mobile-app template files
-**Impact**: Currently documenting known Expo vulnerabilities instead of upgrading
-**Plan**: `docs/mobile-app-expo-upgrade-plan.md` already exists
-**Resolution**: Execute upgrade plan to eliminate documented security issues
-**Question from Codex**: Should we keep documenting vulns or execute the upgrade plan?
-
-### FEAT-002 | Add create-qa-architect integration tests | L | 💭 Idea
-**Category**: Feature
-**Files**: Integration test suite
-**Impact**: Quality automation integration not automatically tested
-**Proposed Fix**: Add automated tests for quality automation integration
-
-### FEAT-003 | Implement template generator tool | XL | 💭 Idea
-**Category**: Feature - Monetization
-**Files**: New tool
-**Impact**: Part of Pro tier monetization strategy
-**Proposed Fix**: Build interactive template customization tool
-
-### DOC-005 | Create video tutorials for template setup | L | 💭 Idea
+### DOC-005 | Create video tutorials for template setup | L | 💡 Planned
 **Category**: Documentation - Monetization
+**Priority Rationale**: Lower effort monetization, drives user acquisition/onboarding
 **Files**: Video content
 **Impact**: Part of Starter Pack monetization
 **Proposed Fix**: Record setup tutorials for each template
+**Value**: MEDIUM - revenue potential with moderate effort
+
+### FEAT-003 | Implement template generator tool | XL | 💭 Idea
+**Category**: Feature - Monetization
+**Priority Rationale**: Highest revenue ceiling but requires user base first + XL effort
+**Files**: New tool
+**Impact**: Part of Pro tier monetization strategy
+**Proposed Fix**: Build interactive template customization tool
+**Value**: HIGH potential - but depends on user acquisition first
+
+### FEAT-002 | Add create-qa-architect integration tests | L | 💭 Idea
+**Category**: Feature - Internal
+**Priority Rationale**: Internal benefit only, no direct user/revenue value
+**Files**: Integration test suite
+**Impact**: Quality automation integration not automatically tested
+**Proposed Fix**: Add automated tests for quality automation integration
+**Value**: LOW - indirect quality benefit
 
 ## Completed ✅
 
@@ -574,11 +583,11 @@ All P0 items from previous review completed ✅ (2025-11-11)
 
 ## Summary Statistics
 
-**Total Open Items**: 1 (0 P0 + 0 P1 + 0 P2 + 1 P3)
+**Total Open Items**: 4 (0 P0 + 1 P1 + 0 P2 + 3 P3)
 - P0 Critical: 0 ✅ ALL COMPLETE!
-- P1 Important: 0 ✅ ALL COMPLETE!
+- P1 Important: 1 🔴 MOB-002 (security upgrade)
 - P2 Recommended: 0 ✅ ALL COMPLETE!
-- P3 Future: 4
+- P3 Future: 3 (prioritized by value)
 
 **Completed Items**: 33 (3 from Nov 5 + 3 P0 Round 1 + 4 Security + 3 P1 Round 1 + 2 P2 + 2 P0 Round 2 + 3 P1 Round 2 + 3 P0 Round 3 + 1 DOC-007 + 2 Round 4 [DOC-008, QUAL-001] + 7 Codex Rounds 6-7)
 
@@ -613,8 +622,10 @@ All P0 items from previous review completed ✅ (2025-11-11)
 **Status**: ✅ Rounds 6-7 COMPLETE! All P0 and P1 items resolved. Systematic quality improvements implemented.
 
 **Open Questions**:
-- Should we scrub git history of build artifacts or keep for audit?
-- Should we execute Expo SDK 51 upgrade plan or continue documenting vulnerabilities?
+- Should we scrub git history of build artifacts or keep for audit? (LOW priority - cosmetic)
+
+**Answered**:
+- ✅ Expo upgrade vs documenting? → Execute upgrade (MOB-002 promoted to P1)
 
 ---
 
@@ -632,9 +643,8 @@ All P0 items from previous review completed ✅ (2025-11-11)
 
 ---
 
-**Next Actions**:
-1. **Immediate**: REP-001 (remove build artifacts) - blocks contributors
-2. **Critical**: AUTH-001 (fix NextAuth boot) - blocks first-time users
-3. **Important**: DOC-006 (fix README promises) - credibility issue
-4. Decide on open questions (git history scrub, Expo upgrade timing)
-5. Execute P0/P1 items systematically
+**Next Actions** (Updated 2025-12-14):
+1. 🔴 **MOB-002**: Upgrade mobile template to Expo SDK 54 - removes 12 prod security vulnerabilities
+2. 💡 **DOC-005**: Video tutorials - monetization with moderate effort
+3. 💭 **FEAT-003**: Template generator - high revenue potential (after user base)
+4. 💭 **FEAT-002**: QA integration tests - internal tooling (lowest priority)
