@@ -2,11 +2,11 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { vi } from 'vitest'
 import { Navbar } from '../Navbar'
 
-// Mock Next.js Link component
+// Mock Next.js Link component - forward onClick to trigger mobile menu close
 vi.mock('next/link', () => {
   return {
-    default: ({ children, href }: { children: React.ReactNode; href: string }) => {
-      return <a href={href}>{children}</a>
+    default: ({ children, href, onClick }: { children: React.ReactNode; href: string; onClick?: () => void }) => {
+      return <a href={href} onClick={onClick}>{children}</a>
     }
   }
 })
@@ -44,19 +44,63 @@ describe('Navbar', () => {
     fireEvent.click(menuButton)
   })
 
-  it('closes mobile menu when a link is clicked', () => {
+  it('closes mobile menu when Features link is clicked', () => {
     render(<Navbar />)
 
     // Open mobile menu
     const menuButton = screen.getByRole('button')
     fireEvent.click(menuButton)
 
-    // Find a mobile menu link and click it
-    const featureLinks = screen.getAllByText('Features')
-    // Click the last one (mobile menu link)
-    if (featureLinks.length > 1) {
-      fireEvent.click(featureLinks[featureLinks.length - 1])
-    }
+    // Mobile menu should be visible (id="mobile-menu")
+    const mobileMenu = document.getElementById('mobile-menu')
+    expect(mobileMenu).toBeInTheDocument()
+
+    // Find and click mobile Features link
+    const featureLink = mobileMenu!.querySelector('a[href="#features"]')
+    expect(featureLink).toBeInTheDocument()
+    fireEvent.click(featureLink!)
+
+    // Menu should be closed - button should show "Open menu"
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
+  })
+
+  it('closes mobile menu when Pricing link is clicked', () => {
+    render(<Navbar />)
+
+    const menuButton = screen.getByRole('button')
+    fireEvent.click(menuButton)
+
+    const mobileMenu = document.getElementById('mobile-menu')
+    const pricingLink = mobileMenu!.querySelector('a[href="#pricing"]')
+    fireEvent.click(pricingLink!)
+
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
+  })
+
+  it('closes mobile menu when Sign In link is clicked', () => {
+    render(<Navbar />)
+
+    const menuButton = screen.getByRole('button')
+    fireEvent.click(menuButton)
+
+    const mobileMenu = document.getElementById('mobile-menu')
+    const signInLink = mobileMenu!.querySelector('a[href="/login"]')
+    fireEvent.click(signInLink!)
+
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
+  })
+
+  it('closes mobile menu when Get Started link is clicked', () => {
+    render(<Navbar />)
+
+    const menuButton = screen.getByRole('button')
+    fireEvent.click(menuButton)
+
+    const mobileMenu = document.getElementById('mobile-menu')
+    const getStartedLink = mobileMenu!.querySelector('a[href="/signup"]')
+    fireEvent.click(getStartedLink!)
+
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
   })
 
   it('renders all navigation links', () => {

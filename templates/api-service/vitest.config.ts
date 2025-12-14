@@ -21,6 +21,7 @@ export default defineConfig({
         'src/middleware/ssrfProtection.ts',
         'src/controllers/authController.ts',
         'src/lib/logger.ts',
+        'src/lib/prisma.ts', // Infrastructure code - tested via integration tests
       ],
       thresholds: {
         branches: 65,

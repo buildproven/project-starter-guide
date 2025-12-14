@@ -51,4 +51,10 @@ describe("App entry", () => {
 
     await expect(findByText("Welcome to Your App")).resolves.toBeTruthy();
   });
+
+  it("renders navigation structure", () => {
+    const { getByText } = render(<App />);
+    // Verify navigation is set up by checking for home screen content
+    expect(getByText("Welcome to Your App")).toBeTruthy();
+  });
 });

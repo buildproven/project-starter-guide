@@ -1,25 +1,49 @@
-# Project Starter Guide - Claude Guide
+# CLAUDE.md
 
-> Collection of production-ready starter templates for different project types.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Overview
+
+Collection of production-ready starter templates. No root `package.json` - all npm commands run from template directories.
 
 ## Templates
 
-| Template | Tech Stack | Use For |
-|----------|------------|---------|
-| `about-me-page/` | Static HTML/CSS | Simple portfolios, landing pages |
-| `api-service/` | Express 5, TypeScript, Prisma | RESTful APIs, microservices |
-| `mobile-app/` | React Native, Expo 54 | iOS/Android apps |
-| `saas-level-1/` | Next.js 16, NextAuth, Stripe | SaaS products with auth + payments |
+| Template | Stack | Test Framework |
+|----------|-------|----------------|
+| `about-me-page/` | Static HTML/CSS | None |
+| `api-service/` | Express 5, TypeScript, Prisma | Vitest |
+| `mobile-app/` | React Native, Expo | Jest |
+| `saas-level-1/` | Next.js 16, NextAuth, Stripe, Prisma | Vitest |
 
-## Key Commands
+## Commands
 
-**From Template Directory:**
+### From Template Directory
 ```bash
-cd templates/saas-level-1
-npm install && npm test && npm run build
+npm install && npm test && npm run build  # Full validation
+npm run quality:check                      # Lint + type-check + test
+npm run lint                               # ESLint
+npm run type-check                         # TypeScript
 ```
 
-**From Root (Smoke Tests):**
+### Single Test (Vitest - api-service, saas-level-1)
+```bash
+npm test -- src/path/to/file.test.ts       # Run single file
+npm test -- -t "test name"                 # Run by test name
+```
+
+### Single Test (Jest - mobile-app)
+```bash
+npm test -- --testPathPattern=file.test.ts
+npm test -- -t "test name"
+```
+
+### Prisma (api-service, saas-level-1)
+```bash
+npm run prisma:generate                    # Generate client
+npx prisma db push                         # Push schema to DB
+```
+
+### Smoke Tests (From Root)
 ```bash
 bash scripts/template-smoke-test.sh api-service
 bash scripts/template-smoke-test.sh mobile-app
@@ -27,27 +51,22 @@ bash scripts/template-smoke-test.sh saas-level-1
 bash scripts/cleanup-artifacts.sh
 ```
 
-## Project Structure
+## Architecture
 
-```
-project-starter-guide/
-├── templates/
-│   ├── about-me-page/      # Static (no CLAUDE.md)
-│   ├── api-service/        # Express (has CLAUDE.md)
-│   ├── mobile-app/         # React Native (has CLAUDE.md)
-│   └── saas-level-1/       # Next.js (has CLAUDE.md)
-├── scripts/                # Smoke tests, cleanup
-└── docs/                   # Architecture docs
-```
+- `templates/` - Self-contained starter projects (each has own CLAUDE.md)
+- `scripts/` - CI smoke tests, cleanup utilities
+- `docs/` - Architecture guides, project-type guides
 
-**Important:** No root `package.json`. Run npm from template directories.
+## Template Env Requirements
 
-## What NOT to Do
+| Template | Required Env Vars |
+|----------|-------------------|
+| api-service | `DATABASE_URL`, `JWT_SECRET` |
+| saas-level-1 | `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (DB/OAuth optional in dev) |
+| mobile-app | None required |
 
-- Don't run npm commands from root (no package.json)
-- Don't skip smoke tests before committing
-- Don't modify templates without testing
-- Don't leave docs out of sync
+## Constraints
 
----
-*See template-specific CLAUDE.md files for details. Global rules in `~/.claude/CLAUDE.md`.*
+- Run npm from template directories only (no root package.json)
+- Run smoke tests before committing template changes
+- Each template has its own CLAUDE.md with specific patterns

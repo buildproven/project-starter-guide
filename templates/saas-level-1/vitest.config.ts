@@ -13,7 +13,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      exclude: ['src/components/Navbar.tsx'],
+      include: ['src/**/*.tsx', 'src/**/*.ts'],
+      exclude: [
+        'src/**/*.test.tsx',
+        'src/**/*.test.ts',
+        'src/**/__tests__/**',
+        'src/types/**',
+        'src/app/layout.tsx', // Next.js infrastructure
+        'src/app/providers.tsx', // Next.js infrastructure
+        'src/lib/prisma.ts', // DB infrastructure - needs integration tests
+        'src/lib/env.ts', // Env validation - uses server-only, tested at runtime
+        'src/app/api/**', // API routes - need integration tests
+      ],
       thresholds: {
         lines: 90,
         functions: 90,

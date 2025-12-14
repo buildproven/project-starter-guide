@@ -1,6 +1,19 @@
 # Expo SDK Upgrade Plan (Mobile App Template)
 
-**Current template baseline (November 4, 2025)**
+> **✅ COMPLETED** - Upgrade verified 2025-12-14
+
+**Final template versions (December 2025)**
+- Expo SDK: `^54.0.3` ✅
+- React Native: `0.81.4` ✅
+- React: `19.1.0` ✅
+- Vulnerabilities: **0** (was 12 production, 8 dev)
+
+---
+
+<details>
+<summary>Original Plan (Historical Reference)</summary>
+
+**Original baseline (November 4, 2025)**
 - Expo SDK: `~49.0.15`
 - React Native: `0.72.6`
 - React Navigation: `6.x`
@@ -85,3 +98,5 @@
 1. Collect Expo 51 release notes and migration steps.
 2. Set up a feature branch for dependency bumps with automated smoke tests.
 3. Schedule manual QA windows and update the quarterly dependency review to include Expo SDK targets.
+
+</details>
