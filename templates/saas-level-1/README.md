@@ -4,7 +4,7 @@ A **starter template** with modern tooling for building SaaS applications. Inclu
 
 **Complexity Level:** 2 | **Timeline:** 1-2 weeks to customize | **Tech Stack:** Next.js + TypeScript + Tailwind + Prisma + NextAuth + Stripe
 
-> Need the one-page checklist? See the shared [Template Quick-Start Guide](../../docs/template-quickstart.md#saas-level-1-nextjs).
+> Need the one-page checklist? Use the commands below as your quick start.
 
 ## What's Included
 

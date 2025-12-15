@@ -204,7 +204,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
    - Missing NEXTAUTH_SECRET (should fail)
    - Mock provider in development (should work)
    - OAuth providers in production (should work)
-3. **Architecture Documentation**: `docs/architecture/nextauth-strategy-matrix.md` - Complete strategy reference
+3. **Architecture Documentation**: NextAuth strategy reference (now archived; keep notes in code/tests)
    - Strategy selection matrix (providers → adapter → strategy → session source)
    - Session callback behavior (database vs JWT)
    - Production validation requirements
@@ -275,7 +275,7 @@ All P0 items from previous review completed ✅ (2025-11-11)
 ### DOC-004 | Fix dependency monitoring workflow documentation gap | S | ✅ Completed
 **Category**: Automation - Documentation Accuracy
 **Codex Finding**: P2 issue identified in post-implementation review
-**Files**: `.github/workflows/dependency-audit.yml`, `docs/dependency-monitoring.md`
+**Files**: `.github/workflows/dependency-audit.yml`, dependency-monitoring doc (archived)
 **Impact**: Workflow only scanned production deps but docs promised "all dependencies"
 **Resolution**:
 - Added devDependencies scanning loop to deprecated package detection
@@ -530,7 +530,7 @@ All P0 items from previous review completed ✅ (2025-11-11)
 
 ### DOC-008 | Create template comparison guide | M | ✅ Completed
 **Category**: Documentation - P2
-**Files**: `docs/template-comparison.md`, `README.md`
+**Files**: template comparison doc (archived), `README.md`
 **Impact**: Helps users choose the right template for their project
 **Resolution**: Created comprehensive comparison guide with:
 - Quick decision matrix

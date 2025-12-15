@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Collection of production-ready starter templates. No root `package.json` - all npm commands run from template directories.
+Collection of production-ready starter templates. Root `package.json` exists for repo-wide lint/format checks; template installs/tests run inside each template directory.
 
 ## Templates
 
@@ -67,6 +67,6 @@ bash scripts/cleanup-artifacts.sh
 
 ## Constraints
 
-- Run npm from template directories only (no root package.json)
+- Use root npm scripts only for repo tooling (linting/formatting); run template installs/tests from within each template directory
 - Run smoke tests before committing template changes
 - Each template has its own CLAUDE.md with specific patterns

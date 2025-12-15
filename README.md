@@ -75,8 +75,8 @@ Comprehensive guide for choosing the right architecture and technology stack for
 
 1. **Identify your project type** - What are you building?
 2. **Determine complexity level** - How complex is your use case?
-3. **Check the technology matrix** - What technologies fit your needs?
-4. **Follow the detailed guide** - Get step-by-step instructions
+3. **Match a starter** - Pick the closest template to your needs
+4. **Review core docs** - Read `docs/ARCHITECTURE.md`, `docs/TESTING.md`, and `docs/DEPLOYMENT.md`
 5. **Use templates** - Start with proven patterns
 
 ### Adding Quality Automation to Any Project
@@ -124,19 +124,10 @@ npm install && npm run prepare
 
 ## Documentation
 
-### Project Type Guides
-- [Static Sites & Portfolios](docs/project-types/static-sites.md)
-- [SaaS Applications](docs/project-types/saas-applications.md)
-- [APIs & Microservices](docs/project-types/apis.md)
-- [Mobile Applications](docs/project-types/mobile-apps.md)
-- [E-commerce Platforms](docs/project-types/ecommerce.md)
-
-### Architecture Guides
-- [Complexity Levels Explained](docs/complexity-levels.md)
-- [Technology Decision Matrix](docs/technology-matrix.md)
-- [Architecture Patterns](docs/architecture-patterns.md)
-- [Security Considerations](docs/security-guide.md)
-- [Quality Automation Setup](docs/quality-automation.md)
+### Core Guides
+- [Architecture](docs/ARCHITECTURE.md)
+- [Testing](docs/TESTING.md)
+- [Deployment](docs/DEPLOYMENT.md)
 
 ### Templates
 - [About Me Page Template](templates/about-me-page/)

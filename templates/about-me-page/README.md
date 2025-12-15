@@ -4,7 +4,7 @@ A modern, responsive personal portfolio website template perfect for developers,
 
 **Complexity Level:** 1 | **Timeline:** 1-2 days | **Tech Stack:** HTML5 + CSS3 + Vanilla JavaScript
 
-> Need the one-page checklist? See the shared [Template Quick-Start Guide](../../docs/template-quickstart.md#about-me-static-html).
+> Need the one-page checklist? Use the steps below as your quick start.
 
 ## Features
 

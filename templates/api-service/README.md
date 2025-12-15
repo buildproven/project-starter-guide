@@ -4,7 +4,7 @@ A production-ready REST API template built with Express.js, TypeScript, PostgreS
 
 **Complexity Level:** 2-3 | **Timeline:** 3-5 days | **Tech Stack:** Express + TypeScript + PostgreSQL + Prisma
 
-> Need the one-page checklist? See the shared [Template Quick-Start Guide](../../docs/template-quickstart.md#api-service-express--prisma).
+> Need the one-page checklist? Use the commands below as your quick start.
 
 ## Features
 

@@ -7,10 +7,9 @@ This document describes the architecture and organization of the Project Starter
 ```
 project-starter-guide/
 ├── docs/                          # Documentation
-│   ├── project-types/             # Guides for specific project types
-│   ├── architecture-patterns.md    # Common architecture patterns
-│   ├── complexity-levels.md        # Complexity level definitions
-│   └── technology-matrix.md        # Technology recommendations
+│   ├── ARCHITECTURE.md            # Architecture overview
+│   ├── TESTING.md                 # Testing strategy
+│   └── DEPLOYMENT.md              # Deployment guidance
 ├── templates/                      # Starter templates
 │   ├── about-me-page/             # Static portfolio template
 │   ├── saas-level-1/              # Full-stack SaaS starter

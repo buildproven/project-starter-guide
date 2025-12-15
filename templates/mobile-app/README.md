@@ -4,7 +4,7 @@ A React Native Expo starter template with TypeScript, navigation, and essential 
 
 **Complexity Level:** 2 | **Timeline:** 2-3 days | **Tech Stack:** React Native + Expo + TypeScript
 
-> Need the one-page checklist? See the shared [Template Quick-Start Guide](../../docs/template-quickstart.md#mobile-app-expo--react-native).
+> Need the one-page checklist? Use the commands below as your quick start.
 
 ## Features
 

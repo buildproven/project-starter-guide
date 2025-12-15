@@ -6,7 +6,8 @@
 Start with the documentation in the `docs/` folder:
 - [Architecture Guide](docs/ARCHITECTURE.md)
 - [Testing Strategy](docs/TESTING.md)
-- [Security Guide](docs/security-guide.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Security Policy](SECURITY.md)
 
 ### Community Support
 - **GitHub Issues**: [Report bugs or request features](https://github.com/vibebuildlab/project-starter-guide/issues)
