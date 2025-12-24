@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **FEAT-003**: Interactive template generator tool (`npm run generate`)
+  - Template selection with complexity indicators
+  - Customization options (database, auth providers, features)
+  - Non-interactive mode with `--defaults` flag for CI/automation
+  - Auto-generated .env.example with secure secrets
+  - Template metadata in `templates/.templates.json`
+- **FEAT-002**: QA integration test suite (74 tests)
+  - Template configuration validation
+  - Script availability checks
+  - Security waiver validation
+  - Environment variable validation
+  - Lint/Prettier/TypeScript config presence
+  - Husky pre-commit hooks
+  - Generator integration tests
+  - CI workflow validation
+
 ### Security
 - Strengthened SSRF protection middleware with additional blocklist entries
 - Improved error handler and notFound middleware robustness

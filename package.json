@@ -8,6 +8,11 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
+    "generate": "node scripts/generate-template.mjs",
+    "generate:api": "node scripts/generate-template.mjs --template=api",
+    "generate:saas": "node scripts/generate-template.mjs --template=saas",
+    "generate:mobile": "node scripts/generate-template.mjs --template=mobile",
+    "generate:about": "node scripts/generate-template.mjs --template=about",
     "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore templates",
     "lint:md:fix": "markdownlint '**/*.md' --ignore node_modules --ignore templates --fix",
     "check:links": "markdown-link-check README.md",
@@ -15,7 +20,8 @@
     "validate": "npm run lint:md && npm run check:links",
     "format": "prettier --write '**/*.{js,json,md}' --ignore-path .gitignore",
     "format:check": "prettier --check '**/*.{js,json,md}' --ignore-path .gitignore",
-    "preview:template": "cd templates/about-me-page && python3 -m http.server 8000"
+    "preview:template": "cd templates/about-me-page && python3 -m http.server 8000",
+    "test:qa": "node tests/integration/qa-integration.test.mjs"
   },
   "keywords": [
     "web-development",
