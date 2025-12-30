@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 export default async function globalTeardown() {
@@ -24,7 +25,7 @@ export default async function globalTeardown() {
   }
 
   // Remove parallel execution lock
-  const lockFile = "/tmp/api-service-test.lock";
+  const lockFile = path.join(os.tmpdir(), "api-service-test.lock");
   if (fs.existsSync(lockFile)) {
     fs.unlinkSync(lockFile);
     console.log("🧹 Released parallel execution lock");

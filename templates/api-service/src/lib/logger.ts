@@ -179,7 +179,10 @@ declare global {
 
 export function requestLogger(req: Request, res: Response, next: NextFunction): void {
   // Generate and attach request ID
-  req.requestId = req.headers['x-request-id'] as string || generateRequestId()
+  const rawRequestId = req.headers['x-request-id']
+  const requestId =
+    Array.isArray(rawRequestId) ? rawRequestId[0] : rawRequestId
+  req.requestId = requestId || generateRequestId()
   req.startTime = Date.now()
 
   // Add request ID to response headers

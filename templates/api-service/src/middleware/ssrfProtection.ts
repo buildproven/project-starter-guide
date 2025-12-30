@@ -15,6 +15,9 @@
 
 import { Request, Response, NextFunction } from 'express'
 import dns from 'dns'
+import http from 'http'
+import https from 'https'
+import net from 'net'
 import { URL } from 'url'
 
 // Private and reserved IP ranges that should be blocked
@@ -64,6 +67,7 @@ const ALLOWED_PROTOCOLS = ['http:', 'https:']
 
 // Blocked ports (commonly used for internal services)
 const BLOCKED_PORTS = [22, 25, 3306, 5432, 6379, 27017, 9200, 9300]
+const DNS_LOOKUP_TIMEOUT_MS = 2000
 
 interface SSRFOptions {
   allowedDomains?: string[]
@@ -102,13 +106,52 @@ function isBlockedHostname(hostname: string, blockMetadataEndpoints: boolean): b
   )
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('DNS lookup timeout'))
+    }, timeoutMs)
+
+    promise
+      .then((value) => {
+        clearTimeout(timeoutId)
+        resolve(value)
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId)
+        reject(error)
+      })
+  })
+}
+
+function createPinnedLookup(addresses: string[]) {
+  let index = 0
+  return (_hostname: string, _options: unknown, callback: (err: Error | null, address: string, family: number) => void) => {
+    const address = addresses[index % addresses.length]
+    index += 1
+    callback(null, address, net.isIP(address))
+  }
+}
+
+export function createPinnedAgent(url: URL, resolvedAddresses?: string[]) {
+  if (!resolvedAddresses || resolvedAddresses.length === 0) {
+    return undefined
+  }
+
+  const lookup = createPinnedLookup(resolvedAddresses)
+  if (url.protocol === 'https:') {
+    return new https.Agent({ lookup, servername: url.hostname })
+  }
+  return new http.Agent({ lookup })
+}
+
 /**
  * Validate a URL for SSRF vulnerabilities
  */
 export async function validateURL(
   urlString: string,
   options: SSRFOptions = {}
-): Promise<{ valid: boolean; error?: string; url?: URL }> {
+): Promise<{ valid: boolean; error?: string; url?: URL; resolvedAddresses?: string[] }> {
   const opts = { ...defaultOptions, ...options }
 
   try {
@@ -149,9 +192,13 @@ export async function validateURL(
     }
 
     // DNS resolution check - validates the actual IP address
+    let resolvedAddresses: string[] | undefined
     if (opts.blockPrivateIPs) {
       try {
-        const addresses = await dns.promises.lookup(url.hostname, { all: true })
+        const addresses = await withTimeout(
+          dns.promises.lookup(url.hostname, { all: true }),
+          DNS_LOOKUP_TIMEOUT_MS
+        )
         if (
           addresses.some(({ address }) =>
             isBlockedIP(address, opts.blockMetadataEndpoints ?? true)
@@ -159,12 +206,13 @@ export async function validateURL(
         ) {
           return { valid: false, error: 'URL resolves to a blocked IP address' }
         }
+        resolvedAddresses = addresses.map(({ address }) => address)
       } catch {
         return { valid: false, error: 'Failed to resolve hostname' }
       }
     }
 
-    return { valid: true, url }
+    return { valid: true, url, resolvedAddresses }
   } catch {
     return { valid: false, error: 'Invalid URL format' }
   }
@@ -178,7 +226,7 @@ export function ssrfProtection(options: SSRFOptions = {}) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const urlToValidate = req.body?.url || req.query?.url
 
-    if (!urlToValidate) {
+    if (!urlToValidate || Array.isArray(urlToValidate)) {
       return next()
     }
 
@@ -193,8 +241,16 @@ export function ssrfProtection(options: SSRFOptions = {}) {
 
     // Attach validated URL to request object (not req.body which may be undefined)
     // Use a custom property that doesn't depend on body-parser being mounted
-    const reqWithUrl = req as Request & { validatedUrl?: URL }
+    const reqWithUrl = req as Request & {
+      validatedUrl?: URL
+      validatedUrlAddresses?: string[]
+      validatedUrlAgent?: http.Agent | https.Agent
+    }
     reqWithUrl.validatedUrl = result.url
+    reqWithUrl.validatedUrlAddresses = result.resolvedAddresses
+    reqWithUrl.validatedUrlAgent = result.url
+      ? createPinnedAgent(result.url, result.resolvedAddresses)
+      : undefined
     next()
   }
 }

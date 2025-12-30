@@ -17,12 +17,12 @@ import { globalLimiter } from './middleware/rateLimiting'
 import authRoutes from './routes/auth'
 import userRoutes from './routes/users'
 import healthRoutes from './routes/health'
+import fetchRoutes from './routes/fetch'
 
 const app = express()
 
-// Trust proxy - Required for rate limiting behind reverse proxies (Nginx, AWS ALB, etc.)
-// Without this, all requests appear to come from the proxy IP
-app.set('trust proxy', 1)
+// Trust proxy only when explicitly enabled (prevents spoofed X-Forwarded-For)
+app.set('trust proxy', env.TRUST_PROXY)
 
 // Security middleware
 app.use(helmet());
@@ -48,6 +48,7 @@ app.use("/health", healthRoutes);
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api", fetchRoutes);
 
 // Error handling
 app.use(notFound);

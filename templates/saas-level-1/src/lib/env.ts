@@ -50,8 +50,7 @@ const envSchema = z.object({
   NEXTAUTH_URL: z
     .string()
     .url('NEXTAUTH_URL must be a valid URL')
-    .optional()
-    .default('http://localhost:3000'),
+    .optional(),
 
   // Stripe - always required, no defaults (secrets should never have placeholders)
   STRIPE_SECRET_KEY: z
@@ -80,6 +79,16 @@ const envSchema = z.object({
 
   // Optional: Email (for NextAuth email provider)
   EMAIL_SERVER: z.string().optional(),
+  EMAIL_SERVER_HOST: z.string().optional(),
+  EMAIL_SERVER_PORT: z
+    .string()
+    .optional()
+    .refine(
+      (value) => value === undefined || (!Number.isNaN(Number(value)) && Number(value) > 0),
+      'EMAIL_SERVER_PORT must be a valid port number'
+    ),
+  EMAIL_SERVER_USER: z.string().optional(),
+  EMAIL_SERVER_PASSWORD: z.string().optional(),
   EMAIL_FROM: z.string().email().optional(),
 
   // Optional: OAuth providers
@@ -87,6 +96,8 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
+  GITHUB_ID: z.string().optional(),
+  GITHUB_SECRET: z.string().optional(),
 })
 
 // Type for validated environment
@@ -110,6 +121,10 @@ function validateEnv(): Env {
     throw new Error(
       `Missing or invalid environment variables: ${Object.keys(errors).join(', ')}`
     )
+  }
+
+  if (parsed.data.NODE_ENV === 'production' && !parsed.data.NEXTAUTH_URL) {
+    throw new Error('NEXTAUTH_URL is required in production')
   }
 
   if (process.env.NODE_ENV !== 'test') {

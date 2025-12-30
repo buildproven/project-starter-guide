@@ -120,6 +120,10 @@ api-service/
 
 - `GET /health` - API health status
 
+### Utilities
+
+- `GET /api/fetch?url=https://example.com` - Example SSRF-safe fetch (uses pinned DNS resolution)
+
 ### Example Requests
 
 **Register User:**
@@ -150,6 +154,12 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```bash
 curl -X GET http://localhost:3000/api/auth/profile \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**Fetch External Content (SSRF-safe example):**
+
+```bash
+curl -X GET "http://localhost:3000/api/fetch?url=https://example.com"
 ```
 
 ## Environment Variables

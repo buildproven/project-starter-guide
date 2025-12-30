@@ -49,25 +49,25 @@ describe('Rate Limiting', () => {
   describe('getUserKey', () => {
     it('returns user:userId when user is authenticated', () => {
       const req = {
-        user: { userId: 123, email: 'test@example.com' },
+        userId: 123,
         ip: '192.168.1.1',
-      } as unknown as Request & { user?: { userId: number; email?: string } }
+      } as unknown as Request & { userId?: number }
 
       expect(getUserKey(req)).toBe('user:123')
     })
 
     it('falls back to IP when user is not authenticated', () => {
       const req = {
-        user: undefined,
+        userId: undefined,
         ip: '192.168.1.1',
-      } as unknown as Request & { user?: { userId: number; email?: string } }
+      } as unknown as Request & { userId?: number }
 
       expect(getUserKey(req)).toBe('192.168.1.1')
     })
 
     it('falls back to IP when user object exists but has no userId', () => {
       const req = {
-        user: { email: 'test@example.com' },
+        userId: undefined,
         ip: '10.0.0.5',
       } as unknown as Request
 

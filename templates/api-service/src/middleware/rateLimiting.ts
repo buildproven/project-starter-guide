@@ -19,7 +19,7 @@ import { Request, Response } from 'express'
 
 // Extend Express Request to include user property from auth middleware
 interface AuthenticatedRequest extends Request {
-  user?: { userId: number; email?: string }
+  userId?: number
 }
 
 /**
@@ -51,8 +51,8 @@ export function getClientIP(req: Request): string {
  * Used by user-based rate limiter
  */
 export function getUserKey(req: AuthenticatedRequest): string {
-  if (req.user?.userId) {
-    return `user:${req.user.userId}`
+  if (req.userId) {
+    return `user:${req.userId}`
   }
   return getClientIP(req)
 }

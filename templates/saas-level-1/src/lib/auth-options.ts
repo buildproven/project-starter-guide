@@ -20,16 +20,20 @@ const getPrisma = (): PrismaClient => {
 
 const providers: NextAuthOptions['providers'] = []
 
-if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
+const githubClientId = process.env.GITHUB_CLIENT_ID || process.env.GITHUB_ID
+const githubClientSecret =
+  process.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_SECRET
+
+if (githubClientId && githubClientSecret) {
   providers.push(
     GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: githubClientId,
+      clientSecret: githubClientSecret,
     })
   )
 } else {
   console.warn(
-    '[auth] GitHub provider disabled – GITHUB_ID and/or GITHUB_SECRET not set.'
+    '[auth] GitHub provider disabled – set GITHUB_CLIENT_ID/GITHUB_CLIENT_SECRET (or GITHUB_ID/GITHUB_SECRET).'
   )
 }
 
@@ -46,32 +50,35 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   )
 }
 
-const hasEmailConfig =
-  process.env.EMAIL_SERVER_HOST &&
-  process.env.EMAIL_SERVER_PORT &&
-  process.env.EMAIL_SERVER_USER &&
-  process.env.EMAIL_SERVER_PASSWORD &&
-  process.env.EMAIL_FROM
+const hasEmailServerString = !!process.env.EMAIL_SERVER && !!process.env.EMAIL_FROM
+const hasEmailServerParts =
+  !!process.env.EMAIL_SERVER_HOST &&
+  !!process.env.EMAIL_SERVER_PORT &&
+  !!process.env.EMAIL_SERVER_USER &&
+  !!process.env.EMAIL_SERVER_PASSWORD &&
+  !!process.env.EMAIL_FROM
 
-if (hasEmailConfig) {
+if (hasEmailServerString || hasEmailServerParts) {
   // Lazy-load EmailProvider to avoid requiring nodemailer when not needed
   const EmailProvider = require('next-auth/providers/email').default
   providers.push(
     EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
+      server: hasEmailServerString
+        ? process.env.EMAIL_SERVER
+        : {
+            host: process.env.EMAIL_SERVER_HOST,
+            port: Number(process.env.EMAIL_SERVER_PORT),
+            auth: {
+              user: process.env.EMAIL_SERVER_USER,
+              pass: process.env.EMAIL_SERVER_PASSWORD,
+            },
+          },
       from: process.env.EMAIL_FROM,
     })
   )
 } else {
   console.warn(
-    '[auth] Email provider disabled – EMAIL_SERVER_* variables not fully configured.'
+    '[auth] Email provider disabled – set EMAIL_SERVER + EMAIL_FROM, or EMAIL_SERVER_HOST/PORT/USER/PASSWORD + EMAIL_FROM.'
   )
 }
 

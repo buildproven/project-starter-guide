@@ -11,6 +11,7 @@ interface EnvConfig {
   DATABASE_URL: string
   JWT_SECRET: string
   CORS_ORIGIN: string
+  TRUST_PROXY: boolean
 }
 
 class EnvValidationError extends Error {
@@ -24,7 +25,14 @@ class EnvValidationError extends Error {
  * Validates a single environment variable.
  * Restricts keys to a known allowlist to avoid object injection patterns flagged by eslint-plugin-security.
  */
-const ALLOWED_ENV_KEYS = new Set(['NODE_ENV', 'PORT', 'DATABASE_URL', 'JWT_SECRET', 'CORS_ORIGIN'])
+const ALLOWED_ENV_KEYS = new Set([
+  'NODE_ENV',
+  'PORT',
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'CORS_ORIGIN',
+  'TRUST_PROXY',
+])
 
 function getEnvVar(
   key: string,
@@ -55,6 +63,9 @@ function getEnvVar(
       break
     case 'CORS_ORIGIN':
       value = process.env.CORS_ORIGIN
+      break
+    case 'TRUST_PROXY':
+      value = process.env.TRUST_PROXY
       break
   }
 
@@ -153,6 +164,14 @@ export function validateEnv(): EnvConfig {
       : 'CORS_ORIGIN must be a valid origin. Example: http://localhost:3000'
   })
 
+  const trustProxyStr = getEnvVar('TRUST_PROXY', {
+    required: false,
+    defaultValue: 'false',
+    validate: (val) => ['true', 'false', '1', '0'].includes(val),
+    errorMessage: 'TRUST_PROXY must be true/false or 1/0',
+  })
+  const TRUST_PROXY = trustProxyStr === 'true' || trustProxyStr === '1'
+
   // Log validation success
   console.log('✅ Environment variables validated successfully')
   if (isTest) {
@@ -166,7 +185,8 @@ export function validateEnv(): EnvConfig {
     PORT,
     DATABASE_URL,
     JWT_SECRET,
-    CORS_ORIGIN
+    CORS_ORIGIN,
+    TRUST_PROXY,
   }
 }
 

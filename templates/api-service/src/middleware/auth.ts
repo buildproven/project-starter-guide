@@ -7,10 +7,14 @@ export const authenticateToken = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers.authorization;
+  if (!authHeader || Array.isArray(authHeader)) {
+    return res.status(401).json({ error: "Access token required" });
+  }
 
-  if (!token) {
+  const [scheme, token] = authHeader.split(" ");
+
+  if (scheme?.toLowerCase() !== "bearer" || !token) {
     return res.status(401).json({ error: "Access token required" });
   }
 

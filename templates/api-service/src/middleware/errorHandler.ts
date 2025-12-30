@@ -6,6 +6,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
+  const isProduction = process.env.NODE_ENV === 'production'
   // Default error response
   let errorResponse = {
     message: err.message,
@@ -33,8 +34,12 @@ export const errorHandler = (
     errorResponse = { message, statusCode: 404 }
   }
 
-  res.status(errorResponse.statusCode || 500).json({
+  const statusCode = errorResponse.statusCode || 500
+  const message =
+    statusCode >= 500 && isProduction ? "Internal server error" : errorResponse.message
+
+  res.status(statusCode).json({
     success: false,
-    error: errorResponse.message || "Server Error",
+    error: message || "Server Error",
   });
 };

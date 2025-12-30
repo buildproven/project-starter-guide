@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 export default async function globalSetup() {
@@ -12,7 +13,7 @@ export default async function globalSetup() {
   console.log("📋 See TESTING.md for PostgreSQL container setup (production recommendation)");
 
   // Parallel execution protection with stale-lock recovery
-  const lockFile = "/tmp/api-service-test.lock";
+  const lockFile = path.join(os.tmpdir(), "api-service-test.lock");
   if (fs.existsSync(lockFile)) {
     // Check if the lock is stale by verifying the PID
     const lockPid = parseInt(fs.readFileSync(lockFile, "utf8").trim());
