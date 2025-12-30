@@ -4,6 +4,9 @@
 # Run lint-staged for code quality
 npx lint-staged
 
+# Type checking to catch TypeScript errors
+npm run type-check
+
 # Run tests to catch regressions
 npm run test -- --passWithNoTests --bail
 

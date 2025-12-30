@@ -111,39 +111,6 @@ export const registrationLimiter = rateLimit({
 })
 
 /**
- * API rate limiter - For expensive/resource-intensive endpoints
- * 10 requests per minute per IP
- */
-export const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10,
-  message: {
-    error: 'API rate limit exceeded',
-    message: 'Too many API requests. Please slow down.',
-    retryAfter: 'See Retry-After header',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: skipInTest,
-  keyGenerator: getClientIP,
-})
-
-/**
- * Per-user rate limiter - Limits based on authenticated user ID
- * 1000 requests per hour per user
- * Falls back to IP if user is not authenticated
- */
-export const userLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 1000,
-  message: standardMessage,
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: skipInTest,
-  keyGenerator: getUserKey,
-})
-
-/**
  * Create a custom rate limiter with specific configuration
  */
 export function createRateLimiter(options: Partial<Options>) {
@@ -186,8 +153,6 @@ export default {
   globalLimiter,
   authLimiter,
   registrationLimiter,
-  apiLimiter,
-  userLimiter,
   createRateLimiter,
   skipForTrustedIPs,
   rateLimitHandler,

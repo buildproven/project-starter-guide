@@ -14,7 +14,7 @@ describe('ssrfProtection', () => {
   })
 
   it('blocks metadata hostnames when enabled', async () => {
-    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }])
+    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }] as never)
 
     const result = await validateURL('http://metadata.google.internal', {
       blockMetadataEndpoints: true,
@@ -26,7 +26,7 @@ describe('ssrfProtection', () => {
   })
 
   it('allows metadata hostnames when disabled', async () => {
-    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }])
+    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }] as never)
 
     const result = await validateURL('http://metadata.google.internal', {
       blockMetadataEndpoints: false,
@@ -37,7 +37,7 @@ describe('ssrfProtection', () => {
   })
 
   it('enforces allowed ports when provided', async () => {
-    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }])
+    lookupSpy.mockResolvedValue([{ address: '93.184.216.34', family: 4 }] as never)
 
     const result = await validateURL('https://example.com:444', {
       allowedPorts: [443],
@@ -51,7 +51,7 @@ describe('ssrfProtection', () => {
     lookupSpy.mockResolvedValue([
       { address: '93.184.216.34', family: 4 },
       { address: '10.0.0.1', family: 4 },
-    ])
+    ] as never)
 
     const result = await validateURL('https://example.com', {})
 

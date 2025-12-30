@@ -1,14 +1,14 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# Run lint-staged on staged files
-npx --no -- lint-staged
+# Run lint-staged for code quality
+npx lint-staged
 
 # Type checking to catch TypeScript errors
 npm run type-check
 
-# Run tests to catch regressions (Hero test, etc.)
-npm run test -- --run --bail
+# Run tests to catch regressions
+npm run test -- --passWithNoTests --bail
 
 # Security checks
 npm run security:secrets
