@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **api-service**: Server startup now handles port binding errors (EADDRINUSE, EACCES)
+- **api-service**: Added `res.on('error')` handler in fetch.ts to prevent hanging requests
+- **api-service**: JWT verification now enforces HS256 algorithm (prevents algorithm confusion)
+- **api-service**: SSRF protection catch blocks now log errors instead of silently failing
+- **api-service**: Health check error response includes error type name for diagnostics
+- **mobile-app**: Config parse errors log as CRITICAL in production
+- **mobile-app**: Added useCallback for navigation handlers (performance)
+- **mobile-app**: Extracted SCREEN_OPTIONS constant to prevent re-renders
+- **saas-level-1**: Added template-specific .gitignore (was missing)
+- **mobile-app**: Added template-specific .gitignore (was missing)
+
 ### Added
 - **FEAT-003**: Interactive template generator tool (`npm run generate`)
   - Template selection with complexity indicators
