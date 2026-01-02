@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { env } from '../config/env'
+import { logger } from '../lib/logger'
+import { HttpStatus } from '../constants/http'
 
 export const authenticateToken = (
   req: Request,
@@ -9,13 +11,13 @@ export const authenticateToken = (
 ) => {
   const authHeader = req.headers.authorization
   if (!authHeader || Array.isArray(authHeader)) {
-    return res.status(401).json({ error: 'Access token required' })
+    return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Access token required' })
   }
 
   const [scheme, token] = authHeader.split(' ')
 
   if (scheme?.toLowerCase() !== 'bearer' || !token) {
-    return res.status(401).json({ error: 'Access token required' })
+    return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Access token required' })
   }
 
   try {
@@ -29,19 +31,22 @@ export const authenticateToken = (
 
     const userId = Number(userIdCandidate)
     if (Number.isNaN(userId)) {
-      return res.status(403).json({ error: 'Invalid token payload' })
+      return res.status(HttpStatus.FORBIDDEN).json({ error: 'Invalid token payload' })
     }
 
     req.userId = userId
     return next()
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ error: 'Token expired' })
+      return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Token expired' })
     }
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ error: 'Invalid token' })
+      return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Invalid token' })
     }
-    console.error('[Auth] Unexpected authentication error:', error)
-    return res.status(401).json({ error: 'Authentication failed' })
+    logger.error('[Auth] Unexpected authentication error', {
+      error,
+      requestId: req.requestId,
+    })
+    return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Authentication failed' })
   }
 }

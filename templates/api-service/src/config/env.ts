@@ -5,6 +5,8 @@
  * Fails fast in production with helpful error messages.
  */
 
+import { logger } from '../lib/logger'
+
 interface EnvConfig {
   NODE_ENV: string
   PORT: number
@@ -178,13 +180,11 @@ export function validateEnv(): EnvConfig {
   const TRUST_PROXY = trustProxyStr === 'true' || trustProxyStr === '1'
 
   // Log validation success
-  console.log('✅ Environment variables validated successfully')
+  logger.info('Environment variables validated successfully')
   if (isTest) {
-    console.log('ℹ️  Running in test mode - validations relaxed for testing')
+    logger.info('Running in test mode - validations relaxed for testing')
   } else if (!isProduction) {
-    console.log(
-      'ℹ️  Running in development mode - some validations are relaxed'
-    )
+    logger.info('Running in development mode - some validations are relaxed')
   }
 
   return {

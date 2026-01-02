@@ -12,10 +12,17 @@
  * - Skip options for trusted IPs
  * - Custom key generators for user-based limiting
  * - Standardized error responses
+ * - Redis support for distributed rate limiting (multi-instance deployments)
+ *
+ * IMPORTANT: For production multi-instance deployments, configure Redis:
+ *   Set REDIS_URL environment variable to enable distributed rate limiting
+ *   Example: REDIS_URL=redis://localhost:6379
  */
 
 import rateLimit, { Options } from 'express-rate-limit'
 import { Request, Response } from 'express'
+import { RateLimits } from '../constants/rateLimit'
+import { HttpStatus } from '../constants/http'
 
 // Extend Express Request to include user property from auth middleware
 interface AuthenticatedRequest extends Request {
@@ -58,12 +65,57 @@ export function getUserKey(req: AuthenticatedRequest): string {
 }
 
 /**
+ * Create Redis store for distributed rate limiting
+ * Only used when REDIS_URL is configured
+ */
+function createRedisStore() {
+  if (!process.env.REDIS_URL) {
+    return undefined // Use in-memory store
+  }
+
+  try {
+    // Dynamic import to avoid requiring redis when not configured
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const RedisStore = require('rate-limit-redis')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { createClient } = require('redis')
+
+    const client = createClient({ url: process.env.REDIS_URL })
+    client.connect().catch((err: Error) => {
+      console.error('[RateLimit] Failed to connect to Redis:', err.message)
+      console.error('[RateLimit] Falling back to in-memory rate limiting')
+    })
+
+    return new RedisStore({ client, prefix: 'rl:' })
+  } catch (error) {
+    console.error(
+      '[RateLimit] Redis modules not installed. Install with: npm install redis rate-limit-redis'
+    )
+    console.error('[RateLimit] Falling back to in-memory rate limiting')
+    return undefined
+  }
+}
+
+const store = createRedisStore()
+
+if (!store && process.env.NODE_ENV === 'production') {
+  console.warn(
+    '[RateLimit] WARNING: Using in-memory rate limiting in production. This does NOT work with multiple instances.'
+  )
+  console.warn(
+    '[RateLimit] For multi-instance deployments, install Redis: npm install redis rate-limit-redis'
+  )
+  console.warn('[RateLimit] Then set REDIS_URL environment variable')
+}
+
+/**
  * Global rate limiter - Applied to all routes
  * 100 requests per 15 minutes per IP
  */
 export const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  store,
+  windowMs: RateLimits.WINDOW_MS,
+  max: RateLimits.GLOBAL_MAX,
   message: standardMessage,
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
@@ -78,8 +130,9 @@ export const globalLimiter = rateLimit({
  * Helps prevent brute force attacks
  */
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  store,
+  windowMs: RateLimits.WINDOW_MS,
+  max: RateLimits.AUTH_MAX,
   message: {
     error: 'Too many authentication attempts',
     message:
@@ -98,8 +151,9 @@ export const authLimiter = rateLimit({
  * 3 registrations per hour per IP
  */
 export const registrationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3,
+  store,
+  windowMs: RateLimits.REGISTRATION_WINDOW_MS,
+  max: RateLimits.REGISTRATION_MAX,
   message: {
     error: 'Too many accounts created',
     message:
@@ -117,6 +171,7 @@ export const registrationLimiter = rateLimit({
  */
 export function createRateLimiter(options: Partial<Options>) {
   return rateLimit({
+    store,
     standardHeaders: true,
     legacyHeaders: false,
     message: standardMessage,
@@ -141,7 +196,7 @@ export function skipForTrustedIPs(req: Request): boolean {
  * Rate limit handler for custom error responses
  */
 export function rateLimitHandler(_req: Request, res: Response): Response {
-  return res.status(429).json({
+  return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
     error: 'Rate limit exceeded',
     message:
       'You have made too many requests. Please wait before trying again.',

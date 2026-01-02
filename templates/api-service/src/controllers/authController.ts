@@ -6,12 +6,15 @@ import type { AuthenticatedRequest } from '../types/express'
 import { prisma } from '../lib/prisma'
 import { env } from '../config/env'
 import { logger } from '../lib/logger'
+import { HttpStatus } from '../constants/http'
+import { AuthConfig } from '../constants/auth'
+import { errorResponses } from '../utils/responses'
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { error, value } = validateRegister(req.body)
     if (error) {
-      return res.status(400).json({ error: error.details[0].message })
+      return errorResponses.badRequest(res, error.details[0].message)
     }
 
     const { email, password, name } = value
@@ -19,12 +22,11 @@ export const register = async (req: Request, res: Response) => {
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } })
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' })
+      return errorResponses.badRequest(res, 'User already exists')
     }
 
     // Hash password
-    const saltRounds = 12
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const hashedPassword = await bcrypt.hash(password, AuthConfig.BCRYPT_SALT_ROUNDS)
 
     // Create user (database constraint handles uniqueness)
     const user = await prisma.user.create({
@@ -43,10 +45,10 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate JWT token (4 hour expiry - implement refresh tokens for longer sessions)
     const token = jwt.sign({ userId: user.id }, env.JWT_SECRET, {
-      expiresIn: '4h',
+      expiresIn: AuthConfig.JWT_EXPIRY,
     })
 
-    return res.status(201).json({
+    return res.status(HttpStatus.CREATED).json({
       message: 'User created successfully',
       user,
       token,
@@ -67,12 +69,10 @@ export const register = async (req: Request, res: Response) => {
       Array.isArray(error.meta.target) &&
       error.meta.target.includes('email')
     ) {
-      return res
-        .status(400)
-        .json({ error: 'User with this email already exists' })
+      return errorResponses.badRequest(res, 'User with this email already exists')
     }
 
-    return res.status(500).json({ error: 'Internal server error' })
+    return errorResponses.internalError(res)
   }
 }
 
@@ -80,7 +80,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { error, value } = validateLogin(req.body)
     if (error) {
-      return res.status(400).json({ error: error.details[0].message })
+      return errorResponses.badRequest(res, error.details[0].message)
     }
 
     const { email, password } = value
@@ -88,18 +88,18 @@ export const login = async (req: Request, res: Response) => {
     // Find user
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+      return errorResponses.unauthorized(res, 'Invalid credentials')
     }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password)
     if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+      return errorResponses.unauthorized(res, 'Invalid credentials')
     }
 
     // Generate JWT token (4 hour expiry - implement refresh tokens for longer sessions)
     const token = jwt.sign({ userId: user.id }, env.JWT_SECRET, {
-      expiresIn: '4h',
+      expiresIn: AuthConfig.JWT_EXPIRY,
     })
 
     // Update last login
@@ -119,14 +119,14 @@ export const login = async (req: Request, res: Response) => {
     })
   } catch (error) {
     logger.error('Login error', { error, requestId: req.requestId })
-    return res.status(500).json({ error: 'Internal server error' })
+    return errorResponses.internalError(res)
   }
 }
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (typeof req.userId !== 'number') {
-      return res.status(401).json({ error: 'Unauthorized' })
+      return errorResponses.unauthorized(res)
     }
 
     const user = await prisma.user.findUnique({
@@ -141,12 +141,12 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
     })
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' })
+      return errorResponses.notFound(res, 'User not found')
     }
 
     return res.json({ user })
   } catch (error) {
     logger.error('Get profile error', { error, requestId: req.requestId })
-    return res.status(500).json({ error: 'Internal server error' })
+    return errorResponses.internalError(res)
   }
 }

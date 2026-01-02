@@ -9,13 +9,12 @@ import { env } from './config/env'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import { requestLogger } from './lib/logger'
+import { requestLogger, logger } from './lib/logger'
 
 import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
 import { globalLimiter } from './middleware/rateLimiting'
 import authRoutes from './routes/auth'
-import userRoutes from './routes/users'
 import healthRoutes from './routes/health'
 import fetchRoutes from './routes/fetch'
 
@@ -32,7 +31,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
+        imgSrc: ["'self'", 'data:'], // Removed permissive 'https:' - add specific domains if needed
         connectSrc: ["'self'"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
@@ -50,10 +49,8 @@ const corsOptions =
 
 // Warn about wildcard CORS in development
 if (env.CORS_ORIGIN === '*' && env.NODE_ENV !== 'production') {
-  console.warn('⚠️  CORS_ORIGIN is set to "*" - this disables CORS protection!')
-  console.warn(
-    '⚠️  Only use wildcard CORS in development. Set specific origin in production.'
-  )
+  logger.warn('CORS_ORIGIN is set to "*" - this disables CORS protection!')
+  logger.warn('Only use wildcard CORS in development. Set specific origin in production.')
 }
 
 app.use(cors(corsOptions))
@@ -73,7 +70,6 @@ app.use('/health', healthRoutes)
 
 // API routes
 app.use('/api/auth', authRoutes)
-app.use('/api/users', userRoutes)
 app.use('/api', fetchRoutes)
 
 // Error handling
