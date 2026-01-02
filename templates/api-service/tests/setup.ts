@@ -26,53 +26,73 @@ const resetDb = () => {
 // Create mock implementation
 const createMockPrismaClient = () => ({
   user: {
-    findUnique: vi.fn(({ where }: { where: { email?: string; id?: number } }) => {
-      const { email, id } = where
-      const found = users.find(
-        (u) => (email && u.email === email) || (id && u.id === id)
-      )
-      return Promise.resolve(found ?? null)
-    }),
+    findUnique: vi.fn(
+      ({ where }: { where: { email?: string; id?: number } }) => {
+        const { email, id } = where
+        const found = users.find(
+          u => (email && u.email === email) || (id && u.id === id)
+        )
+        return Promise.resolve(found ?? null)
+      }
+    ),
     findMany: vi.fn(() => Promise.resolve([...users])),
-    create: vi.fn(({ data, select }: { data: { email: string; name: string; password: string }; select?: Record<string, boolean> }) => {
-      const exists = users.find((u) => u.email === data.email)
-      if (exists) {
-        const err = new Error(
-          'Unique constraint failed on the fields: (`email`)'
-        ) as Error & { code?: string; meta?: { target: string[] } }
-        err.code = 'P2002'
-        err.meta = { target: ['email'] }
-        return Promise.reject(err)
-      }
-      const newUser: UserRecord = {
-        id: users.length + 1,
-        email: data.email,
-        name: data.name,
-        password: data.password,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lastLogin: null,
-      }
-      users.push(newUser)
+    create: vi.fn(
+      ({
+        data,
+        select,
+      }: {
+        data: { email: string; name: string; password: string }
+        select?: Record<string, boolean>
+      }) => {
+        const exists = users.find(u => u.email === data.email)
+        if (exists) {
+          const err = new Error(
+            'Unique constraint failed on the fields: (`email`)'
+          ) as Error & { code?: string; meta?: { target: string[] } }
+          err.code = 'P2002'
+          err.meta = { target: ['email'] }
+          return Promise.reject(err)
+        }
+        const newUser: UserRecord = {
+          id: users.length + 1,
+          email: data.email,
+          name: data.name,
+          password: data.password,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastLogin: null,
+        }
+        users.push(newUser)
 
-      if (select) {
-        const result: Partial<UserRecord> = {}
-        Object.entries(select).forEach(([key, enabled]) => {
-          if (enabled && key in newUser) {
-            (result as Record<string, unknown>)[key] = (newUser as Record<string, unknown>)[key]
-          }
-        })
-        return Promise.resolve(result)
-      }
+        if (select) {
+          const result: Partial<UserRecord> = {}
+          Object.entries(select).forEach(([key, enabled]) => {
+            if (enabled && key in newUser) {
+              ;(result as Record<string, unknown>)[key] = (
+                newUser as Record<string, unknown>
+              )[key]
+            }
+          })
+          return Promise.resolve(result)
+        }
 
-      return Promise.resolve(newUser)
-    }),
-    update: vi.fn(({ where, data }: { where: { id: number }; data: Partial<UserRecord> }) => {
-      const target = users.find((u) => u.id === where.id)
-      if (!target) return Promise.resolve(null)
-      Object.assign(target, data, { updatedAt: new Date() })
-      return Promise.resolve(target)
-    }),
+        return Promise.resolve(newUser)
+      }
+    ),
+    update: vi.fn(
+      ({
+        where,
+        data,
+      }: {
+        where: { id: number }
+        data: Partial<UserRecord>
+      }) => {
+        const target = users.find(u => u.id === where.id)
+        if (!target) return Promise.resolve(null)
+        Object.assign(target, data, { updatedAt: new Date() })
+        return Promise.resolve(target)
+      }
+    ),
     deleteMany: vi.fn(() => {
       const count = users.length
       resetDb()

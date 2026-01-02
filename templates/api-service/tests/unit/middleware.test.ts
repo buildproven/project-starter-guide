@@ -59,8 +59,8 @@ describe('Middleware', () => {
       notFound(req, res, next as NextFunction)
       expect(res.status).toHaveBeenCalledWith(404)
       expect(next).toHaveBeenCalledWith(expect.any(Error))
-      const errorArg = (next as unknown as { mock: { calls: unknown[][] } }).mock.calls[0][0] as
-        Error & { statusCode?: number }
+      const errorArg = (next as unknown as { mock: { calls: unknown[][] } })
+        .mock.calls[0][0] as Error & { statusCode?: number }
       expect(errorArg.statusCode).toBe(404)
     })
   })

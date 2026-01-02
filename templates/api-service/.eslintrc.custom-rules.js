@@ -12,11 +12,13 @@ module.exports = {
       meta: {
         type: 'problem',
         docs: {
-          description: 'Ensure dotenv.config() is called before any other imports',
+          description:
+            'Ensure dotenv.config() is called before any other imports',
           category: 'Best Practices',
         },
         messages: {
-          dotenvNotFirst: 'dotenv.config() must be called before any other imports. Move to top of file.',
+          dotenvNotFirst:
+            'dotenv.config() must be called before any other imports. Move to top of file.',
         },
       },
       create(context) {

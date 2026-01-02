@@ -22,12 +22,14 @@ found 0 vulnerabilities
 ```
 
 ### Production Dependencies: ✅ SECURE
+
 - **0 Critical** severity
 - **0 High** severity
 - **0 Moderate** severity
 - **0 Low** severity
 
 ### Development Dependencies: ⚠️ 8 KNOWN LOW-RISK
+
 - **0 Critical** severity
 - **0 High** severity
 - **0 Moderate** severity (js-yaml resolved)
@@ -36,9 +38,11 @@ found 0 vulnerabilities
 ## Vulnerability Resolution History
 
 ### Resolved Vulnerabilities
+
 - **js-yaml** (was moderate): ✅ Resolved through dependency updates (2025-11-22)
 
 ### Known Dev-Only Vulnerabilities (Documented Waivers)
+
 - **cookie** (low): Via @lhci/cli -> lighthouse -> @sentry/node
 - **tmp** (low): Via @lhci/cli -> inquirer -> external-editor
 - **6 additional low-severity** vulnerabilities in @lhci/cli dependency chain
@@ -48,6 +52,7 @@ found 0 vulnerabilities
 **Waiver Documentation**: See `.security-waivers.json` for detailed analysis
 
 ### Status Summary
+
 - **Production Dependencies**: 0 vulnerabilities ✅
 - **Development Dependencies**: 8 low-severity (documented and approved) ⚠️
 
@@ -57,24 +62,26 @@ found 0 vulnerabilities
 
 **Location:** `src/middleware/rateLimiting.ts`
 
-| Limiter | Limit | Window | Purpose |
-|---------|-------|--------|---------|
-| Global | 100 req | 15 min | General abuse prevention |
-| Auth | 5 req | 15 min | Brute force protection |
-| Registration | 3 req | 1 hour | Account spam prevention |
-| API | 10 req | 1 min | Expensive operations |
+| Limiter      | Limit   | Window | Purpose                  |
+| ------------ | ------- | ------ | ------------------------ |
+| Global       | 100 req | 15 min | General abuse prevention |
+| Auth         | 5 req   | 15 min | Brute force protection   |
+| Registration | 3 req   | 1 hour | Account spam prevention  |
+| API          | 10 req  | 1 min  | Expensive operations     |
 
 ### SSRF Protection
 
 **Location:** `src/middleware/ssrfProtection.ts`
 
 Protects against Server-Side Request Forgery when fetching external URLs:
+
 - Blocks private IP ranges (10.x, 172.16-31.x, 192.168.x)
 - Blocks localhost and loopback addresses
 - Blocks cloud metadata endpoints (169.254.169.254)
 - DNS rebinding protection (validates resolved IPs)
 
 **Usage:**
+
 ```typescript
 import { validateExternalURL } from './middleware/ssrfProtection'
 const { valid, url, error } = await validateExternalURL(userUrl)
@@ -130,10 +137,10 @@ npm audit --production   # Production dependencies only: 0 vulnerabilities
 
 ## Security Audit History
 
-| Date | Total Vulns | Production | Development | Action Taken |
-|------|-------------|------------|-------------|--------------|
-| 2025-11-11 | 9 (1 mod, 8 low) | Unknown | Unknown | Initial audit |
-| 2025-11-22 | 8 (0 mod, 8 low) | 0 | 8 | js-yaml resolved, dev-only vulns documented |
+| Date       | Total Vulns      | Production | Development | Action Taken                                |
+| ---------- | ---------------- | ---------- | ----------- | ------------------------------------------- |
+| 2025-11-11 | 9 (1 mod, 8 low) | Unknown    | Unknown     | Initial audit                               |
+| 2025-11-22 | 8 (0 mod, 8 low) | 0          | 8           | js-yaml resolved, dev-only vulns documented |
 
 ### Current Status Summary
 
@@ -144,6 +151,7 @@ npm audit --production   # Production dependencies only: 0 vulnerabilities
   - Proper documentation in `.security-waivers.json`
 
 ### Production Security
+
 - **Production dependencies**: 0 vulnerabilities ✅
 - **Runtime security**: Not affected by development tool vulnerabilities
 
@@ -196,15 +204,17 @@ CORS_ORIGIN=https://your-frontend-domain.com
 The template includes pre-configured security headers:
 
 ```javascript
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false
-}))
+    crossOriginEmbedderPolicy: false,
+  })
+)
 ```
 
 ## References
@@ -217,6 +227,7 @@ app.use(helmet({
 ## Contact
 
 For security concerns specific to this template:
+
 - Open an issue: [GitHub Issues](https://github.com/brettstark73/project-starter-guide/issues)
 - Security advisory: Use GitHub Security Advisory for private disclosure
 

@@ -18,6 +18,7 @@ import dns from 'dns'
 import http from 'http'
 import https from 'https'
 import net from 'net'
+import { logger } from '../lib/logger'
 import { URL } from 'url'
 
 // Private and reserved IP ranges that should be blocked
@@ -90,19 +91,23 @@ function isBlockedIP(ip: string, blockMetadataEndpoints: boolean): boolean {
   const ranges = blockMetadataEndpoints
     ? [...BLOCKED_IP_RANGES, ...METADATA_IP_RANGES]
     : BLOCKED_IP_RANGES
-  return ranges.some((pattern) => pattern.test(ip))
+  return ranges.some(pattern => pattern.test(ip))
 }
 
 /**
  * Check if a hostname is blocked
  */
-function isBlockedHostname(hostname: string, blockMetadataEndpoints: boolean): boolean {
+function isBlockedHostname(
+  hostname: string,
+  blockMetadataEndpoints: boolean
+): boolean {
   const lowerHostname = hostname.toLowerCase()
   const blocked = blockMetadataEndpoints
     ? [...BLOCKED_HOSTNAMES, ...METADATA_HOSTNAMES]
     : BLOCKED_HOSTNAMES
   return blocked.some(
-    (blocked) => lowerHostname === blocked || lowerHostname.endsWith(`.${blocked}`)
+    blocked =>
+      lowerHostname === blocked || lowerHostname.endsWith(`.${blocked}`)
   )
 }
 
@@ -113,11 +118,11 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
     }, timeoutMs)
 
     promise
-      .then((value) => {
+      .then(value => {
         clearTimeout(timeoutId)
         resolve(value)
       })
-      .catch((error) => {
+      .catch(error => {
         clearTimeout(timeoutId)
         reject(error)
       })
@@ -126,7 +131,11 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
 
 function createPinnedLookup(addresses: string[]) {
   let index = 0
-  return (_hostname: string, _options: unknown, callback: (err: Error | null, address: string, family: number) => void) => {
+  return (
+    _hostname: string,
+    _options: unknown,
+    callback: (err: Error | null, address: string, family: number) => void
+  ) => {
     const address = addresses[index % addresses.length]
     index += 1
     callback(null, address, net.isIP(address))
@@ -151,7 +160,12 @@ export function createPinnedAgent(url: URL, resolvedAddresses?: string[]) {
 export async function validateURL(
   urlString: string,
   options: SSRFOptions = {}
-): Promise<{ valid: boolean; error?: string; url?: URL; resolvedAddresses?: string[] }> {
+): Promise<{
+  valid: boolean
+  error?: string
+  url?: URL
+  resolvedAddresses?: string[]
+}> {
   const opts = { ...defaultOptions, ...options }
 
   try {
@@ -183,8 +197,7 @@ export async function validateURL(
     // Check allowed domains whitelist
     if (opts.allowedDomains && opts.allowedDomains.length > 0) {
       const isAllowed = opts.allowedDomains.some(
-        (domain) =>
-          url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+        domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`)
       )
       if (!isAllowed) {
         return { valid: false, error: 'Domain not in allowed list' }
@@ -208,14 +221,17 @@ export async function validateURL(
         }
         resolvedAddresses = addresses.map(({ address }) => address)
       } catch (err) {
-        console.error('[SSRF] DNS resolution failed:', url.hostname, err)
+        logger.error('[SSRF] DNS resolution failed', {
+          hostname: url.hostname,
+          error: err,
+        })
         return { valid: false, error: 'Failed to resolve hostname' }
       }
     }
 
     return { valid: true, url, resolvedAddresses }
   } catch (err) {
-    console.error('[SSRF] URL validation failed:', urlString, err)
+    logger.error('[SSRF] URL validation failed', { urlString, error: err })
     return { valid: false, error: 'Invalid URL format' }
   }
 }

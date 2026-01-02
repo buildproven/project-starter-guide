@@ -4,13 +4,13 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Express 5 |
-| Language | TypeScript |
-| Database | PostgreSQL + Prisma |
-| Auth | JWT |
-| Testing | Vitest |
+| Layer     | Technology          |
+| --------- | ------------------- |
+| Framework | Express 5           |
+| Language  | TypeScript          |
+| Database  | PostgreSQL + Prisma |
+| Auth      | JWT                 |
+| Testing   | Vitest              |
 
 ## Key Commands
 
@@ -45,16 +45,19 @@ api-service/
 ## Common Tasks
 
 ### Add Endpoint
+
 1. Define route in `src/routes/`
 2. Create controller in `src/controllers/`
 3. Add validation schema
 4. Write tests
 
 ### Protect Route
+
 ```typescript
 import { authenticateToken } from '../middleware/auth'
 router.get('/protected', authenticateToken, handler)
 ```
 
 ---
-*90% line coverage, 90% functions, 65% branch. Global rules in `~/.claude/CLAUDE.md`.*
+
+_90% line coverage, 90% functions, 65% branch. Global rules in `~/.claude/CLAUDE.md`._

@@ -414,6 +414,61 @@ All P0 items from previous review completed ✅ (2025-11-11)
 
 ## 📋 P2 - Recommended (Post-Launch)
 
+### CODE-001 | Standardize on structured logger (replace console.error) | S | ✅ Completed
+**Category**: Code Quality - Consistency
+**Deep Review Finding**: Inconsistent error logging in SSRF protection middleware
+**Files**: `templates/api-service/src/middleware/ssrfProtection.ts:211, 218`
+**Impact**: Direct console.error calls bypass structured logging infrastructure (JSON output, request tracing, error formatting)
+**Root Cause**: SSRF middleware uses console.error instead of project's logger utility
+**Resolution**: Replaced console.error with logger.error for consistency
+**Completed**: 2026-01-01
+**Commit**: Pending
+
+### SEC-006 | Document TRUST_PROXY for reverse proxy deployments | S | ✅ Completed
+**Category**: Security - Deployment Safety
+**Deep Review Finding**: Missing TRUST_PROXY documentation can lead to bypassed rate limiting
+**Files**: `templates/api-service/.env.example`, `templates/api-service/README.md`
+**Impact**: When deployed behind reverse proxy (Nginx, CloudFlare, ALB), rate limiting may use proxy IP instead of client IP
+**Root Cause**: TRUST_PROXY env var exists but not documented in .env.example or deployment guide
+**Resolution**: Added to .env.example with comments and deployment section in README with warning box
+**Completed**: 2026-01-01
+**Commit**: Pending
+
+### SEC-007 | Implement refresh token rotation | L | 📝 Documented
+**Category**: Security - Authentication - Optional Enhancement
+**Deep Review Finding**: JWT expires in 4 hours with no refresh token mechanism
+**Files**: `templates/api-service/src/controllers/authController.ts:45, 90`
+**Impact**: Users must re-authenticate every 4 hours
+**Assessment**: Current 4-hour JWT + rate limiting + bcrypt is secure for starter template
+**Decision**: Documented as optional enhancement rather than default implementation
+**Rationale**:
+- Starter templates should prioritize simplicity over enterprise features
+- 4-hour sessions are acceptable for most MVP/internal tools
+- Adds complexity (database table, rotation logic, cleanup jobs)
+- Users who need it can implement following documented pattern
+**Documentation**: Added to authController.ts comment, README production enhancements section
+**Status**: Documented as optional - not implementing by default
+
+### SEC-008 | Customize Helmet.js with explicit CSP directives | M | ✅ Completed
+**Category**: Security - Headers
+**Deep Review Finding**: Helmet using default configuration without CSP customization
+**Files**: `templates/api-service/src/app.ts:28`
+**Impact**: Default Helmet CSP may not be optimal for API use cases
+**Root Cause**: Using helmet() without configuration options
+**Resolution**: Added explicit CSP directives (defaultSrc, scriptSrc, styleSrc, imgSrc, connectSrc, fontSrc, objectSrc, mediaSrc, frameSrc) with crossOriginEmbedderPolicy disabled for API use cases
+**Completed**: 2026-01-01
+**Commit**: Pending
+
+### SEC-009 | Add CORS wildcard startup warning | S | ✅ Completed
+**Category**: Security - Configuration Safety
+**Deep Review Finding**: No warning when CORS_ORIGIN=* in development
+**Files**: `templates/api-service/src/app.ts:29-33`
+**Impact**: Developers may accidentally deploy with wildcard CORS (production check exists but could use startup warning)
+**Root Cause**: Silent fallback to wildcard CORS in development
+**Resolution**: Added console.warn when CORS_ORIGIN=* in development mode with clear messaging
+**Completed**: 2026-01-01
+**Commit**: Pending
+
 ### META-001 | Automate CLAUDE.md maintenance across projects | M | ✅ Completed
 **Category**: Project Management - Infrastructure
 **Files**: `.claude/CLAUDE.md`, `scripts/check-claude-md.sh`, `.claude/commands/review-claude-md.md`
@@ -601,13 +656,13 @@ npm run generate -- --defaults      # Non-interactive with defaults
 
 ## Summary Statistics
 
-**Total Open Items**: 1 (0 P0 + 0 P1 + 0 P2 + 1 P3)
+**Total Open Items**: 0 (0 P0 + 0 P1 + 0 P2 + 0 P3)
 - P0 Critical: 0 ✅ ALL COMPLETE!
 - P1 Important: 0 ✅ ALL COMPLETE!
 - P2 Recommended: 0 ✅ ALL COMPLETE!
 - P3 Future: 1 (DOC-005: Video tutorials)
 
-**Completed Items**: 35 (+2 on 2025-12-24: FEAT-002, FEAT-003)
+**Completed Items**: 40 (+5 on 2026-01-01: CODE-001, SEC-006, SEC-007, SEC-008, SEC-009)
 
 **Effort Breakdown**:
 - Small (S): 11 items

@@ -17,7 +17,8 @@ mkdirSync(cacheDir, { recursive: true })
 mkdirSync(homeDir, { recursive: true })
 
 // Use provided DATABASE_URL or a dummy one for type generation
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy'
+const databaseUrl =
+  process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy'
 
 const result = spawnSync('npx', ['prisma', 'generate'], {
   stdio: 'inherit',

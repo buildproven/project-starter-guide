@@ -218,6 +218,19 @@ npm test -- auth.test.ts
 
 ## Deployment
 
+⚠️ **IMPORTANT: Reverse Proxy Configuration**
+
+When deploying behind a reverse proxy (Nginx, CloudFlare, AWS ALB, Vercel, etc.):
+
+1. **Set `TRUST_PROXY=true`** in your environment variables
+2. **Verify proxy headers** are configured (`X-Forwarded-For`, `X-Forwarded-Proto`)
+3. **Test rate limiting** uses real client IPs:
+   ```bash
+   curl -I https://your-api.com/health
+   ```
+
+Without this, rate limiting and IP-based security features will use the proxy's IP instead of real client IPs, allowing attackers to bypass protections.
+
 ### Railway
 
 1. Connect GitHub repository
@@ -281,6 +294,7 @@ CMD ["npm", "start"]
 **Cause:** You copied the template files instead of cloning with git
 
 **Fix:**
+
 ```bash
 git init
 git add .
@@ -299,11 +313,13 @@ npm install  # Re-run to set up git hooks
 **Status:** ✅ **Expected - mostly dev dependencies**
 
 **Details:**
+
 - Most vulnerabilities are in development tools (testing, linting)
 - See `.security-waivers.json` for documented waivers
 - Production dependencies are minimal and secure
 
 **Action:**
+
 1. Review `.security-waivers.json` for rationale
 2. Run `npm audit --production` to see only production vulnerabilities
 3. Update dependencies periodically
@@ -319,11 +335,13 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Check DATABASE_URL in .env:**
+
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/api_db"
    ```
 
 2. **Verify PostgreSQL is running:**
+
    ```bash
    # macOS (Homebrew)
    brew services list | grep postgresql
@@ -338,6 +356,7 @@ npm install  # Re-run to set up git hooks
    ```
 
 3. **Create database:**
+
    ```bash
    # Using psql
    createdb api_db
@@ -349,6 +368,7 @@ npm install  # Re-run to set up git hooks
    ```
 
 4. **Test connection:**
+
    ```bash
    psql -U postgres -d api_db -c "SELECT 1;"
    ```
@@ -367,11 +387,13 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Generate Prisma client:**
+
    ```bash
    npx prisma generate
    ```
 
 2. **Reinstall if needed:**
+
    ```bash
    rm -rf node_modules
    npm install
@@ -390,12 +412,14 @@ npm install  # Re-run to set up git hooks
 **Common causes:**
 
 1. **Missing JWT_SECRET:**
+
    ```env
    # Add to .env
    JWT_SECRET=your-super-secret-jwt-key-change-in-production
    ```
 
 2. **Token not sent in Authorization header:**
+
    ```bash
    # Correct format
    curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:3000/api/auth/profile
@@ -417,6 +441,7 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Find and kill process:**
+
    ```bash
    # macOS/Linux
    lsof -ti:3000 | xargs kill -9
@@ -441,17 +466,21 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Set CORS_ORIGIN in .env:**
+
    ```env
    CORS_ORIGIN=http://localhost:3000
    ```
 
 2. **For multiple origins:**
+
    ```typescript
    // src/index.ts
-   app.use(cors({
-     origin: ['http://localhost:3000', 'http://localhost:3001'],
-     credentials: true
-   }));
+   app.use(
+     cors({
+       origin: ['http://localhost:3000', 'http://localhost:3001'],
+       credentials: true,
+     })
+   )
    ```
 
 3. **Allow all origins (development only!):**
@@ -468,6 +497,7 @@ npm install  # Re-run to set up git hooks
 **Common fixes:**
 
 1. **Clear build directory:**
+
    ```bash
    rm -rf dist
    npm run build
@@ -510,6 +540,7 @@ npm install  # Re-run to set up git hooks
 **Check:**
 
 1. **Request body format:**
+
    ```bash
    # Must be valid JSON
    curl -X POST http://localhost:3000/api/auth/register \
@@ -534,11 +565,13 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Rebuild bcrypt:**
+
    ```bash
    npm rebuild bcrypt
    ```
 
 2. **If rebuild fails, reinstall:**
+
    ```bash
    npm uninstall bcrypt
    npm install bcrypt
@@ -568,6 +601,7 @@ npm install  # Re-run to set up git hooks
    - SSL mode if required
 
 3. **Build command:**
+
    ```bash
    npm run build && npm start
    ```
@@ -590,18 +624,19 @@ npm install  # Re-run to set up git hooks
 1. **Wait 15 minutes for limit to reset**
 
 2. **Adjust rate limits for development:**
+
    ```typescript
    // src/index.ts
    const limiter = rateLimit({
      windowMs: 15 * 60 * 1000,
      max: 1000, // Increase for development
-   });
+   })
    ```
 
 3. **Disable in development:**
    ```typescript
    if (process.env.NODE_ENV !== 'development') {
-     app.use(limiter);
+     app.use(limiter)
    }
    ```
 
@@ -614,6 +649,7 @@ npm install  # Re-run to set up git hooks
 **Common fixes:**
 
 1. **Build from dist directory:**
+
    ```bash
    # Build first
    npm run build
@@ -623,6 +659,7 @@ npm install  # Re-run to set up git hooks
    ```
 
 2. **Environment variables:**
+
    ```bash
    docker run -e DATABASE_URL="..." -e JWT_SECRET="..." api-service
    ```
@@ -640,6 +677,7 @@ npm install  # Re-run to set up git hooks
 **Fixes:**
 
 1. **Check NODE_ENV:**
+
    ```env
    # Development - detailed logs
    NODE_ENV=development
@@ -666,6 +704,7 @@ npm install  # Re-run to set up git hooks
 4. **Review validation results:** See `claudedocs/fresh-clone-validation-results.md`
 
 **Need more help?** Open an issue with:
+
 - Node version (`node --version`)
 - npm version (`npm --version`)
 - Database type and version
@@ -713,6 +752,7 @@ CORS_ORIGIN=http://localhost:3000
 ### Health Checks
 
 The Docker setup includes health checks for both the API service and PostgreSQL:
+
 - **API Health**: `GET /health` (liveness probe)
 - **API Ready**: `GET /health/ready` (readiness probe with DB check)
 - **Database**: PostgreSQL `pg_isready` check

@@ -82,7 +82,8 @@ export const authLimiter = rateLimit({
   max: 5,
   message: {
     error: 'Too many authentication attempts',
-    message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
+    message:
+      'Too many login attempts from this IP. Please try again after 15 minutes.',
     retryAfter: 'See Retry-After header',
   },
   standardHeaders: true,
@@ -101,7 +102,8 @@ export const registrationLimiter = rateLimit({
   max: 3,
   message: {
     error: 'Too many accounts created',
-    message: 'Too many accounts created from this IP. Please try again after an hour.',
+    message:
+      'Too many accounts created from this IP. Please try again after an hour.',
     retryAfter: 'See Retry-After header',
   },
   standardHeaders: true,
@@ -138,13 +140,11 @@ export function skipForTrustedIPs(req: Request): boolean {
 /**
  * Rate limit handler for custom error responses
  */
-export function rateLimitHandler(
-  _req: Request,
-  res: Response
-): Response {
+export function rateLimitHandler(_req: Request, res: Response): Response {
   return res.status(429).json({
     error: 'Rate limit exceeded',
-    message: 'You have made too many requests. Please wait before trying again.',
+    message:
+      'You have made too many requests. Please wait before trying again.',
     retryAfter: res.getHeader('Retry-After'),
   })
 }

@@ -24,34 +24,60 @@ const app = express()
 // Trust proxy only when explicitly enabled (prevents spoofed X-Forwarded-For)
 app.set('trust proxy', env.TRUST_PROXY)
 
-// Security middleware
-app.use(helmet());
+// Security middleware with explicit CSP directives
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Allow cross-origin requests for API use cases
+  })
+)
 const corsOptions =
   env.CORS_ORIGIN === '*'
     ? { origin: '*', credentials: false }
     : { origin: env.CORS_ORIGIN, credentials: true }
-app.use(cors(corsOptions));
+
+// Warn about wildcard CORS in development
+if (env.CORS_ORIGIN === '*' && env.NODE_ENV !== 'production') {
+  console.warn('⚠️  CORS_ORIGIN is set to "*" - this disables CORS protection!')
+  console.warn(
+    '⚠️  Only use wildcard CORS in development. Set specific origin in production.'
+  )
+}
+
+app.use(cors(corsOptions))
 
 // Rate limiting (global)
 app.use(globalLimiter)
 
 // Logging
-app.use(requestLogger);
+app.use(requestLogger)
 
 // Body parsing
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true }))
 
 // Health check
-app.use("/health", healthRoutes);
+app.use('/health', healthRoutes)
 
 // API routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api", fetchRoutes);
+app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api', fetchRoutes)
 
 // Error handling
-app.use(notFound);
-app.use(errorHandler);
+app.use(notFound)
+app.use(errorHandler)
 
-export default app;
+export default app

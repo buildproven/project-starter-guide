@@ -11,40 +11,40 @@ const MAX_RESPONSE_BYTES = 1024 * 1024
 function requestText(
   url: URL,
   agent?: http.Agent | https.Agent
-): Promise<{ status: number; headers: http.IncomingHttpHeaders; body: string }> {
+): Promise<{
+  status: number
+  headers: http.IncomingHttpHeaders
+  body: string
+}> {
   return new Promise((resolve, reject) => {
     const client = url.protocol === 'https:' ? https : http
-    const req = client.request(
-      url,
-      { method: 'GET', agent },
-      (res) => {
-        const chunks: Buffer[] = []
-        let size = 0
+    const req = client.request(url, { method: 'GET', agent }, res => {
+      const chunks: Buffer[] = []
+      let size = 0
 
-        res.on('data', (chunk: Buffer) => {
-          size += chunk.length
-          if (size > MAX_RESPONSE_BYTES) {
-            req.destroy()
-            reject(new Error('Response too large'))
-            return
-          }
-          chunks.push(chunk)
-        })
-
-        res.on('error', (err) => {
+      res.on('data', (chunk: Buffer) => {
+        size += chunk.length
+        if (size > MAX_RESPONSE_BYTES) {
           req.destroy()
-          reject(err)
-        })
+          reject(new Error('Response too large'))
+          return
+        }
+        chunks.push(chunk)
+      })
 
-        res.on('end', () => {
-          resolve({
-            status: res.statusCode ?? 502,
-            headers: res.headers,
-            body: Buffer.concat(chunks).toString('utf8'),
-          })
+      res.on('error', err => {
+        req.destroy()
+        reject(err)
+      })
+
+      res.on('end', () => {
+        resolve({
+          status: res.statusCode ?? 502,
+          headers: res.headers,
+          body: Buffer.concat(chunks).toString('utf8'),
         })
-      }
-    )
+      })
+    })
 
     req.on('error', reject)
     req.end()
@@ -68,7 +68,8 @@ router.get('/fetch', authenticateToken, ssrfProtection(), async (req, res) => {
       reqWithUrl.validatedUrl,
       reqWithUrl.validatedUrlAgent
     )
-    const contentType = result.headers['content-type'] || 'text/plain; charset=utf-8'
+    const contentType =
+      result.headers['content-type'] || 'text/plain; charset=utf-8'
     return res.status(result.status).type(contentType).send(result.body)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Request failed'

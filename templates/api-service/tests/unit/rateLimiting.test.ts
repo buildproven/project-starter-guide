@@ -193,7 +193,8 @@ describe('Rate Limiting', () => {
       expect(res.status).toHaveBeenCalledWith(429)
       expect(res.json).toHaveBeenCalledWith({
         error: 'Rate limit exceeded',
-        message: 'You have made too many requests. Please wait before trying again.',
+        message:
+          'You have made too many requests. Please wait before trying again.',
         retryAfter: '60',
       })
       expect(result).toBe(res)

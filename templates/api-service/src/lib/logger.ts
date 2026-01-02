@@ -142,7 +142,11 @@ class Logger {
     const childLogger = new Logger(this.service, this.minLevel)
     const originalLog = childLogger.log.bind(childLogger)
 
-    childLogger.log = (level: LogLevel, message: string, context?: LogContext) => {
+    childLogger.log = (
+      level: LogLevel,
+      message: string,
+      context?: LogContext
+    ) => {
       originalLog(level, message, { ...defaultContext, ...context })
     }
 
@@ -177,11 +181,14 @@ declare global {
   }
 }
 
-export function requestLogger(req: Request, res: Response, next: NextFunction): void {
+export function requestLogger(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   // Generate and attach request ID
   const rawRequestId = req.headers['x-request-id']
-  const requestId =
-    Array.isArray(rawRequestId) ? rawRequestId[0] : rawRequestId
+  const requestId = Array.isArray(rawRequestId) ? rawRequestId[0] : rawRequestId
   req.requestId = requestId || generateRequestId()
   req.startTime = Date.now()
 

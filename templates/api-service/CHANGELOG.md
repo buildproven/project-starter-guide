@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-23
 
 ### Added
+
 - Express.js with TypeScript configuration
 - Prisma ORM with SQLite/PostgreSQL support
 - JWT authentication middleware
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions CI pipeline
 
 ### Security
+
 - Environment validation at startup
 - JWT token verification
 - Rate limiting configuration
@@ -30,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - OpenAPI/Swagger documentation
 - Redis caching layer option
 - Request logging middleware

@@ -1,20 +1,25 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express'
 
 export const errorHandler = (
-  err: Error & { statusCode?: number; code?: string; errors?: Record<string, { message: string }> },
+  err: Error & {
+    statusCode?: number
+    code?: string
+    errors?: Record<string, { message: string }>
+  },
   req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ) => {
   const isProduction = process.env.NODE_ENV === 'production'
   // Default error response
   let errorResponse = {
     message: err.message,
-    statusCode: err.statusCode || (res.statusCode !== 200 ? res.statusCode : 500),
-  };
+    statusCode:
+      err.statusCode || (res.statusCode !== 200 ? res.statusCode : 500),
+  }
 
   // Log error
-  console.error(err);
+  console.error(err)
 
   // Prisma validation error
   if (err.name === 'PrismaClientValidationError') {
@@ -36,10 +41,12 @@ export const errorHandler = (
 
   const statusCode = errorResponse.statusCode || 500
   const message =
-    statusCode >= 500 && isProduction ? "Internal server error" : errorResponse.message
+    statusCode >= 500 && isProduction
+      ? 'Internal server error'
+      : errorResponse.message
 
   res.status(statusCode).json({
     success: false,
-    error: message || "Server Error",
-  });
-};
+    error: message || 'Server Error',
+  })
+}
