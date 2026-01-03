@@ -4,15 +4,15 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Database | PostgreSQL + Prisma |
-| Auth | NextAuth (Prisma adapter) |
-| Payments | Stripe |
-| UI | Tailwind CSS |
-| Testing | Vitest |
+| Layer     | Technology                |
+| --------- | ------------------------- |
+| Framework | Next.js 16 (App Router)   |
+| Language  | TypeScript                |
+| Database  | PostgreSQL + Prisma       |
+| Auth      | NextAuth (Prisma adapter) |
+| Payments  | Stripe                    |
+| UI        | Tailwind CSS              |
+| Testing   | Vitest                    |
 
 ## Key Commands
 
@@ -60,4 +60,5 @@ if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 - `customer.subscription.deleted`
 
 ---
-*Server Components by default. Global rules in `~/.claude/CLAUDE.md`.*
+
+_Server Components by default. Global rules in `~/.claude/CLAUDE.md`._

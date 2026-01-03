@@ -330,6 +330,7 @@ Full TypeScript support with:
 **Cause:** You copied the template files instead of cloning with git
 
 **Fix:**
+
 ```bash
 git init
 git add .
@@ -348,11 +349,13 @@ npm install  # Re-run to set up git hooks
 **Status:** ✅ **Expected and documented**
 
 **Details:**
+
 - All vulnerabilities reviewed and documented in `.security-waivers.json`
 - 12 production vulnerabilities are React Native ecosystem dependencies
 - Security team has assessed and waived these for the mobile development context
 
 **Action:**
+
 1. Review `.security-waivers.json` for rationale
 2. Run `npm audit` to see specific packages
 3. Update dependencies as the React Native ecosystem matures
@@ -371,6 +374,7 @@ npm install  # Re-run to set up git hooks
 **Status:** ✅ **Expected for React Native projects**
 
 **Tips to speed up:**
+
 ```bash
 # Use npm ci for faster installs (requires package-lock.json)
 npm ci
@@ -380,6 +384,7 @@ npm ci
 ```
 
 **Expected times:**
+
 - **First install:** 5-10 minutes
 - **With cache:** 1-2 minutes
 - **npm ci:** 3-5 minutes
@@ -391,6 +396,7 @@ npm ci
 **Issue:** App not updating or showing old code
 
 **Fix:**
+
 ```bash
 # Clear Expo cache
 npx expo start --clear
@@ -411,6 +417,7 @@ npx expo start --clear
 **Issue:** `npm run ios` fails or simulator doesn't launch
 
 **Fixes:**
+
 ```bash
 # Reset all simulators
 xcrun simctl erase all
@@ -432,6 +439,7 @@ open -a Simulator
 **Issue:** `npm run android` fails to connect to emulator
 
 **Fixes:**
+
 ```bash
 # List running emulators
 adb devices
@@ -457,15 +465,16 @@ emulator -list-avds
 **Why:** Test mocks often use `any` for navigation, props, and callbacks
 
 **Fix (optional):**
+
 ```typescript
 // Instead of:
-const mockNavigation = {} as any;
+const mockNavigation = {} as any
 
 // Use proper typing:
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp } from '@react-navigation/native'
 const mockNavigation: Partial<NavigationProp<any>> = {
   navigate: jest.fn(),
-};
+}
 ```
 
 ---
@@ -475,6 +484,7 @@ const mockNavigation: Partial<NavigationProp<any>> = {
 **Issue:** QR code scanning doesn't connect to dev server
 
 **Fixes:**
+
 1. **Check network:** Phone and computer must be on same WiFi
 2. **Disable VPN:** VPNs can block local network connections
 3. **Try tunnel mode:**
@@ -493,6 +503,7 @@ const mockNavigation: Partial<NavigationProp<any>> = {
 **Issue:** `eas build` fails with unclear errors
 
 **Common fixes:**
+
 ```bash
 # Ensure EAS CLI is up to date
 npm install -g eas-cli@latest
@@ -514,11 +525,13 @@ eas credentials
 **Issue:** App feels slow or laggy
 
 **Diagnostic steps:**
+
 1. **Enable performance monitor:**
    - Shake device → "Show Performance Monitor"
    - Look for dropped frames (should be 60 FPS)
 
 2. **Check bundle size:**
+
    ```bash
    npx expo-doctor
    ```
@@ -540,6 +553,7 @@ eas credentials
 **Issue:** `.env` values not accessible in app
 
 **Fix:**
+
 ```bash
 # Expo uses .env differently than web apps
 # Install expo-constants
@@ -559,6 +573,7 @@ const apiUrl = Constants.expoConfig?.extra?.apiUrl;
 **Issue:** Peer dependency warnings during install
 
 **Fix:**
+
 ```bash
 # Use --legacy-peer-deps for compatibility
 npm install --legacy-peer-deps
@@ -577,6 +592,7 @@ npm install expo@latest
 4. **Review validation results:** See `claudedocs/fresh-clone-validation-results.md`
 
 **Need more help?** Open an issue with:
+
 - Node version (`node --version`)
 - npm version (`npm --version`)
 - Expo version (`expo --version`)

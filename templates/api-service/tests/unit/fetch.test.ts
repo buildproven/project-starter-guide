@@ -99,16 +99,17 @@ describe('/fetch endpoint', () => {
   })
 
   describe('Response Handling', () => {
-    it('should return 502 on network errors', async () => {
-      // Use a non-existent domain that will cause connection failure
+    it('should return 400 on DNS resolution failures', async () => {
+      // Use a non-existent domain that will fail DNS resolution
       const response = await request(app)
         .get(
           '/api/fetch?url=' + encodeURIComponent('https://this-domain-definitely-does-not-exist-12345.com')
         )
         .set('Authorization', `Bearer ${validToken}`)
 
-      expect(response.status).toBe(502)
+      expect(response.status).toBe(400)
       expect(response.body).toHaveProperty('error')
+      expect(response.body).toHaveProperty('details', 'Failed to resolve hostname')
     })
 
     it('should handle response size limits', async () => {

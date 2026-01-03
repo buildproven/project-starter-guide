@@ -7,18 +7,21 @@ This directory contains image and media assets for your about-me page.
 To customize this template, you'll need to add the following images:
 
 ### Profile Image
+
 - **File:** `profile.jpg` or `profile.png`
 - **Size:** 400x400px (square aspect ratio)
 - **Purpose:** Main hero section profile photo
 - **Tips:** Use a high-quality, professional headshot with good lighting
 
 ### Project Images
+
 - **Files:** `project1.jpg`, `project2.jpg`, `project3.jpg`
 - **Size:** 600x400px (3:2 aspect ratio)
 - **Purpose:** Showcase images for your featured projects
 - **Tips:** Use screenshots, mockups, or representative images of your work
 
 ### Resume
+
 - **File:** `resume.pdf`
 - **Purpose:** Downloadable resume/CV for visitors
 - **Tips:** Keep it updated and ensure it's properly formatted

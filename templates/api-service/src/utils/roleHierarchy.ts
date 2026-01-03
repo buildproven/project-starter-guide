@@ -32,6 +32,7 @@ const ROLE_LEVELS: Record<Role, number> = {
  * @example hasMinimumRole('ADMIN', 'USER') // false (USER < ADMIN)
  */
 export function hasMinimumRole(requiredRole: Role, userRole: Role): boolean {
+  // eslint-disable-next-line security/detect-object-injection -- Role enum keys are safe, not user input
   return ROLE_LEVELS[userRole] >= ROLE_LEVELS[requiredRole]
 }
 
@@ -75,6 +76,7 @@ export function isRegularUser(userRole: Role): boolean {
  * @example getRolesAtOrBelow('MODERATOR') // ['USER', 'MODERATOR']
  */
 export function getRolesAtOrBelow(maxRole: Role): Role[] {
+  // eslint-disable-next-line security/detect-object-injection -- Role enum keys are safe, not user input
   const maxLevel = ROLE_LEVELS[maxRole]
   return Object.entries(ROLE_LEVELS)
     .filter(([, level]) => level <= maxLevel)
@@ -86,6 +88,7 @@ export function getRolesAtOrBelow(maxRole: Role): Role[] {
  * @example getRolesAbove('USER') // ['MODERATOR', 'ADMIN']
  */
 export function getRolesAbove(minRole: Role): Role[] {
+  // eslint-disable-next-line security/detect-object-injection -- Role enum keys are safe, not user input
   const minLevel = ROLE_LEVELS[minRole]
   return Object.entries(ROLE_LEVELS)
     .filter(([, level]) => level > minLevel)
@@ -96,6 +99,7 @@ export function getRolesAbove(minRole: Role): Role[] {
  * Compare two roles and return the higher one
  */
 export function getHigherRole(role1: Role, role2: Role): Role {
+  // eslint-disable-next-line security/detect-object-injection -- Role enum keys are safe, not user input
   return ROLE_LEVELS[role1] >= ROLE_LEVELS[role2] ? role1 : role2
 }
 

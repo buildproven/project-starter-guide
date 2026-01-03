@@ -4,19 +4,19 @@ Complete reference for understanding how NextAuth selects adapters, strategies, 
 
 ## Strategy Selection Matrix
 
-| Scenario | Providers | Adapter | Strategy | Session Source | Use Case |
-|----------|-----------|---------|----------|----------------|----------|
-| **OAuth Configured** | GitHub/Google | Prisma | `database` | Prisma user | Production with real auth |
-| **OAuth + Mock** | GitHub + Dev Mock | Prisma | `database` | Prisma user | Local dev with real OAuth |
-| **Mock Only (Dev)** | Mock/Credentials | none | `jwt` | Token | Development without OAuth setup |
-| **No Providers (Prod)** | - | - | - | **FATAL ERROR** | Fail fast on startup |
-| **Email Provider** | Email | Prisma | `database` | Prisma user | Passwordless authentication |
+| Scenario                | Providers         | Adapter | Strategy   | Session Source  | Use Case                        |
+| ----------------------- | ----------------- | ------- | ---------- | --------------- | ------------------------------- |
+| **OAuth Configured**    | GitHub/Google     | Prisma  | `database` | Prisma user     | Production with real auth       |
+| **OAuth + Mock**        | GitHub + Dev Mock | Prisma  | `database` | Prisma user     | Local dev with real OAuth       |
+| **Mock Only (Dev)**     | Mock/Credentials  | none    | `jwt`      | Token           | Development without OAuth setup |
+| **No Providers (Prod)** | -                 | -       | -          | **FATAL ERROR** | Fail fast on startup            |
+| **Email Provider**      | Email             | Prisma  | `database` | Prisma user     | Passwordless authentication     |
 
 ## Provider Detection Logic
 
 ```typescript
-const hasOAuthProviders = providers.some(p =>
-  p.id === 'github' || p.id === 'google' || p.id === 'email'
+const hasOAuthProviders = providers.some(
+  p => p.id === 'github' || p.id === 'google' || p.id === 'email'
 )
 
 // Adapter selection
@@ -31,6 +31,7 @@ strategy: hasOAuthProviders ? 'database' : 'jwt'
 ## Session Callback Behavior
 
 ### Database Strategy (OAuth Providers)
+
 ```typescript
 async session({ session, token, user }) {
   // user comes from Prisma adapter (already populated)
@@ -45,6 +46,7 @@ async session({ session, token, user }) {
 **Critical**: Never overwrite `session.user.id` unconditionally when using database strategy. Prisma pre-populates this field.
 
 ### JWT Strategy (Credentials Only)
+
 ```typescript
 async session({ session, token, user }) {
   // user is undefined, token contains all data
@@ -61,6 +63,7 @@ async session({ session, token, user }) {
 ### Required Environment Variables
 
 **Minimum for Production**:
+
 - `NEXTAUTH_SECRET` - **REQUIRED** (prevents per-instance secrets)
 - At least one auth provider:
   - `GITHUB_ID` + `GITHUB_SECRET`, or
@@ -70,6 +73,7 @@ async session({ session, token, user }) {
 ### Fail-Fast Checks
 
 1. **No Providers Check** (Line ~77):
+
 ```typescript
 if (providers.length === 0 && process.env.NODE_ENV === 'production') {
   throw new Error('[auth] FATAL: No authentication providers configured')
@@ -77,6 +81,7 @@ if (providers.length === 0 && process.env.NODE_ENV === 'production') {
 ```
 
 2. **Missing Secret Check** (Line ~110):
+
 ```typescript
 if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
   throw new Error('[auth] FATAL: NEXTAUTH_SECRET is required in production')
@@ -85,22 +90,24 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 
 ## Database Requirements
 
-| Strategy | DATABASE_URL Required | Prisma Migrations Required |
-|----------|----------------------|---------------------------|
-| `database` | ✅ Yes | ✅ Yes |
-| `jwt` | ❌ No | ❌ No |
+| Strategy   | DATABASE_URL Required | Prisma Migrations Required |
+| ---------- | --------------------- | -------------------------- |
+| `database` | ✅ Yes                | ✅ Yes                     |
+| `jwt`      | ❌ No                 | ❌ No                      |
 
 **Dev Tip**: Use JWT strategy (credentials only) for quick local testing without database setup.
 
 ## Common Pitfalls
 
 ### ❌ Wrong: Overwriting Session User ID
+
 ```typescript
 session.user.id = user?.id || token?.sub || ''
 // Problem: Overwrites Prisma-populated id with '' on subsequent requests
 ```
 
 ### ✅ Right: Preserving Session User ID
+
 ```typescript
 if (!session.user.id) {
   session.user.id = user?.id || token?.sub || ''
@@ -109,6 +116,7 @@ if (!session.user.id) {
 ```
 
 ### ❌ Wrong: Always Adding Dev Credentials
+
 ```typescript
 if (process.env.NODE_ENV === 'development') {
   providers.push(CredentialsProvider({...}))
@@ -117,6 +125,7 @@ if (process.env.NODE_ENV === 'development') {
 ```
 
 ### ✅ Right: Only Add Mock When No Providers
+
 ```typescript
 if (providers.length === 0) {
   providers.push(CredentialsProvider({...}))
@@ -127,6 +136,7 @@ if (providers.length === 0) {
 ## Testing Scenarios
 
 ### Scenario 1: OAuth Login with Database
+
 ```bash
 # Environment
 export GITHUB_ID="real-client-id"
@@ -143,6 +153,7 @@ export NODE_ENV="production"
 ```
 
 ### Scenario 2: Local Development without OAuth
+
 ```bash
 # Environment
 export NEXTAUTH_SECRET="dev-secret"
@@ -157,6 +168,7 @@ export NODE_ENV="development"
 ```
 
 ### Scenario 3: Production Misconfiguration
+
 ```bash
 # Environment
 export NODE_ENV="production"
@@ -171,6 +183,7 @@ export NODE_ENV="production"
 ## Session Persistence
 
 ### Database Strategy Flow
+
 1. User logs in with OAuth
 2. NextAuth creates user + account rows in Prisma
 3. Session stored in database with userId reference
@@ -180,6 +193,7 @@ export NODE_ENV="production"
    - Session callback **preserves** existing id
 
 ### JWT Strategy Flow
+
 1. User logs in with credentials
 2. JWT token created with user data
 3. No database write
@@ -191,6 +205,7 @@ export NODE_ENV="production"
 ## Connection Management
 
 ### With Database Strategy
+
 ```typescript
 // lib/prisma.ts - Singleton pattern
 export const prisma =
@@ -201,6 +216,7 @@ export const prisma =
 ```
 
 ### With JWT Strategy
+
 ```typescript
 // No Prisma client needed
 // No database connections
@@ -212,12 +228,14 @@ export const prisma =
 If auth is not working:
 
 1. **Check provider detection**:
+
    ```typescript
    console.log('hasOAuthProviders:', hasOAuthProviders)
    console.log('strategy:', authOptions.session.strategy)
    ```
 
 2. **Verify session.user.id**:
+
    ```typescript
    // In session callback
    console.log('session.user.id before:', session.user?.id)
@@ -226,6 +244,7 @@ If auth is not working:
    ```
 
 3. **Check environment**:
+
    ```bash
    echo "NODE_ENV: $NODE_ENV"
    echo "NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:0:10}..."

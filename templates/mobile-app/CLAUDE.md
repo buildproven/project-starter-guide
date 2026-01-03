@@ -4,12 +4,12 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | React Native 0.81, Expo 54 |
-| Language | TypeScript |
-| Navigation | Expo Router (file-based) |
-| Testing | Jest + jest-expo |
+| Layer      | Technology                 |
+| ---------- | -------------------------- |
+| Framework  | React Native 0.81, Expo 54 |
+| Language   | TypeScript                 |
+| Navigation | Expo Router (file-based)   |
+| Testing    | Jest + jest-expo           |
 
 ## Key Commands
 
@@ -64,4 +64,5 @@ import { Platform } from 'react-native'
 Or use file extensions: `Component.ios.tsx`, `Component.android.tsx`
 
 ---
-*Use ThemedView/ThemedText for consistency. Global rules in `~/.claude/CLAUDE.md`.*
+
+_Use ThemedView/ThemedText for consistency. Global rules in `~/.claude/CLAUDE.md`._

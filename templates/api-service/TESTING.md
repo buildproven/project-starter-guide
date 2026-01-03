@@ -21,14 +21,14 @@
 
 ### Security Test Coverage
 
-| Feature | Unit Tests | Integration Tests | Coverage |
-|---------|-----------|-------------------|----------|
-| SSRF Protection | ✅ Private IPs, DNS rebinding | ✅ Real URL validation | Full |
-| Rate Limiting | ✅ Limit enforcement | ✅ Real request tracking | Full |
-| JWT Auth | ✅ Token validation | ✅ Full auth flow | Full |
-| Helmet/CSP | ⚠️ Config verification | ⚠️ Header checks | Partial |
-| CORS | ⚠️ Config verification | ⚠️ Origin checks | Partial |
-| Structured Logging | ✅ Logger usage | ✅ Log output | Full |
+| Feature            | Unit Tests                    | Integration Tests        | Coverage |
+| ------------------ | ----------------------------- | ------------------------ | -------- |
+| SSRF Protection    | ✅ Private IPs, DNS rebinding | ✅ Real URL validation   | Full     |
+| Rate Limiting      | ✅ Limit enforcement          | ✅ Real request tracking | Full     |
+| JWT Auth           | ✅ Token validation           | ✅ Full auth flow        | Full     |
+| Helmet/CSP         | ⚠️ Config verification        | ⚠️ Header checks         | Partial  |
+| CORS               | ⚠️ Config verification        | ⚠️ Origin checks         | Partial  |
+| Structured Logging | ✅ Logger usage               | ✅ Log output            | Full     |
 
 ### Coverage Requirements
 

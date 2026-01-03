@@ -19,6 +19,7 @@ found 0 vulnerabilities
 ```
 
 ### All Dependencies: ✅ SECURE
+
 - **0 Critical** severity
 - **0 High** severity
 - **0 Moderate** severity
@@ -27,6 +28,7 @@ found 0 vulnerabilities
 ## Framework Version Status
 
 ### Current Framework Versions
+
 - **Next.js**: `^16.0.3` ✅ Current
 - **React**: `^19.0.0` ✅ Current
 - **Zod**: `^3.25.76` ✅ Current
@@ -38,7 +40,9 @@ found 0 vulnerabilities
 This template maintains clean dependencies with no known security vulnerabilities.
 
 ### Previous Status
+
 Previous documentation indicated 4 moderate vulnerabilities, but these have been resolved through:
+
 - Regular dependency updates
 - Package lock file maintenance
 - Proactive security monitoring
@@ -50,12 +54,14 @@ Previous documentation indicated 4 moderate vulnerabilities, but these have been
 **Location:** `src/lib/rbac.ts`
 
 Roles hierarchy (lowest to highest):
+
 - `user` - Basic authenticated access
 - `member` - Team member privileges
 - `admin` - Administrative access
 - `owner` - Full control
 
 **Usage:**
+
 ```typescript
 import { requireRole, can, requirePermission } from '@/lib/rbac'
 
@@ -74,11 +80,13 @@ if (can(user, 'posts:delete')) {
 **Location:** `src/lib/env.ts`
 
 Zod-based validation with fail-fast in production:
+
 - Validates all required env vars at startup
 - Strong secret requirements in production (32+ chars)
 - Type-safe environment access
 
 **Usage:**
+
 ```typescript
 import { env, isProduction } from '@/lib/env'
 console.log(env.DATABASE_URL) // Type-safe access
@@ -127,9 +135,9 @@ npm audit --production   # Production dependencies only
 
 ## Security Audit History
 
-| Date | Vulnerabilities | Action Taken |
-|------|-----------------|--------------|
-| 2025-11-22 | 0 | Confirmed clean audit, created security documentation |
+| Date       | Vulnerabilities | Action Taken                                          |
+| ---------- | --------------- | ----------------------------------------------------- |
+| 2025-11-22 | 0               | Confirmed clean audit, created security documentation |
 
 ## Maintenance
 
@@ -179,28 +187,28 @@ Consider adding to `next.config.js`:
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
-    value: 'on'
+    value: 'on',
   },
   {
     key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload'
+    value: 'max-age=63072000; includeSubDomains; preload',
   },
   {
     key: 'X-XSS-Protection',
-    value: '1; mode=block'
+    value: '1; mode=block',
   },
   {
     key: 'X-Frame-Options',
-    value: 'SAMEORIGIN'
+    value: 'SAMEORIGIN',
   },
   {
     key: 'X-Content-Type-Options',
-    value: 'nosniff'
+    value: 'nosniff',
   },
   {
     key: 'Referrer-Policy',
-    value: 'origin-when-cross-origin'
-  }
+    value: 'origin-when-cross-origin',
+  },
 ]
 ```
 
@@ -214,6 +222,7 @@ const securityHeaders = [
 ## Contact
 
 For security concerns specific to this template:
+
 - Open an issue: [GitHub Issues](https://github.com/brettstark73/project-starter-guide/issues)
 - Security advisory: Use GitHub Security Advisory for private disclosure
 

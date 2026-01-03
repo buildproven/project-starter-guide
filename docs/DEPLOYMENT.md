@@ -7,11 +7,13 @@ This document covers deployment strategies and procedures for Project Starter Gu
 ### Level 1-2 Projects (Static & Dynamic Frontend)
 
 **Recommended Platforms:**
+
 - [Vercel](https://vercel.com) - Git-connected, edge functions, analytics
 - [Netlify](https://netlify.com) - Static hosting, forms, serverless functions
 - [GitHub Pages](https://pages.github.com) - Free static hosting
 
 **Setup:**
+
 1. Push code to GitHub
 2. Connect repository on platform
 3. Configure build settings (if needed)
@@ -20,11 +22,13 @@ This document covers deployment strategies and procedures for Project Starter Gu
 ### Level 3 Projects (Full-Stack Applications)
 
 **Recommended Platforms:**
+
 - [Vercel](https://vercel.com) - Next.js native, database integrations
 - [Railway.app](https://railway.app) - Simple full-stack deployment
 - [Render](https://render.com) - Backend + database hosting
 
 **Architecture:**
+
 - Frontend: Deployed to CDN/edge network
 - API: Serverless functions or containerized backend
 - Database: Managed database service (Supabase, PlanetScale, MongoDB Atlas)
@@ -32,11 +36,13 @@ This document covers deployment strategies and procedures for Project Starter Gu
 ### Level 4-5 Projects (Enterprise Grade)
 
 **Recommended Platforms:**
+
 - [AWS](https://aws.amazon.com) - Comprehensive cloud services
 - [Google Cloud](https://cloud.google.com) - Data and ML capabilities
 - [Azure](https://azure.microsoft.com) - Enterprise integrations
 
 **Architecture:**
+
 - Containerized services (Docker)
 - Orchestration (Kubernetes)
 - Load balancing and auto-scaling
@@ -47,18 +53,21 @@ This document covers deployment strategies and procedures for Project Starter Gu
 Before deploying to production:
 
 ### Code Quality
+
 - [ ] All tests pass locally
 - [ ] ESLint checks pass
 - [ ] No console warnings or errors
 - [ ] No hardcoded secrets in code
 
 ### Configuration
+
 - [ ] Environment variables configured
 - [ ] Database migrations run
 - [ ] API keys and credentials set up
 - [ ] CDN/caching configured (if applicable)
 
 ### Security
+
 - [ ] HTTPS enabled
 - [ ] CORS configured correctly
 - [ ] Authentication/authorization working
@@ -66,12 +75,14 @@ Before deploying to production:
 - [ ] Security headers set
 
 ### Performance
+
 - [ ] Bundle size within targets
 - [ ] API response times acceptable
 - [ ] Database queries optimized
 - [ ] Images optimized and lazy-loaded
 
 ### Monitoring
+
 - [ ] Error tracking (Sentry, LogRocket)
 - [ ] Analytics configured
 - [ ] Uptime monitoring enabled
@@ -130,6 +141,7 @@ docker push registry.example.com/myapp:latest
 ## Environment Variables
 
 ### Development
+
 ```bash
 # .env.local (git-ignored)
 DATABASE_URL=postgresql://localhost/myapp_dev
@@ -138,6 +150,7 @@ NODE_ENV=development
 ```
 
 ### Production
+
 ```bash
 # Set in platform dashboard or deployment config
 # Never commit to git
@@ -168,12 +181,14 @@ npm run migrate:rollback
 ## Zero-Downtime Deployments
 
 ### Blue-Green Deployment
+
 1. Deploy new version to separate environment (green)
 2. Test thoroughly
 3. Switch traffic to new version
 4. Keep old version (blue) as rollback
 
 ### Canary Deployment
+
 1. Deploy to small percentage of traffic (5-10%)
 2. Monitor metrics and errors
 3. Gradually increase percentage
@@ -182,12 +197,14 @@ npm run migrate:rollback
 ## Monitoring & Observability
 
 ### Essential Metrics
+
 - **Error rate** - Percentage of failed requests
 - **Response time** - API latency and page load time
 - **Uptime** - Availability percentage
 - **CPU/Memory** - Server resource utilization
 
 ### Tools
+
 - [Sentry](https://sentry.io) - Error tracking
 - [LogRocket](https://logrocket.com) - Session replay
 - [Datadog](https://datadoghq.com) - Infrastructure monitoring
@@ -209,6 +226,7 @@ git push origin main
 ## Performance Optimization
 
 ### Frontend
+
 - Enable gzip compression
 - Minify and bundle code
 - Optimize images (WebP, lazy loading)
@@ -216,6 +234,7 @@ git push origin main
 - Implement caching headers
 
 ### Backend
+
 - Database query optimization
 - Implement caching (Redis)
 - Rate limiting
@@ -225,11 +244,13 @@ git push origin main
 ## Disaster Recovery
 
 ### Regular Backups
+
 - Database: Daily encrypted backups
 - Code: Version controlled in Git
 - Configuration: Stored securely
 
 ### Recovery Testing
+
 - Test backup restoration quarterly
 - Document recovery procedures
 - Keep runbooks updated
@@ -237,18 +258,21 @@ git push origin main
 ## Common Issues
 
 ### Deployment Fails
+
 1. Check build logs
 2. Verify environment variables
 3. Check dependency compatibility
 4. Review recent code changes
 
 ### Slow Performance
+
 1. Check server resources
 2. Review application logs
 3. Analyze database queries
 4. Check external API latency
 
 ### High Error Rate
+
 1. Check error logs
 2. Review recent deployments
 3. Check database connectivity

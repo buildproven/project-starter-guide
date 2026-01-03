@@ -22,6 +22,7 @@ A modern, responsive personal portfolio website template perfect for developers,
 2. **Add your images** to the `assets/` folder (see assets/README.md)
 3. **Customize the content** in `index.html` - replace all `[Your ...]` placeholders
 4. **Setup Quality Automation** (Recommended)
+
    ```bash
    # Initialize as npm project for quality tools
    npm init -y
@@ -35,6 +36,7 @@ A modern, responsive personal portfolio website template perfect for developers,
    npm run format      # Auto-format code
    npm run security:audit  # Check for vulnerabilities
    ```
+
 5. **Update colors/styling** in `styles.css` if desired
 6. **Deploy** to your hosting platform
 
@@ -58,23 +60,28 @@ about-me-page/
 ## Customization
 
 ### 1. Basic Information
+
 Edit `index.html` to replace:
+
 - `[Your Name]` with your actual name
 - `[Your Title/Role]` with your job title
 - `[Your Focus]` with your area of expertise
 - All social media URLs and email addresses
 
 ### 2. Content Sections
+
 - **About:** Replace placeholder paragraphs and update skills
 - **Experience:** Update job titles, companies, dates, and achievements
 - **Projects:** Change project names, descriptions, and technology tags
 
 ### 3. Styling
+
 Edit CSS custom properties in `styles.css`:
+
 ```css
 :root {
-    --primary-color: #2563eb;    /* Main brand color */
-    --accent-color: #06b6d4;     /* Secondary accent */
+  --primary-color: #2563eb; /* Main brand color */
+  --accent-color: #06b6d4; /* Secondary accent */
 }
 ```
 

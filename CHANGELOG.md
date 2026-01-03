@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **api-service**: Role-based access control (RBAC) with role hierarchy system (ADMIN > DEVELOPER > FREE)
 - **api-service**: Authorize middleware for permission-based access control
 - **api-service**: DNS caching layer for improved external request performance
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **api-service**: Fetch timeout enforcement (10s) and response size limits (1MB)
 
 ### Changed
+
 - **api-service**: Refactored error handling with centralized response utilities
 - **api-service**: Added HTTP status code and auth constants for maintainability
 - **api-service**: Streamlined routing structure and removed unused routes
@@ -28,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **saas-level-1**: Auth session callback explicitly defaults to 'user' role
 
 ### Fixed
+
 - **api-service**: Replaced console.error with structured logger in SSRF middleware (CODE-001)
 - **api-service**: Customized Helmet.js with explicit CSP directives (SEC-008)
 - **api-service**: Added CORS wildcard startup warning for development (SEC-009)
@@ -43,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **mobile-app**: Added template-specific .gitignore (was missing)
 
 ### Added
+
 - **FEAT-003**: Interactive template generator tool (`npm run generate`)
   - Template selection with complexity indicators
   - Customization options (database, auth providers, features)
@@ -60,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CI workflow validation
 
 ### Security
+
 - **api-service**: SSRF protection now blocks comprehensive IP ranges (IPv4, IPv6, metadata endpoints, cloud provider IPs)
 - **api-service**: DNS rebinding protection via pinned HTTP/HTTPS agents
 - **api-service**: DNS lookup timeout (2s) prevents hanging on malicious domains
@@ -74,18 +79,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **scripts**: Smoke test updated to use correct Stripe env variable (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 ### Added
+
 - **api-service**: New `/api/fetch` route demonstrating SSRF-safe external request proxy
 - **saas-level-1**: Support both `GITHUB_CLIENT_ID` and legacy `GITHUB_ID` env vars
 - **saas-level-1**: Support `EMAIL_SERVER` connection string or `EMAIL_SERVER_*` parts
 - **saas-level-1**: Require `NEXTAUTH_URL` in production (no localhost default)
 
 ### Changed
+
 - **api-service**: Test infrastructure uses `os.tmpdir()` for portable lock files
 - Enhanced mobile-app env configuration and test coverage
 
 ## [2.2.0] - 2025-12-08
 
 ### Added
+
 - Database performance indexes to all Prisma schemas (Account.userId, Session.userId/expires, User.stripeCustomerId, Subscription.userId+status)
 - ARIA accessibility attributes to mobile menu button (aria-label, aria-expanded, aria-controls)
 - Prettier configuration files to api-service and mobile-app templates
@@ -94,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - .env.docker.example for secure Docker Compose configuration
 
 ### Changed
+
 - **BREAKING**: Enabled TypeScript strict mode in saas-level-1 template
 - Docker secrets moved from hardcoded values to .env.docker file (api-service)
 - Placeholder text color improved from gray-400 to gray-500 for WCAG AA compliance
@@ -103,12 +112,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - .gitignore updated to include .env.docker
 
 ### Security
+
 - Fixed 3 high-severity vulnerabilities in glob (command injection)
 - Fixed 1 moderate-severity vulnerability in js-yaml (prototype pollution)
 - Removed all security waivers from saas-level-1 (vulnerabilities resolved)
 - Docker Compose secrets no longer hardcoded, now use environment files
 
 ### Performance
+
 - Added 7 database indexes for 50-80% query performance improvement:
   - Account: userId index for faster OAuth account lookups
   - Session: userId and expires indexes for session management and cleanup
@@ -117,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - User (api-service): lastLogin index for analytics queries
 
 ### Accessibility
+
 - Mobile menu now fully keyboard accessible with proper ARIA labels
 - Improved color contrast for form placeholders (WCAG 2.1 AA compliant)
 - Mobile navigation role explicitly defined
@@ -124,6 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-20
 
 ### Initial Release
+
 - Three starter templates: api-service, mobile-app, saas-level-1
 - Comprehensive documentation and README files
 - Security best practices and automated scanning
@@ -144,6 +157,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Upgrading to v2.2.0
 
 #### TypeScript Strict Mode (saas-level-1)
+
 If you've forked the saas-level-1 template, enabling strict mode may reveal type errors:
 
 ```bash
@@ -157,6 +171,7 @@ npm run type-check
 ```
 
 #### Docker Secrets (api-service)
+
 If using Docker Compose:
 
 ```bash
@@ -172,6 +187,7 @@ docker-compose up
 ```
 
 #### Database Migrations (All templates)
+
 New indexes require a database migration:
 
 ```bash
