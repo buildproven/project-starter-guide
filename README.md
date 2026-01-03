@@ -12,7 +12,7 @@ Comprehensive guide for choosing the right architecture and technology stack for
 
 > **Maintainer & Ownership**
 > This project is maintained by **Vibe Build Lab LLC**, a studio focused on AI-assisted product development, micro-SaaS, and "vibe coding" workflows for solo founders and small teams.
-> Learn more at **https://vibebuildlab.com**.
+> Learn more at **<https://vibebuildlab.com>**.
 
 ---
 
@@ -34,14 +34,14 @@ Comprehensive guide for choosing the right architecture and technology stack for
 
 ## Quick Start Decision Matrix
 
-| Project Type | Complexity | Recommended Stack | Time to MVP |
-|--------------|------------|-------------------|-------------|
-| **Portfolio / About Me** | Level 1 | HTML5 + CSS3 + Vanilla JS | 0.5-1 day |
-| **Landing Page** | Level 1 | Next.js + Tailwind | 1-2 days |
-| **Blog / Documentation** | Level 2 | Next.js + MDX or Astro | 2-4 days |
-| **SaaS MVP** | Level 3 | Next.js + Supabase + Stripe | 3-5 days |
-| **E-commerce** | Level 3 | Next.js + Shopify/Stripe + DB | 5-7 days |
-| **Enterprise SaaS** | Level 4 | Microservices + K8s + Multiple DBs | 3-6 weeks |
+| Project Type             | Complexity | Recommended Stack                  | Time to MVP |
+| ------------------------ | ---------- | ---------------------------------- | ----------- |
+| **Portfolio / About Me** | Level 1    | HTML5 + CSS3 + Vanilla JS          | 0.5-1 day   |
+| **Landing Page**         | Level 1    | Next.js + Tailwind                 | 1-2 days    |
+| **Blog / Documentation** | Level 2    | Next.js + MDX or Astro             | 2-4 days    |
+| **SaaS MVP**             | Level 3    | Next.js + Supabase + Stripe        | 3-5 days    |
+| **E-commerce**           | Level 3    | Next.js + Shopify/Stripe + DB      | 5-7 days    |
+| **Enterprise SaaS**      | Level 4    | Microservices + K8s + Multiple DBs | 3-6 weeks   |
 
 ## Pricing & Licensing
 
@@ -54,18 +54,21 @@ Comprehensive guide for choosing the right architecture and technology stack for
 ## Tech Stack Coverage
 
 ### Frontend Frameworks
+
 - **React/Next.js** - Most versatile, great ecosystem
 - **Vue/Nuxt.js** - Gentle learning curve, great DX
 - **Svelte/SvelteKit** - Smallest bundle size, fast performance
 - **Astro** - Content-focused sites, multi-framework support
 
 ### Backend Solutions
+
 - **Serverless Functions** - Vercel, Netlify (Levels 1-2)
 - **Node.js** - Express, Fastify, Nest.js (Levels 2-3)
 - **Python** - FastAPI, Django (Levels 3-4)
 - **Go** - Gin, Fiber (Levels 3-5)
 
 ### Databases
+
 - **Level 1-2:** LocalStorage, Supabase
 - **Level 3:** PostgreSQL, MongoDB, PlanetScale
 - **Level 4:** Multiple databases, Redis, search engines
@@ -89,6 +92,7 @@ npm install && npm run prepare
 ```
 
 **What you get:**
+
 - ESLint + Security Rules
 - Prettier Formatting
 - Security Scanning
@@ -99,26 +103,31 @@ npm install && npm run prepare
 ## Complexity Levels
 
 ### Level 1: Static & Simple
+
 - **Use Case:** Landing pages, portfolios, documentation
 - **Architecture:** Static files, minimal JavaScript
 - **Hosting:** Vercel, Netlify, GitHub Pages
 
 ### Level 2: Dynamic Frontend
+
 - **Use Case:** Interactive websites, simple web apps
 - **Architecture:** Frontend framework + API calls
 - **Hosting:** Vercel, Netlify + serverless functions
 
 ### Level 3: Full-Stack Applications
+
 - **Use Case:** SaaS products, e-commerce, dashboards
 - **Architecture:** Frontend + Backend + Database + Auth
 - **Hosting:** Vercel/Railway + managed database
 
 ### Level 4: Scalable Systems
+
 - **Use Case:** High-traffic applications, complex business logic
 - **Architecture:** Microservices, load balancers, caching
 - **Hosting:** Cloud platforms (AWS, GCP, Azure)
 
 ### Level 5: Enterprise Grade
+
 - **Use Case:** Mission-critical systems, complex integrations
 - **Architecture:** Distributed systems, service mesh, monitoring
 - **Hosting:** Multi-cloud, Kubernetes clusters
@@ -126,11 +135,13 @@ npm install && npm run prepare
 ## Documentation
 
 ### Core Guides
+
 - [Architecture](docs/ARCHITECTURE.md)
 - [Testing](docs/TESTING.md)
 - [Deployment](docs/DEPLOYMENT.md)
 
 ### Templates
+
 - [About Me Page Template](templates/about-me-page/)
 - [SaaS Level 1 Starter](templates/saas-level-1/)
 - [API Service Template](templates/api-service/)
@@ -161,6 +172,7 @@ This project is MIT licensed. See [LICENSE](LICENSE) for full details.
 ## Support
 
 Need help? See [SUPPORT.md](SUPPORT.md) for:
+
 - Documentation links
 - Community resources
 - Commercial support options

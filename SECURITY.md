@@ -2,11 +2,12 @@
 
 ## Reporting Security Vulnerabilities
 
-If you discover a security vulnerability in this project, please report it responsibly by emailing **security@vibebuildlab.com** instead of using the public issue tracker.
+If you discover a security vulnerability in this project, please report it responsibly by emailing **<security@vibebuildlab.com>** instead of using the public issue tracker.
 
 ### What to Include in Your Report
 
 Please provide:
+
 - A description of the vulnerability
 - Steps to reproduce the issue
 - Potential impact
@@ -25,6 +26,7 @@ This project implements security best practices including:
 ## Supported Versions
 
 Security updates are provided for:
+
 - The latest major version
 - The current stable release
 
@@ -40,4 +42,4 @@ Security advisories will be published on the [GitHub Security Advisories](https:
 
 ---
 
-For questions about security, contact **security@vibebuildlab.com**.
+For questions about security, contact **<security@vibebuildlab.com>**.

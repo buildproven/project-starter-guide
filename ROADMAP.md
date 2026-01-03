@@ -20,27 +20,27 @@ Provide production-ready starter templates that help developers launch projects 
 
 ### Q1 2025: Monetization Foundation
 
-| Initiative | Description | Status |
-|------------|-------------|--------|
-| Video tutorials | Setup guides for each template | Planned |
-| Starter Pack | Bundled templates + tutorials | Planned |
-| Community feedback | NPS surveys, feature requests | Planned |
+| Initiative         | Description                    | Status  |
+| ------------------ | ------------------------------ | ------- |
+| Video tutorials    | Setup guides for each template | Planned |
+| Starter Pack       | Bundled templates + tutorials  | Planned |
+| Community feedback | NPS surveys, feature requests  | Planned |
 
 ### Q2 2025: Platform Expansion
 
-| Initiative | Description | Status |
-|------------|-------------|--------|
-| Template generator | Interactive customization tool | Idea |
-| Python/FastAPI template | Expand language coverage | Idea |
-| Go/Fiber template | High-performance API option | Idea |
+| Initiative              | Description                    | Status |
+| ----------------------- | ------------------------------ | ------ |
+| Template generator      | Interactive customization tool | Idea   |
+| Python/FastAPI template | Expand language coverage       | Idea   |
+| Go/Fiber template       | High-performance API option    | Idea   |
 
 ### Q3 2025: Enterprise Features
 
-| Initiative | Description | Status |
-|------------|-------------|--------|
-| Multi-tenancy template | SaaS Level 2 | Idea |
-| Admin dashboard | Common SaaS patterns | Idea |
-| Analytics integration | Built-in product analytics | Idea |
+| Initiative             | Description                | Status |
+| ---------------------- | -------------------------- | ------ |
+| Multi-tenancy template | SaaS Level 2               | Idea   |
+| Admin dashboard        | Common SaaS patterns       | Idea   |
+| Analytics integration  | Built-in product analytics | Idea   |
 
 ## Non-Goals
 
@@ -60,4 +60,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Strategic discussions hap
 
 ---
 
-*Roadmap is reviewed quarterly. Priorities may shift based on user feedback and market conditions.*
+_Roadmap is reviewed quarterly. Priorities may shift based on user feedback and market conditions._

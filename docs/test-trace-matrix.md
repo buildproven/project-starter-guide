@@ -5,23 +5,24 @@
 
 ## Coverage Summary
 
-| Metric | Value |
-|--------|-------|
-| Requirements | 0 |
-| Covered | 0 |
-| Coverage | 0% |
+| Metric       | Value |
+| ------------ | ----- |
+| Requirements | 0     |
+| Covered      | 0     |
+| Coverage     | 0%    |
 
 ## Requirement → Test Mapping
 
-| REQ-ID | Description | Test File | Status |
-|--------|-------------|-----------|--------|
-| REQ-F.01.01 | [Description] | - | ⚠️ Missing |
+| REQ-ID      | Description   | Test File | Status     |
+| ----------- | ------------- | --------- | ---------- |
+| REQ-F.01.01 | [Description] | -         | ⚠️ Missing |
 
 ## Test → Requirement Mapping
 
 | Test File | Tests | REQ-IDs | Status |
-|-----------|-------|---------|--------|
-| - | - | - | - |
+| --------- | ----- | ------- | ------ |
+| -         | -     | -       | -      |
 
 ---
-*Run `vbl qa` to regenerate this matrix*
+
+_Run `vbl qa` to regenerate this matrix_

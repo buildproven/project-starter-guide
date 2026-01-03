@@ -6,12 +6,6 @@
     "skipLibCheck": true,
     "types": ["jest"]
   },
-  "include": [
-    "src/**/*",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

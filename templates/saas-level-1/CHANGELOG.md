@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-23
 
 ### Added
+
 - Next.js 16 with App Router architecture
 - NextAuth authentication with Prisma adapter
 - JWT and database session strategy support
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions CI/CD pipeline
 
 ### Security
+
 - Environment variable validation at startup
 - CSRF protection via NextAuth
 - Secure session handling
@@ -31,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - Role-based access control (RBAC) helpers
 - Multi-tenant support option
 - Email verification flow

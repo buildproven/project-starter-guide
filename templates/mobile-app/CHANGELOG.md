@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-23
 
 ### Added
+
 - React Native with Expo SDK 54
 - TypeScript strict mode
 - React Navigation setup
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iOS and Android build configurations
 
 ### Security
+
 - Secure credential storage
 - API token handling best practices
 - Input validation patterns
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - Push notification setup
 - Offline-first data sync
 - Biometric authentication option

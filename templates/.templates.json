@@ -27,7 +27,12 @@
       "description": "Production-ready REST API with Express 5, TypeScript, PostgreSQL, and Prisma",
       "complexity": 3,
       "stack": ["Express 5", "TypeScript", "PostgreSQL", "Prisma", "Vitest"],
-      "features": ["jwt-auth", "rate-limiting", "ssrf-protection", "prisma-orm"],
+      "features": [
+        "jwt-auth",
+        "rate-limiting",
+        "ssrf-protection",
+        "prisma-orm"
+      ],
       "customizations": {
         "database": {
           "type": "select",
@@ -47,8 +52,16 @@
         }
       },
       "envVars": [
-        { "key": "DATABASE_URL", "required": true, "example": "postgresql://user:password@localhost:5432/mydb" },
-        { "key": "JWT_SECRET", "required": true, "example": "your-super-secret-jwt-key-change-in-production" },
+        {
+          "key": "DATABASE_URL",
+          "required": true,
+          "example": "postgresql://user:password@localhost:5432/mydb"
+        },
+        {
+          "key": "JWT_SECRET",
+          "required": true,
+          "example": "your-super-secret-jwt-key-change-in-production"
+        },
         { "key": "PORT", "required": false, "default": "3000" }
       ]
     },
@@ -72,14 +85,27 @@
         }
       },
       "envVars": [
-        { "key": "EXPO_PUBLIC_API_URL", "required": false, "example": "https://api.example.com" }
+        {
+          "key": "EXPO_PUBLIC_API_URL",
+          "required": false,
+          "example": "https://api.example.com"
+        }
       ]
     },
     "saas-level-1": {
       "name": "SaaS Level 1",
       "description": "Full-stack SaaS starter with Next.js 16, NextAuth, Stripe, and Prisma",
       "complexity": 3,
-      "stack": ["Next.js 16", "TypeScript", "PostgreSQL", "Prisma", "NextAuth", "Stripe", "Tailwind CSS", "Vitest"],
+      "stack": [
+        "Next.js 16",
+        "TypeScript",
+        "PostgreSQL",
+        "Prisma",
+        "NextAuth",
+        "Stripe",
+        "Tailwind CSS",
+        "Vitest"
+      ],
       "features": ["auth", "payments", "database", "responsive-ui"],
       "customizations": {
         "database": {
@@ -106,16 +132,56 @@
         }
       },
       "envVars": [
-        { "key": "DATABASE_URL", "required": false, "example": "postgresql://user:password@localhost:5432/mydb" },
-        { "key": "NEXTAUTH_SECRET", "required": true, "example": "your-nextauth-secret-32-chars-min" },
-        { "key": "NEXTAUTH_URL", "required": true, "example": "http://localhost:3000" },
-        { "key": "GITHUB_ID", "required": false, "example": "your-github-oauth-app-id" },
-        { "key": "GITHUB_SECRET", "required": false, "example": "your-github-oauth-secret" },
-        { "key": "GOOGLE_ID", "required": false, "example": "your-google-oauth-client-id" },
-        { "key": "GOOGLE_SECRET", "required": false, "example": "your-google-oauth-secret" },
-        { "key": "STRIPE_SECRET_KEY", "required": false, "example": "sk_test_..." },
-        { "key": "STRIPE_PUBLISHABLE_KEY", "required": false, "example": "pk_test_..." },
-        { "key": "STRIPE_WEBHOOK_SECRET", "required": false, "example": "whsec_..." }
+        {
+          "key": "DATABASE_URL",
+          "required": false,
+          "example": "postgresql://user:password@localhost:5432/mydb"
+        },
+        {
+          "key": "NEXTAUTH_SECRET",
+          "required": true,
+          "example": "your-nextauth-secret-32-chars-min"
+        },
+        {
+          "key": "NEXTAUTH_URL",
+          "required": true,
+          "example": "http://localhost:3000"
+        },
+        {
+          "key": "GITHUB_ID",
+          "required": false,
+          "example": "your-github-oauth-app-id"
+        },
+        {
+          "key": "GITHUB_SECRET",
+          "required": false,
+          "example": "your-github-oauth-secret"
+        },
+        {
+          "key": "GOOGLE_ID",
+          "required": false,
+          "example": "your-google-oauth-client-id"
+        },
+        {
+          "key": "GOOGLE_SECRET",
+          "required": false,
+          "example": "your-google-oauth-secret"
+        },
+        {
+          "key": "STRIPE_SECRET_KEY",
+          "required": false,
+          "example": "sk_test_..."
+        },
+        {
+          "key": "STRIPE_PUBLISHABLE_KEY",
+          "required": false,
+          "example": "pk_test_..."
+        },
+        {
+          "key": "STRIPE_WEBHOOK_SECRET",
+          "required": false,
+          "example": "whsec_..."
+        }
       ]
     }
   },

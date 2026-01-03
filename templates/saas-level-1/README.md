@@ -260,6 +260,7 @@ GITHUB_CLIENT_SECRET=your-github-client-secret
 **Cause:** You copied the template files instead of cloning with git
 
 **Fix:**
+
 ```bash
 git init
 git add .
@@ -280,6 +281,7 @@ npm install  # Re-run to set up git hooks
 **Status:** ✅ **Expected for full-stack SaaS templates**
 
 **Tips to speed up:**
+
 ```bash
 # Use npm ci for faster installs (requires package-lock.json)
 npm ci
@@ -289,6 +291,7 @@ npm ci
 ```
 
 **Expected times:**
+
 - **First install:** 10-15 minutes
 - **With cache:** 2-3 minutes
 - **npm ci:** 5-8 minutes
@@ -302,6 +305,7 @@ npm ci
 **Cause:** Prisma client not generated after install
 
 **Fix:**
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -321,11 +325,13 @@ npm install
 **Fixes:**
 
 1. **Check DATABASE_URL in .env.local:**
+
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/saas_db"
    ```
 
 2. **Verify database is running:**
+
    ```bash
    # For PostgreSQL
    psql -U postgres -c "SELECT version();"
@@ -335,6 +341,7 @@ npm install
    ```
 
 3. **Create database if it doesn't exist:**
+
    ```bash
    # PostgreSQL
    createdb saas_db
@@ -357,6 +364,7 @@ npm install
 **Common causes:**
 
 1. **Missing NEXTAUTH_SECRET:**
+
    ```bash
    # Generate a secret
    openssl rand -base64 32
@@ -366,6 +374,7 @@ npm install
    ```
 
 2. **Wrong NEXTAUTH_URL:**
+
    ```env
    # Development
    NEXTAUTH_URL=http://localhost:3000
@@ -388,12 +397,14 @@ npm install
 **Fixes:**
 
 1. **Clear Next.js cache:**
+
    ```bash
    rm -rf .next
    npm run build
    ```
 
 2. **Clear all caches:**
+
    ```bash
    rm -rf node_modules .next
    npm install
@@ -413,16 +424,16 @@ npm install
 **Fixes:**
 
 1. **Verify globals.css is imported:**
+
    ```typescript
    // src/app/layout.tsx
    import './globals.css'
    ```
 
 2. **Check tailwind.config.js content paths:**
+
    ```javascript
-   content: [
-     './src/**/*.{js,ts,jsx,tsx,mdx}',
-   ]
+   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}']
    ```
 
 3. **Rebuild:**
@@ -438,6 +449,7 @@ npm install
 **Issue:** TypeScript errors about Prisma types
 
 **Fix:**
+
 ```bash
 # Regenerate Prisma client
 npx prisma generate
@@ -458,7 +470,8 @@ npx prisma generate
    - Next.js loads `.env.local` by default
    - Copy `.env.example` to `.env.local`
 
-2. **Variables need NEXT_PUBLIC_ prefix for client-side:**
+2. **Variables need NEXT*PUBLIC* prefix for client-side:**
+
    ```env
    # Server-side only
    DATABASE_URL=postgresql://...
@@ -482,6 +495,7 @@ npx prisma generate
 **Checklist:**
 
 1. **Verify Stripe keys:**
+
    ```env
    STRIPE_PUBLISHABLE_KEY=pk_test_...
    STRIPE_SECRET_KEY=sk_test_...
@@ -493,6 +507,7 @@ npx prisma generate
    - Ensure keys match (both test or both live)
 
 3. **Webhook setup:**
+
    ```bash
    # Install Stripe CLI
    brew install stripe/stripe-cli/stripe
@@ -510,6 +525,7 @@ npx prisma generate
 **Fixes:**
 
 1. **Restart dev server:**
+
    ```bash
    npm run dev
    ```
@@ -531,6 +547,7 @@ npx prisma generate
 **Fixes:**
 
 1. **Find and kill process:**
+
    ```bash
    # macOS/Linux
    lsof -ti:3000 | xargs kill -9
@@ -582,6 +599,7 @@ npx prisma generate
 4. **Review validation results:** See `claudedocs/fresh-clone-validation-results.md`
 
 **Need more help?** Open an issue with:
+
 - Node version (`node --version`)
 - npm version (`npm --version`)
 - Next.js version (from package.json)

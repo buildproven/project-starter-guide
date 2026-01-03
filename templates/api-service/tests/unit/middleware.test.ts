@@ -21,7 +21,11 @@ describe('Middleware', () => {
       const req = { headers: {} } as Request
       authenticateToken(req, res, next as NextFunction)
       expect(res.status).toHaveBeenCalledWith(401)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Access token required' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Access token required',
+        message: 'Please provide a valid Bearer token in the Authorization header.',
+        code: 'AUTH_1001',
+      })
     })
 
     it('accepts valid token', () => {
@@ -46,6 +50,8 @@ describe('Middleware', () => {
       expect(res.status).toHaveBeenCalledWith(401)
       expect(res.json).toHaveBeenCalledWith({
         error: 'Invalid token',
+        message: 'The provided token is invalid or malformed. Please log in again.',
+        code: 'AUTH_1002',
       })
     })
   })

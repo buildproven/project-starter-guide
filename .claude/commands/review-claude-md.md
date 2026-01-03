@@ -35,16 +35,19 @@ Review project CLAUDE.md and suggest updates based on recent repository changes.
 ## Triggers for Updates
 
 **Workflow Changes**:
+
 - New files in `.github/workflows/`
 - New files in `scripts/`
 - New custom commands in `.claude/commands/`
 
 **Template Changes**:
+
 - Auth configuration modifications
 - Testing strategy changes
 - Build process updates
 
 **Pattern Discovery**:
+
 - After code review rounds
 - After fixing critical bugs
 - After implementing new features
@@ -68,6 +71,7 @@ git diff HEAD~20..HEAD -- templates/*/package.json templates/*/{auth,config}*
 ## Output Format
 
 Provide:
+
 1. **What Changed**: Summary of recent repository changes
 2. **Current CLAUDE.md**: Relevant sections that may need updates
 3. **Suggested Updates**: Specific additions or modifications

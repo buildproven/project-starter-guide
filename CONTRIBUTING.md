@@ -5,22 +5,26 @@ Thank you for your interest in contributing! This guide helps developers choose 
 ## How to Contribute
 
 ### 📝 Documentation Improvements
+
 - Fix typos or unclear explanations
 - Add missing information to existing guides
 - Improve code examples and snippets
 - Update outdated technology recommendations
 
 ### 🚀 New Project Types
+
 - Add guides for project types we haven't covered
 - Create new complexity level examples
 - Contribute real-world case studies
 
 ### 🛠️ Templates
+
 - Create starter templates for different project types
 - Improve existing templates with better practices
 - Add deployment configurations and documentation
 
 ### 🐛 Issues
+
 - Report outdated information
 - Suggest new project types or technologies to cover
 - Request clarification on existing guides
@@ -36,18 +40,21 @@ Thank you for your interest in contributing! This guide helps developers choose 
 ## Style Guide
 
 ### Documentation
+
 - Use clear, concise language
 - Include practical examples
 - Provide both pros/cons for technology choices
 - Update the main README if adding new sections
 
 ### Code Examples
+
 - Use modern JavaScript/TypeScript syntax
 - Include error handling where appropriate
 - Add comments explaining complex concepts
 - Test all code examples before submitting
 
 ### Templates
+
 - Include comprehensive README files
 - Provide clear customization instructions
 - Ensure responsive design and accessibility
@@ -56,18 +63,21 @@ Thank you for your interest in contributing! This guide helps developers choose 
 ## What We're Looking For
 
 ### High Priority
+
 - Mobile app development guides
 - DevOps and deployment strategies
 - Security best practices by complexity level
 - Real-world case studies and examples
 
-### Medium Priority  
+### Medium Priority
+
 - More framework-specific guides
 - Performance optimization strategies
 - Testing strategies by project type
 - Internationalization considerations
 
 ### Templates Needed
+
 - Mobile app starters (React Native, Flutter)
 - E-commerce templates
 - API service templates
