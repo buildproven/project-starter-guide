@@ -99,13 +99,11 @@ function createRedisStore() {
 const store = createRedisStore()
 
 if (!store && process.env.NODE_ENV === 'production') {
-  console.warn(
-    '[RateLimit] WARNING: Using in-memory rate limiting in production. This does NOT work with multiple instances.'
+  throw new Error(
+    '[RateLimit] FATAL: Redis is required in production for distributed rate limiting. ' +
+      'Set REDIS_URL environment variable. ' +
+      'Example: REDIS_URL=redis://localhost:6379'
   )
-  console.warn(
-    '[RateLimit] For multi-instance deployments, install Redis: npm install redis rate-limit-redis'
-  )
-  console.warn('[RateLimit] Then set REDIS_URL environment variable')
 }
 
 /**
@@ -167,6 +165,27 @@ export const registrationLimiter = rateLimit({
 })
 
 /**
+ * Per-user rate limiter for /fetch endpoint
+ * 100 requests per hour per user (prevents abuse as proxy service)
+ * Falls back to IP-based limiting for unauthenticated requests
+ */
+export const fetchLimiter = rateLimit({
+  store,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 100,
+  message: {
+    error: 'Fetch rate limit exceeded',
+    message:
+      'You have made too many fetch requests. Please try again after an hour.',
+    retryAfter: 'See Retry-After header',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  keyGenerator: getUserKey, // Uses user ID if authenticated, IP otherwise
+})
+
+/**
  * Create a custom rate limiter with specific configuration
  */
 export function createRateLimiter(options: Partial<Options>) {
@@ -208,6 +227,7 @@ export default {
   globalLimiter,
   authLimiter,
   registrationLimiter,
+  fetchLimiter,
   createRateLimiter,
   skipForTrustedIPs,
   rateLimitHandler,

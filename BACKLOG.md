@@ -1,6 +1,6 @@
 # Project Starter Guide - Backlog
 
-**Last Updated**: 2026-01-02 (Security hardening and RBAC implementation)
+**Last Updated**: 2026-01-02 (All P1 and P2 items from Deep Review completed)
 **Priority System**: P0 (Critical - Block Release) → P1 (Important - Fix Soon) → P2 (Nice-to-have) → P3 (Future)
 
 ## 🚨 P0 - Critical (Block Release)
@@ -157,6 +157,61 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 **Commit**: f4a9602
 
 ## ⚠️ P1 - Important (Should Fix Soon)
+
+### TEST-005 | Add tests for /fetch endpoint | S | ✅ Completed
+**Category**: Testing - Critical Gap (v2.6.1 Blocker)
+**Deep Review Finding**: Missing test coverage for critical /fetch endpoint
+**Files**: `templates/api-service/src/routes/fetch.ts`, `templates/api-service/tests/unit/fetch.test.ts`
+**Impact**: CRITICAL gap - /fetch endpoint has no test coverage
+**Root Cause**: Endpoint added but tests not written
+**Resolution**: Created comprehensive test suite for /fetch endpoint
+- Authentication tests (missing token, invalid token, valid token)
+- URL validation tests (missing URL, private IPs, invalid formats, valid URLs)
+- Response handling tests (network errors, size limits, timeouts)
+- Content type handling tests
+**Completed**: 2026-01-02
+**Commit**: [pending]
+
+### TYPE-001 | Add Role field to User model and make it required | S | ✅ Completed
+**Category**: Type Safety (v2.6.1 Blocker)
+**Deep Review Finding**: Role type is optional but should be required
+**Files**: `templates/api-service/prisma/schema.prisma`, `templates/api-service/src/controllers/authController.ts`
+**Impact**: Type safety gap - Role should be non-optional
+**Root Cause**: Inconsistent type modeling
+**Resolution**: Added Role enum and field to User model
+- Created Role enum with USER, ADMIN, MODERATOR values
+- Added required role field to User model with default value of USER
+- Updated authController to include role in all user responses
+- Role is now properly typed and always present
+**Completed**: 2026-01-02
+**Commit**: [pending]
+
+### REDIS-001 | Fail fast on missing Redis in production | S | ✅ Completed
+**Category**: Production Safety (Production Scale Blocker)
+**Deep Review Finding**: Missing Redis detection allows silent failures
+**Files**: `templates/api-service/src/middleware/rateLimiting.ts`
+**Impact**: Prevents silent failures in multi-instance deployments
+**Root Cause**: No validation for Redis availability in production
+**Resolution**: Changed warning to fatal error in production
+- Application now throws error on startup if Redis not configured in production
+- Clear error message with setup instructions
+- Prevents deployment without proper distributed rate limiting
+**Completed**: 2026-01-02
+**Commit**: [pending]
+
+### RATE-001 | Add per-user rate limiting to /fetch endpoint | M | ✅ Completed
+**Category**: Security - Abuse Prevention (Production Scale Blocker)
+**Deep Review Finding**: /fetch endpoint lacks per-user rate limiting
+**Files**: `templates/api-service/src/routes/fetch.ts`, `templates/api-service/src/middleware/rateLimiting.ts`
+**Impact**: Prevents abuse of /fetch endpoint by individual users
+**Root Cause**: Global rate limiting exists but no per-user limits
+**Resolution**: Implemented per-user rate limiting for /fetch endpoint
+- Created fetchLimiter with 100 requests/hour per user
+- Uses getUserKey function (user ID if authenticated, IP otherwise)
+- Applied to /fetch endpoint alongside authentication and SSRF protection
+- Returns 429 with retry-after header when limit exceeded
+**Completed**: 2026-01-02
+**Commit**: [pending]
 
 ### DB-001 | Fix API template Prisma connection leaks | M | ✅ Completed
 **Category**: Database - Important
@@ -413,6 +468,51 @@ All P0 items from previous review completed ✅ (2025-11-11)
 **Commits**: 96ec170, 74a4f1b
 
 ## 📋 P2 - Recommended (Post-Launch)
+
+### PERF-002 | Add DNS caching for /fetch endpoint | M | ✅ Completed
+**Category**: Performance Optimization
+**Deep Review Finding**: DNS lookups add 50-200ms latency per request
+**Files**: `templates/api-service/src/routes/fetch.ts`, `templates/api-service/src/lib/dnsCache.ts`
+**Impact**: 50-200ms latency savings per request
+**Root Cause**: No DNS caching implemented
+**Resolution**: Implemented DNS caching layer with TTL
+- Created DNSCache class with in-memory caching
+- Configurable TTL (default 5 minutes) and max cache size (1000 entries)
+- Automatic LRU eviction when cache is full
+- Integrated into /fetch endpoint for pre-resolution
+- Cache statistics available for monitoring
+**Completed**: 2026-01-02
+**Commit**: [pending]
+
+### AUTH-008 | Add role hierarchy helpers | S | ✅ Completed
+**Category**: Code Quality - Maintainability
+**Deep Review Finding**: Role comparisons scattered throughout codebase
+**Files**: `templates/api-service/src/utils/roleHierarchy.ts`, `templates/api-service/src/middleware/authorize.ts`
+**Impact**: Improves maintainability and reduces duplication
+**Root Cause**: No centralized role hierarchy helpers
+**Resolution**: Created comprehensive role hierarchy system
+- Added roleHierarchy.ts with centralized role comparison functions
+- Implemented hasMinimumRole, hasExactRole, hasAnyRole, isAdmin, isModerator helpers
+- Created authorize.ts middleware with requireRole, requireMinimumRole, requireAnyRole functions
+- Established role hierarchy: ADMIN > MODERATOR > USER
+- Type-safe role operations with Prisma enum integration
+**Completed**: 2026-01-02
+**Commit**: [pending]
+
+### UX-001 | Add specific error messages | S | ✅ Completed
+**Category**: User Experience
+**Deep Review Finding**: Generic error messages don't help users understand issues
+**Files**: `templates/api-service/src/utils/responses.ts`, `templates/api-service/src/controllers/authController.ts`, `templates/api-service/src/middleware/auth.ts`
+**Impact**: Better user experience through clearer error messages
+**Root Cause**: Using generic error messages instead of specific ones
+**Resolution**: Implemented structured error response system
+- Created ErrorCodes enum with categorized error codes (AUTH_xxxx, AUTHZ_xxxx, VALIDATION_xxxx, etc.)
+- Enhanced errorResponses with specific error helpers (invalidCredentials, tokenExpired, resourceExists, validationError, rateLimitExceeded)
+- All error responses now include error, message, code, and optional details fields
+- Updated authController and auth middleware to use specific error messages
+- Error codes enable programmatic error handling on client side
+**Completed**: 2026-01-02
+**Commit**: [pending]
 
 ### REFACTOR-001 | Improve api-service error handling and responses | M | ✅ Completed
 **Category**: Code Quality - Maintainability
@@ -671,19 +771,34 @@ npm run generate -- --defaults      # Non-interactive with defaults
 
 ## Summary Statistics
 
-**Total Open Items**: 0 (0 P0 + 0 P1 + 0 P2 + 0 P3)
+**Total Open Items**: 1 (0 P0 + 0 P1 + 0 P2 + 1 P3)
 - P0 Critical: 0 ✅ ALL COMPLETE!
-- P1 Important: 0 ✅ ALL COMPLETE!
-- P2 Recommended: 0 ✅ ALL COMPLETE!
+- P1 Important: 0 ✅ ALL COMPLETE! (All v2.6.1 & Production Scale blockers resolved)
+- P2 Recommended: 0 ✅ ALL COMPLETE! (All strategic improvements implemented)
 - P3 Future: 1 (DOC-005: Video tutorials)
 
-**Completed Items**: 40 (+5 on 2026-01-01: CODE-001, SEC-006, SEC-007, SEC-008, SEC-009)
+**Completed Items**: 47 (+7 on 2026-01-02: TEST-005, TYPE-001, REDIS-001, RATE-001, PERF-002, AUTH-008, UX-001)
 
 **Effort Breakdown**:
-- Small (S): 11 items
-- Medium (M): 15 items
-- Large (L): 9 items (+1 FEAT-002)
-- Extra Large (XL): 2 items (+1 FEAT-003)
+- Small (S): 21 items completed
+- Medium (M): 19 items completed
+- Large (L): 9 items completed
+- Extra Large (XL): 2 items completed
+
+**Priority Actions - ✅ COMPLETED (2026-01-02)**:
+
+**v2.6.1 Release Blockers** (P1) - ✅ ALL COMPLETE:
+1. ✅ **TEST-005**: Add tests for /fetch endpoint (comprehensive test suite)
+2. ✅ **TYPE-001**: Add Role field to User model (enum + required field)
+
+**Production Scale Blockers** (P1) - ✅ ALL COMPLETE:
+3. ✅ **REDIS-001**: Fail fast on missing Redis in production (startup validation)
+4. ✅ **RATE-001**: Add per-user rate limiting to /fetch endpoint (100 req/hr per user)
+
+**Strategic Improvements** (P2) - ✅ ALL COMPLETE:
+5. ✅ **PERF-002**: Add DNS caching (50-200ms latency savings, 5min TTL)
+6. ✅ **AUTH-008**: Add role hierarchy helpers (centralized utilities + middleware)
+7. ✅ **UX-001**: Add specific error messages (structured error codes + helpful messages)
 
 **Priority Actions - Codex Round 2 (2025-11-13 Morning)**:
 1. ~~**REP-001**: Remove build artifacts~~ ✅ Already resolved

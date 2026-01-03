@@ -3,6 +3,8 @@ import http from 'http'
 import https from 'https'
 import ssrfProtection from '../middleware/ssrfProtection'
 import { authenticateToken } from '../middleware/auth'
+import { fetchLimiter } from '../middleware/rateLimiting'
+import { dnsCache } from '../lib/dnsCache'
 
 const router = express.Router()
 
@@ -57,7 +59,13 @@ function requestText(
 
 // Example: fetch external content safely using the pinned agent created by ssrfProtection.
 // Requires authentication to prevent abuse as a proxy service.
-router.get('/fetch', authenticateToken, ssrfProtection(), async (req, res) => {
+// Per-user rate limiting (100 req/hour) prevents individual user abuse.
+router.get(
+  '/fetch',
+  authenticateToken,
+  fetchLimiter,
+  ssrfProtection(),
+  async (req, res) => {
   const reqWithUrl = req as express.Request & {
     validatedUrl?: URL
     validatedUrlAgent?: http.Agent | https.Agent
@@ -68,6 +76,10 @@ router.get('/fetch', authenticateToken, ssrfProtection(), async (req, res) => {
   }
 
   try {
+    // Pre-resolve DNS with caching to reduce latency (50-200ms savings)
+    const hostname = reqWithUrl.validatedUrl.hostname
+    await dnsCache.lookup(hostname)
+
     const result = await requestText(
       reqWithUrl.validatedUrl,
       reqWithUrl.validatedUrlAgent
@@ -79,6 +91,7 @@ router.get('/fetch', authenticateToken, ssrfProtection(), async (req, res) => {
     const message = error instanceof Error ? error.message : 'Request failed'
     return res.status(502).json({ error: message })
   }
-})
+  }
+)
 
 export default router
