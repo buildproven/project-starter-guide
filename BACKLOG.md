@@ -1,6 +1,6 @@
 # Project Starter Guide - Backlog
 
-**Last Updated**: 2026-01-02 (All P1 and P2 items from Deep Review completed)
+**Last Updated**: 2026-01-02 (Latest: RBAC, DNS caching, role hierarchy, fetch tests - Commits: 8887665)
 **Priority System**: P0 (Critical - Block Release) → P1 (Important - Fix Soon) → P2 (Nice-to-have) → P3 (Future)
 
 ## 🚨 P0 - Critical (Block Release)
@@ -170,7 +170,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 - Response handling tests (network errors, size limits, timeouts)
 - Content type handling tests
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### TYPE-001 | Add Role field to User model and make it required | S | ✅ Completed
 **Category**: Type Safety (v2.6.1 Blocker)
@@ -179,12 +179,13 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 **Impact**: Type safety gap - Role should be non-optional
 **Root Cause**: Inconsistent type modeling
 **Resolution**: Added Role enum and field to User model
-- Created Role enum with USER, ADMIN, MODERATOR values
-- Added required role field to User model with default value of USER
+- Created Role enum with FREE, DEVELOPER, ADMIN values
+- Added required role field to User model with default value of FREE
+- Added permissions field to User model with default empty array
 - Updated authController to include role in all user responses
 - Role is now properly typed and always present
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### REDIS-001 | Fail fast on missing Redis in production | S | ✅ Completed
 **Category**: Production Safety (Production Scale Blocker)
@@ -197,7 +198,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 - Clear error message with setup instructions
 - Prevents deployment without proper distributed rate limiting
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### RATE-001 | Add per-user rate limiting to /fetch endpoint | M | ✅ Completed
 **Category**: Security - Abuse Prevention (Production Scale Blocker)
@@ -211,7 +212,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
 - Applied to /fetch endpoint alongside authentication and SSRF protection
 - Returns 429 with retry-after header when limit exceeded
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### DB-001 | Fix API template Prisma connection leaks | M | ✅ Completed
 **Category**: Database - Important
@@ -482,7 +483,7 @@ All P0 items from previous review completed ✅ (2025-11-11)
 - Integrated into /fetch endpoint for pre-resolution
 - Cache statistics available for monitoring
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### AUTH-008 | Add role hierarchy helpers | S | ✅ Completed
 **Category**: Code Quality - Maintainability
@@ -492,12 +493,12 @@ All P0 items from previous review completed ✅ (2025-11-11)
 **Root Cause**: No centralized role hierarchy helpers
 **Resolution**: Created comprehensive role hierarchy system
 - Added roleHierarchy.ts with centralized role comparison functions
-- Implemented hasMinimumRole, hasExactRole, hasAnyRole, isAdmin, isModerator helpers
+- Implemented hasMinimumRole, hasExactRole, hasAnyRole, isAdmin, isDeveloper helpers
 - Created authorize.ts middleware with requireRole, requireMinimumRole, requireAnyRole functions
-- Established role hierarchy: ADMIN > MODERATOR > USER
+- Established role hierarchy: ADMIN > DEVELOPER > FREE
 - Type-safe role operations with Prisma enum integration
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### UX-001 | Add specific error messages | S | ✅ Completed
 **Category**: User Experience
@@ -512,7 +513,7 @@ All P0 items from previous review completed ✅ (2025-11-11)
 - Updated authController and auth middleware to use specific error messages
 - Error codes enable programmatic error handling on client side
 **Completed**: 2026-01-02
-**Commit**: [pending]
+**Commit**: 8887665
 
 ### REFACTOR-001 | Improve api-service error handling and responses | M | ✅ Completed
 **Category**: Code Quality - Maintainability

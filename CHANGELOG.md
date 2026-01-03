@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **api-service**: Role-based access control (RBAC) with role hierarchy system (ADMIN > DEVELOPER > FREE)
+- **api-service**: Authorize middleware for permission-based access control
+- **api-service**: DNS caching layer for improved external request performance
+- **api-service**: Comprehensive unit tests for fetch endpoint with SSRF validation
+- **api-service**: Role and permissions fields in Prisma schema
 - **saas-level-1**: Role-based access control (RBAC) with Prisma enum (user, member, admin, owner)
 - **saas-level-1**: End-to-end role flow from database → JWT/session → client
 - **saas-level-1**: Prisma migrations tracked in git for starter template
