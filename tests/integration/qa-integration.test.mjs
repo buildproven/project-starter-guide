@@ -9,8 +9,8 @@
  *   node tests/integration/qa-integration.test.mjs --template=api  # Single template
  */
 
-import { spawnSync, spawn } from 'node:child_process'
-import { readFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { readFileSync, existsSync, mkdirSync, rmSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 
@@ -437,7 +437,7 @@ function printSummary() {
 }
 
 async function main() {
-  const args = parseArgs()
+  const _args = parseArgs()
 
   console.log(color('\n=== QA Integration Tests ===', colors.bold, colors.cyan))
 

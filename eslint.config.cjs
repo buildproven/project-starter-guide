@@ -44,6 +44,8 @@ const configs = [
       '**/*.html',
       // User config symlinks
       '**/.claude-setup/**',
+      // Template files with placeholders (not valid JS until processed)
+      '**/templates/monetization/**',
     ],
   },
   js.configs.recommended,

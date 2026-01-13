@@ -11,7 +11,7 @@
  */
 
 import { createInterface } from 'node:readline'
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, basename } from 'node:path'
 import { randomBytes } from 'node:crypto'
@@ -126,7 +126,7 @@ class TemplateGenerator {
 
     console.log(color('\nAvailable Templates:\n', colors.bold))
 
-    templates.forEach(([id, template], i) => {
+    templates.forEach(([_id, template], i) => {
       const complexity = '●'.repeat(template.complexity) + '○'.repeat(3 - template.complexity)
       console.log(`  ${color(`${i + 1}.`, colors.blue)} ${color(template.name, colors.bold)} ${color(`[${complexity}]`, colors.dim)}`)
       console.log(`     ${color(template.description, colors.dim)}`)

@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Form submission simulation (replace with actual implementation)
-  function simulateFormSubmission(formData) {
+  function simulateFormSubmission(_formData) {
     const submitButton = contactForm.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
 
