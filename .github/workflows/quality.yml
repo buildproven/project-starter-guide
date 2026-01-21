@@ -21,10 +21,14 @@ on:
   pull_request:
     branches: [main, master, develop]
   schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday (security scans)
-  workflow_dispatch:       # Manual trigger
-# WORKFLOW_MODE: minimal
+    - cron: '0 0 * * 0' # Weekly on Sunday (security scans)
+  workflow_dispatch: # Manual trigger
 
+# Prevent duplicate runs - cancel in-progress when new commit pushed
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+# WORKFLOW_MODE: minimal
 
 jobs:
   # Step 1: Detect project maturity level and package manager
@@ -39,6 +43,8 @@ jobs:
       has-css: ${{ steps.detect.outputs.has-css }}
       package-manager: ${{ steps.detect-pm.outputs.manager }}
       install-cmd: ${{ steps.detect-pm.outputs.install-cmd }}
+      is-turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}
+      turbo-prefix: ${{ steps.detect-pm.outputs.turbo-prefix }}
 
     steps:
       - name: Checkout code
@@ -70,17 +76,47 @@ jobs:
             echo "install-cmd=npm install" >> $GITHUB_OUTPUT
           fi
 
+          # Detect Turborepo
+          if [ -f turbo.json ]; then
+            echo "is-turborepo=true" >> $GITHUB_OUTPUT
+            echo "turbo-prefix=turbo run" >> $GITHUB_OUTPUT
+            echo "📦 Turborepo detected - will use 'turbo run' for tasks"
+          else
+            echo "is-turborepo=false" >> $GITHUB_OUTPUT
+            echo "turbo-prefix=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup pnpm
+        if: steps.detect-pm.outputs.manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: steps.detect-pm.outputs.manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
+
+      - name: Install dependencies for maturity detection
+        run: ${{ steps.detect-pm.outputs.install-cmd }}
+
       - name: Detect Project Maturity
         id: detect
         run: |
-          # Use the project maturity detector
-          node node_modules/create-qa-architect/lib/project-maturity.js --github-actions >> $GITHUB_OUTPUT
+          # Use the project maturity detector (local for qa-architect itself, node_modules for other projects)
+          if [ -f lib/project-maturity.js ]; then
+            node lib/project-maturity.js --github-actions >> $GITHUB_OUTPUT
+          else
+            node node_modules/create-qa-architect/lib/project-maturity.js --github-actions >> $GITHUB_OUTPUT
+          fi
 
       - name: Display Detection Report
         run: |
           echo "📊 Project Detection Results"
           echo "Package Manager: ${{ steps.detect-pm.outputs.manager }}"
           echo "Install Command: ${{ steps.detect-pm.outputs.install-cmd }}"
+          echo "Turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}"
           echo "Maturity: ${{ steps.detect.outputs.maturity }}"
           echo "Source files: ${{ steps.detect.outputs.source-count }}"
           echo "Test files: ${{ steps.detect.outputs.test-count }}"
@@ -89,23 +125,32 @@ jobs:
           echo "Has CSS files: ${{ steps.detect.outputs.has-css }}"
 
   # Step 2: Core checks - ALWAYS run (all maturity levels)
+  # Note: Runs on Node 22 only - Prettier formatting is not sensitive to Node version
   core-checks:
     runs-on: ubuntu-latest
     needs: detect-maturity
-    strategy:
-      matrix:
-        node-version: [20, 22]
-      fail-fast: false
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'
           cache: ${{ needs.detect-maturity.outputs.package-manager }}
+
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
 
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
@@ -117,7 +162,7 @@ jobs:
 
   # Step 3: Linting - run if source files exist (bootstrap+)
   # Note: Runs on Node 20 only - linting tools are less sensitive to Node version differences
-  # Core runtime compatibility is tested via matrix in core-checks and tests jobs
+  # Core runtime compatibility is tested via matrix in tests job when enabled
   linting:
     runs-on: ubuntu-latest
     needs: detect-maturity
@@ -132,6 +177,18 @@ jobs:
         with:
           node-version: '20'
           cache: ${{ needs.detect-maturity.outputs.package-manager }}
+
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
 
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
@@ -170,6 +227,18 @@ jobs:
         with:
           node-version: '20'
           cache: ${{ needs.detect-maturity.outputs.package-manager }}
+
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
 
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
@@ -251,7 +320,11 @@ jobs:
           echo "🔍 Running gitleaks secret scanning..."
           # Use setup.js security scan which manages gitleaks binary internally
           # This avoids the commercial license requirement of the gitleaks-action
-          node setup.js --security-config
+          if [ -f setup.js ]; then
+            node setup.js --security-config
+          else
+            node node_modules/create-qa-architect/setup.js --security-config
+          fi
 
       - name: Security pattern detection
         uses: semgrep/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
@@ -273,7 +346,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     needs: detect-maturity
-    if: fromJSON(needs.detect-maturity.outputs.test-count) > 0    
+    if: fromJSON(needs.detect-maturity.outputs.test-count) > 0
     strategy:
       fail-fast: false
       matrix:
@@ -288,6 +361,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: ${{ needs.detect-maturity.outputs.package-manager }}
+
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
 
       - name: Install dependencies
         run: |
@@ -346,24 +431,48 @@ jobs:
           node-version: '20'
           cache: ${{ needs.detect-maturity.outputs.package-manager }}
 
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8.15.0'
+
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.0.0'
+
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
 
       - name: Configuration security check
         run: |
           echo "🔍 Running configuration security validation..."
-          node setup.js --security-config
+          if [ -f setup.js ]; then
+            node setup.js --security-config
+          else
+            node node_modules/create-qa-architect/setup.js --security-config
+          fi
 
       - name: Documentation validation
         run: |
           echo "📖 Running documentation validation..."
-          node setup.js --validate-docs
+          if [ -f setup.js ]; then
+            node setup.js --validate-docs
+          else
+            node node_modules/create-qa-architect/setup.js --validate-docs
+          fi
 
       - name: Documentation consistency and security audit freshness
         run: |
           echo "🔐 Running comprehensive documentation validation..."
           # This includes security audit freshness check with proper git-based validation
-          bash scripts/check-docs.sh
+          if [ -f scripts/check-docs.sh ]; then
+            bash scripts/check-docs.sh
+          else
+            bash node_modules/create-qa-architect/scripts/check-docs.sh
+          fi
 
       - name: Package size and contents validation
         if: hashFiles('package.json') != ''
@@ -406,10 +515,32 @@ jobs:
 
       - name: Lighthouse CI
         if: hashFiles('.lighthouserc.js', '.lighthouserc.json', 'lighthouserc.js') != ''
+        id: lighthouse
         run: |
           echo "🚢 Running Lighthouse CI..."
           npx lhci autorun
         continue-on-error: true
+
+      - name: Report Lighthouse Failures
+        if: steps.lighthouse.outcome == 'failure'
+        env:
+          MATURITY: ${{ needs.detect-maturity.outputs.maturity }}
+        run: |
+          echo "::error::Lighthouse CI failed - performance budgets or quality thresholds violated"
+          echo "Review the Lighthouse report to see which metrics failed."
+          echo "Common failures: performance score, accessibility issues, SEO problems"
+
+          # Add to job summary for visibility
+          echo "## ⚠️ Lighthouse CI Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Performance budgets or quality thresholds were violated." >> $GITHUB_STEP_SUMMARY
+          echo "This is currently a soft failure (continue-on-error: true)." >> $GITHUB_STEP_SUMMARY
+          echo "Review the Lighthouse report in the Actions logs above." >> $GITHUB_STEP_SUMMARY
+
+          # Fail build for production-ready projects
+          if [ "$MATURITY" == "production-ready" ]; then
+            echo "::error::Production-ready projects must pass Lighthouse CI checks"
+            exit 1
+          fi
 
   # Step 7: Summary - report what checks ran
   summary:
@@ -425,6 +556,12 @@ jobs:
 
     steps:
       - name: Generate Check Summary
+        env:
+          CORE_RESULT: ${{ needs.core-checks.result }}
+          LINTING_RESULT: ${{ needs.linting.result }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+          TESTS_RESULT: ${{ needs.tests.result }}
+          DOCS_RESULT: ${{ needs.documentation.result }}
         run: |
           echo "## Quality Checks Summary 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -437,11 +574,59 @@ jobs:
           echo "- Has documentation: ${{ needs.detect-maturity.outputs.has-docs }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Checks Executed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Core checks: Always run" >> $GITHUB_STEP_SUMMARY
-          echo "- ${{ needs.detect-maturity.outputs.source-count > 0 && '✅' || '⏭️' }} Linting: ${{ needs.detect-maturity.outputs.source-count > 0 && 'Enabled' || 'Skipped (no source files)' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ${{ needs.detect-maturity.outputs.has-deps == 'true' && '✅' || '⏭️' }} Security: ${{ needs.detect-maturity.outputs.has-deps == 'true' && 'Enabled' || 'Skipped (no dependencies)' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ${{ needs.detect-maturity.outputs.test-count > 0 && '✅' || '⏭️' }} Tests: ${{ needs.detect-maturity.outputs.test-count > 0 && 'Enabled' || 'Skipped (no test files)' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ${{ needs.detect-maturity.outputs.maturity == 'production-ready' && '✅' || '⏭️' }} Documentation: ${{ needs.detect-maturity.outputs.maturity == 'production-ready' && 'Enabled' || 'Skipped (not production-ready)' }}" >> $GITHUB_STEP_SUMMARY
+
+          # Core checks
+          if [ "$CORE_RESULT" == "success" ]; then
+            echo "- ✅ Core checks: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$CORE_RESULT" == "failure" ]; then
+            echo "- ❌ Core checks: Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Core checks: $CORE_RESULT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Linting
+          if [ "$LINTING_RESULT" == "success" ]; then
+            echo "- ✅ Linting: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$LINTING_RESULT" == "failure" ]; then
+            echo "- ❌ Linting: Failed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$LINTING_RESULT" == "skipped" ]; then
+            echo "- ⏭️ Linting: Skipped (no source files)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Linting: $LINTING_RESULT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Security
+          if [ "$SECURITY_RESULT" == "success" ]; then
+            echo "- ✅ Security: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$SECURITY_RESULT" == "failure" ]; then
+            echo "- ❌ Security: Failed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$SECURITY_RESULT" == "skipped" ]; then
+            echo "- ⏭️ Security: Skipped (no dependencies)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Security: $SECURITY_RESULT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Tests
+          if [ "$TESTS_RESULT" == "success" ]; then
+            echo "- ✅ Tests: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$TESTS_RESULT" == "failure" ]; then
+            echo "- ❌ Tests: Failed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$TESTS_RESULT" == "skipped" ]; then
+            echo "- ⏭️ Tests: Skipped (no test files)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Tests: $TESTS_RESULT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Documentation
+          if [ "$DOCS_RESULT" == "success" ]; then
+            echo "- ✅ Documentation: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$DOCS_RESULT" == "failure" ]; then
+            echo "- ❌ Documentation: Failed" >> $GITHUB_STEP_SUMMARY
+          elif [ "$DOCS_RESULT" == "skipped" ]; then
+            echo "- ⏭️ Documentation: Skipped (not production-ready)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Documentation: $DOCS_RESULT" >> $GITHUB_STEP_SUMMARY
+          fi
             # PR comment step not enabled (use --pr-comments to add)
 
   # Slack alerts not enabled (use --alerts-slack to add)

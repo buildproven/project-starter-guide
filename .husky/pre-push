@@ -31,3 +31,53 @@ else
 
   echo "✅ Pre-push validation passed!"
 fi
+
+# Security scans (runs after main validation)
+echo ""
+echo "🔐 Running security scans..."
+
+# 1. Secret scanning with gitleaks
+if command -v gitleaks &> /dev/null; then
+  echo "  → Scanning for secrets..."
+  gitleaks detect --no-git --verbose --exit-code=1 || {
+    echo "❌ Secrets detected! Remove them before pushing."
+    exit 1
+  }
+else
+  echo "  ⚠️  gitleaks not installed - skipping secret scan"
+  echo "     Install: brew install gitleaks (Mac) or npm install -g gitleaks"
+fi
+
+# 2. Dependency audit
+echo "  → Checking dependencies..."
+# Detect package manager and use appropriate audit command
+if [ -f "pnpm-lock.yaml" ]; then
+  pnpm audit --audit-level=high || {
+    echo "❌ Vulnerable dependencies found! Run 'pnpm audit --fix' to resolve."
+    exit 1
+  }
+elif [ -f "yarn.lock" ]; then
+  yarn audit || {
+    echo "❌ Vulnerable dependencies found! Run 'yarn audit fix' to resolve."
+    exit 1
+  }
+else
+  npm audit --audit-level=high || {
+    echo "❌ Vulnerable dependencies found! Run 'npm audit fix' to resolve."
+    exit 1
+  }
+fi
+
+# 3. XSS pattern detection
+echo "  → Scanning for XSS patterns..."
+if grep -rE "innerHTML.*\$\{" src/ app/ lib/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" 2>/dev/null; then
+  echo "❌ Potential XSS: innerHTML with interpolation found"
+  exit 1
+fi
+
+if grep -rE "eval\(.*\$\{" src/ app/ lib/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" 2>/dev/null; then
+  echo "❌ Potential code injection: eval with interpolation found"
+  exit 1
+fi
+
+echo "✅ Security scans passed!"
