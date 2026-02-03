@@ -49,7 +49,8 @@
     "size": "size-limit",
     "size:why": "size-limit --why",
     "test:a11y": "vitest run tests/accessibility.test.js",
-    "test:coverage:check": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.functions=70"
+    "test:coverage:check": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.functions=70",
+    "test:changed": "vitest run --changed HEAD~1 --passWithNoTests"
   },
   "keywords": [
     "web-development",
