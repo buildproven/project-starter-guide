@@ -34,6 +34,7 @@ jobs:
   # Step 1: Detect project maturity level and package manager
   detect-maturity:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' || github.event_name == 'schedule'
     outputs:
       maturity: ${{ steps.detect.outputs.maturity }}
       source-count: ${{ steps.detect.outputs.source-count }}
