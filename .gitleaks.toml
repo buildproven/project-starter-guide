@@ -26,7 +26,7 @@ regex = '''(?i)(api_key|secret|password|token)\s*=\s*['""][^'"\s]{10,}['""]'''
 tags = ["env", "secret"]
 
 # Allowlist for test files and examples
-[[rules.allowlist]]
+[rules.allowlist]
 description = "Test secrets and examples"
 regexes = [
   '''test_secret_.*''',
@@ -44,7 +44,7 @@ paths = [
 ]
 
 # Global allowlist for common false positives
-[[allowlist]]
+[allowlist]
 description = "Common false positives"
 regexes = [
   '''EXAMPLE_.*''',

@@ -72,10 +72,10 @@ describe('Monetization Templates - Licensing & Attribution', () => {
     })
   })
 
-  it('should have VBL attribution in all JS files', () => {
+  it('should have BuildProven attribution in all JS files', () => {
     jsFiles.forEach(file => {
       const content = readFileSync(join(monetizationDir, file), 'utf8')
-      expect(content.toLowerCase()).toContain('vibe build lab')
+      expect(content.toLowerCase()).toContain('buildproven')
     })
   })
 })
