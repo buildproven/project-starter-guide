@@ -1,12 +1,12 @@
 # Project Starter Guide
 
-[![Template Smoke Tests](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/template-smoke-tests.yml/badge.svg)](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/template-smoke-tests.yml)
-[![Code Quality](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/code-quality-review.yml/badge.svg)](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/code-quality-review.yml)
-[![Dependency Audit](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/dependency-audit.yml/badge.svg)](https://github.com/vibebuildlab/project-starter-guide/actions/workflows/dependency-audit.yml)
+[![Template Smoke Tests](https://github.com/buildproven/project-starter-guide/actions/workflows/template-smoke-tests.yml/badge.svg)](https://github.com/buildproven/project-starter-guide/actions/workflows/template-smoke-tests.yml)
+[![Code Quality](https://github.com/buildproven/project-starter-guide/actions/workflows/code-quality-review.yml/badge.svg)](https://github.com/buildproven/project-starter-guide/actions/workflows/code-quality-review.yml)
+[![Dependency Audit](https://github.com/buildproven/project-starter-guide/actions/workflows/dependency-audit.yml/badge.svg)](https://github.com/buildproven/project-starter-guide/actions/workflows/dependency-audit.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Monetization Templates](https://img.shields.io/badge/Monetization-Built--in-success?style=flat-square)]()
-[![Vibe Build Lab](https://img.shields.io/badge/By-Vibe%20Build%20Lab-blue?style=flat-square)](https://vibebuildlab.com)
-[![Subscribe](https://img.shields.io/badge/Newsletter-Subscribe-blue?logo=substack)](https://blog.vibebuildlab.com/subscribe?utm_source=project-starter-guide-github)
+[![BuildProven](https://img.shields.io/badge/By-Vibe%20Build%20Lab-blue?style=flat-square)](https://buildproven.ai)
+[![Subscribe](https://img.shields.io/badge/Newsletter-Subscribe-blue?logo=substack)](https://blog.buildproven.ai/subscribe?utm_source=project-starter-guide-github)
 
 **Free SaaS project starters with built-in monetization infrastructure.**
 
@@ -16,8 +16,8 @@ and marketing automation. A comprehensive guide for choosing the right architect
 ---
 
 > **Maintainer & Ownership**
-> This project is maintained by **Vibe Build Lab LLC**, a studio focused on AI-assisted product development, micro-SaaS, and "vibe coding" workflows for solo founders and small teams.
-> Learn more at **<https://vibebuildlab.com>**.
+> This project is maintained by **BuildProven LLC**, a studio focused on AI-assisted product development, micro-SaaS, and "vibe coding" workflows for solo founders and small teams.
+> Learn more at **<https://buildproven.ai>**.
 
 ---
 
@@ -163,9 +163,9 @@ npm install && npm run prepare
 Start free and upgrade as your business grows:
 
 1. **Free**: This guide + monetization templates → Start building
-2. **$49**: [VBL Validator](https://vibebuildlab.com/validate) → Validate ideas before building
-3. **$249**: [saas-starter-kit](https://vibebuildlab.com/starter-kit) → Production-ready foundation
-4. **$599**: [VBL Professional](https://vibebuildlab.com/pricing) → Full automation with V-cycle quality
+2. **$49**: [VBL Validator](https://buildproven.ai/validate) → Validate ideas before building
+3. **$249**: [saas-starter-kit](https://buildproven.ai/starter-kit) → Production-ready foundation
+4. **$599**: [VBL Professional](https://buildproven.ai/pricing) → Full automation with V-cycle quality
 
 ## Roadmap
 
@@ -181,9 +181,9 @@ Start free and upgrade as your business grows:
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-- Report bugs via [GitHub Issues](https://github.com/vibebuildlab/project-starter-guide/issues)
-- Suggest features via [GitHub Issues](https://github.com/vibebuildlab/project-starter-guide/issues)
-- Improve documentation via [Pull Requests](https://github.com/vibebuildlab/project-starter-guide/pulls)
+- Report bugs via [GitHub Issues](https://github.com/buildproven/project-starter-guide/issues)
+- Suggest features via [GitHub Issues](https://github.com/buildproven/project-starter-guide/issues)
+- Improve documentation via [Pull Requests](https://github.com/buildproven/project-starter-guide/pulls)
 
 ## License
 
@@ -200,9 +200,9 @@ Need help? See [SUPPORT.md](SUPPORT.md) for:
 
 ## Legal
 
-- [Privacy Policy](https://vibebuildlab.com/privacy-policy)
-- [Terms of Service](https://vibebuildlab.com/terms)
+- [Privacy Policy](https://buildproven.ai/privacy-policy)
+- [Terms of Service](https://buildproven.ai/terms)
 
 ---
 
-> **Vibe Build Lab LLC** · [vibebuildlab.com](https://vibebuildlab.com)
+> **BuildProven LLC** · [buildproven.ai](https://buildproven.ai)

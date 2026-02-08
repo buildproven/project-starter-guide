@@ -2,11 +2,11 @@
  * License Validator (user-side, no Stripe dependencies)
  *
  * Part of Project Starter Guide - SaaS Monetization Templates
- * Copyright (c) 2025 Vibe Build Lab LLC
+ * Copyright (c) 2025 BuildProven LLC
  * Licensed under MIT License
  *
  * Originally from saas-monetization-templates (VBL Internal)
- * Learn more: https://vibebuildlab.com
+ * Learn more: https://buildproven.ai
  *
  * Features:
  * - No Stripe dependencies (secrets stay server-side)

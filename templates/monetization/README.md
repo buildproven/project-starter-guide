@@ -237,15 +237,15 @@ NODE_ENV=production                     # Environment mode
 
 ## Support
 
-These templates are part of [Project Starter Guide](https://github.com/vibebuildlab/project-starter-guide), an open-source resource by [Vibe Build Lab](https://vibebuildlab.com).
+These templates are part of [Project Starter Guide](https://github.com/buildproven/project-starter-guide), an open-source resource by [BuildProven](https://buildproven.ai).
 
-- **Issues**: [GitHub Issues](https://github.com/vibebuildlab/project-starter-guide/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/vibebuildlab/project-starter-guide/discussions)
-- **Paid Support**: [VBL Professional Services](https://vibebuildlab.com/pricing)
+- **Issues**: [GitHub Issues](https://github.com/buildproven/project-starter-guide/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/buildproven/project-starter-guide/discussions)
+- **Paid Support**: [VBL Professional Services](https://buildproven.ai/pricing)
 
 ## License
 
-MIT License - Copyright (c) 2025 Vibe Build Lab LLC
+MIT License - Copyright (c) 2025 BuildProven LLC
 
 Originally from saas-monetization-templates (VBL Internal), open sourced as part of project-starter-guide.
 
@@ -254,6 +254,6 @@ Originally from saas-monetization-templates (VBL Internal), open sourced as part
 Ready to build? Check out the [Value Ladder](../../README.md#value-ladder):
 
 1. **Free**: This guide + monetization templates
-2. **$49**: [VBL Validator](https://vibebuildlab.com/validate) - Idea validation
-3. **$249**: [saas-starter-kit](https://vibebuildlab.com/starter-kit) - Production foundation
-4. **$599**: [VBL Professional](https://vibebuildlab.com/pricing) - Full automation
+2. **$49**: [VBL Validator](https://buildproven.ai/validate) - Idea validation
+3. **$249**: [saas-starter-kit](https://buildproven.ai/starter-kit) - Production foundation
+4. **$599**: [VBL Professional](https://buildproven.ai/pricing) - Full automation

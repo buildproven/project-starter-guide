@@ -4,10 +4,10 @@
  * CLI helper to activate a license for {{PROJECT_NAME}}
  *
  * Part of Project Starter Guide - SaaS Monetization Templates
- * Copyright (c) 2025 Vibe Build Lab LLC
+ * Copyright (c) 2025 BuildProven LLC
  * Licensed under MIT License
  *
- * Learn more: https://vibebuildlab.com
+ * Learn more: https://buildproven.ai
  */
 const { promptLicenseActivation } = require("./licensing");
 

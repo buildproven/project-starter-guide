@@ -13,7 +13,7 @@ Start with the documentation in the `docs/` folder:
 
 ### Community Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/vibebuildlab/project-starter-guide/issues)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/buildproven/project-starter-guide/issues)
 - **GitHub Discussions**: Ask questions and share ideas
 - **Pull Requests**: Contributions welcome
 
@@ -27,7 +27,7 @@ Each template has its own `CLAUDE.md` with detailed guidance:
 
 ## Response Times
 
-This is an open-source project maintained by Vibe Build Lab. We aim to:
+This is an open-source project maintained by BuildProven. We aim to:
 
 - Acknowledge issues within **48 hours**
 - Provide initial response within **1 week**
@@ -37,8 +37,8 @@ This is an open-source project maintained by Vibe Build Lab. We aim to:
 
 For priority support, custom development, or enterprise licensing:
 
-- Email: <support@vibebuildlab.com>
-- Website: [vibebuildlab.com](https://vibebuildlab.com)
+- Email: <support@buildproven.ai>
+- Website: [buildproven.ai](https://buildproven.ai)
 
 ### Services Available
 
@@ -51,7 +51,7 @@ For priority support, custom development, or enterprise licensing:
 
 **Do not report security vulnerabilities in public issues.**
 
-Email security concerns to: <security@vibebuildlab.com>
+Email security concerns to: <security@buildproven.ai>
 
 We follow responsible disclosure practices and will:
 
@@ -67,4 +67,4 @@ Commercial use is permitted. Attribution is appreciated but not required.
 
 ---
 
-**Vibe Build Lab LLC** · [vibebuildlab.com](https://vibebuildlab.com)
+**BuildProven LLC** · [buildproven.ai](https://buildproven.ai)

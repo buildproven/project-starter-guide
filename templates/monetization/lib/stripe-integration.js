@@ -5,12 +5,12 @@
  * Handles subscription payments, license key generation, and billing management
  *
  * Part of Project Starter Guide - SaaS Monetization Templates
- * Copyright (c) 2025 Vibe Build Lab LLC
+ * Copyright (c) 2025 BuildProven LLC
  * Licensed under MIT License
  *
  * Originally from saas-monetization-templates (VBL Internal)
  * Open sourced as part of project-starter-guide
- * Learn more: https://vibebuildlab.com
+ * Learn more: https://buildproven.ai
  */
 
 const crypto = require("crypto");
