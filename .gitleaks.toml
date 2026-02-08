@@ -13,13 +13,6 @@ regex = '''eyJ[A-Za-z0-9_/+-]{10,}={0,2}'''
 tags = ["key", "JWT"]
 
 [[rules]]
-description = "Base64 encoded secrets (long)"
-id = "base64-secret"
-regex = '''[A-Za-z0-9+/]{40,}={0,2}'''
-tags = ["secret", "base64"]
-keywords = ["secret", "key", "token", "password"]
-
-[[rules]]
 description = "Environment variable secrets"
 id = "env-secret"
 regex = '''(?i)(api_key|secret|password|token)\s*=\s*['""][^'"\s]{10,}['""]'''
