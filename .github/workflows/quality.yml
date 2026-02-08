@@ -313,6 +313,21 @@ jobs:
             exit 1
           }
 
+      - name: Cache gitleaks binary for real download test
+        if: runner.os == 'Linux' && hashFiles('tests/gitleaks-real-binary-test.js') != ''
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/create-qa-architect/gitleaks
+          key: gitleaks-8.28.0-linux-x64-a65b5253-${{ hashFiles('lib/validation/config-security.js') }}
+          restore-keys: |
+            gitleaks-8.28.0-linux-x64-a65b5253-
+            gitleaks-8.28.0-linux-x64-
+
+      - name: Run real gitleaks binary verification test
+        if: runner.os == 'Linux' && hashFiles('tests/gitleaks-real-binary-test.js') != ''
+        run: |
+          echo "🔐 Running real gitleaks binary verification test..."
+          QAA_DEVELOPER=true RUN_REAL_BINARY_TEST=1 node tests/gitleaks-real-binary-test.js
 
   # Step 4: Documentation - run for production-ready projects
   documentation:
