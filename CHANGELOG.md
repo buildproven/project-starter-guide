@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TEST-008: error response utility tests (33% → 90% target)
   - TEST-009: rate limiting integration tests (55% → 85% target)
   - TEST-010: NextAuth configuration tests (0% → 80% target)
-- **vibelab-claude-setup**: Added submodule for Web UI configuration
+- **claude-setup**: Added submodule for Web UI configuration
 
 ### Changed
 
