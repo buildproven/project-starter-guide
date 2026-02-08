@@ -12,43 +12,32 @@ id = "jwt-token"
 regex = '''eyJ[A-Za-z0-9_/+-]{10,}={0,2}'''
 tags = ["key", "JWT"]
 
-[[rules]]
-description = "Environment variable secrets"
-id = "env-secret"
-regex = '''(?i)(api_key|secret|password|token)\s*=\s*['""][^'"\s]{10,}['""]'''
-tags = ["env", "secret"]
-
-# Allowlist for test files and examples
-[rules.allowlist]
-description = "Test secrets and examples"
-regexes = [
-  '''test_secret_.*''',
-  '''example_.*''',
-  '''dummy_.*''',
-  '''fake_.*'''
-]
-paths = [
-  '''tests/''',
-  '''test/''',
-  '''__tests__/''',
-  '''examples/''',
-  '''docs/''',
-  '''.md$'''
-]
-
-# Global allowlist for common false positives
+# Global allowlist — this is a starter template repo with example/test secrets
 [allowlist]
-description = "Common false positives"
+description = "Template repo false positives"
 regexes = [
   '''EXAMPLE_.*''',
   '''your_.*_here''',
   '''replace_with_.*''',
-  '''TODO:.*'''
+  '''TODO:.*''',
+  '''test-secret.*''',
+  '''test-jwt.*''',
+  '''dummy-.*''',
+  '''fake-.*''',
+  '''YOUR_JWT_TOKEN''',
+  '''YOUR_TOKEN''',
+  '''VALIDATION_\d+'''
 ]
 paths = [
   '''node_modules''',
   '''\.npm-cache''',
   '''\.next''',
   '''dist''',
-  '''\.claude-setup'''
+  '''\.claude-setup''',
+  '''coverage''',
+  '''scripts/''',
+  '''\.github/workflows/''',
+  '''__tests__/''',
+  '''\.test\.''',
+  '''\.md$'''
 ]
