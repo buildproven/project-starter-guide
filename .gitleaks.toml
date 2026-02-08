@@ -52,3 +52,10 @@ regexes = [
   '''replace_with_.*''',
   '''TODO:.*'''
 ]
+paths = [
+  '''node_modules''',
+  '''\.npm-cache''',
+  '''\.next''',
+  '''dist''',
+  '''\.claude-setup'''
+]
