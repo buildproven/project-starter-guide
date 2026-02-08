@@ -4,7 +4,7 @@
  * Minimal Stripe webhook handler for {{PROJECT_NAME}}
  *
  * Part of Project Starter Guide - SaaS Monetization Templates
- * Copyright (c) 2025 Vibe Build Lab LLC
+ * Copyright (c) 2025 BuildProven LLC
  * Licensed under MIT License
  *
  * Production use: wire this into your existing web framework.

@@ -68,7 +68,7 @@ describe('Monetization Templates - Licensing & Attribution', () => {
     it(`should have MIT license header in ${file}`, () => {
       const content = readFileSync(join(monetizationDir, file), 'utf8')
       expect(content).toContain('Licensed under MIT License')
-      expect(content).toContain('Copyright (c) 2025 Vibe Build Lab LLC')
+      expect(content).toContain('Copyright (c) 2025 BuildProven LLC')
     })
   })
 
@@ -166,7 +166,7 @@ describe('Monetization Templates - README Quality', () => {
     const readmePath = join(monetizationDir, 'README.md')
     const content = readFileSync(readmePath, 'utf8')
 
-    expect(content).toContain('vibebuildlab.com')
+    expect(content).toContain('buildproven.ai')
     expect(content).toContain('VBL Validator')
     expect(content).toContain('saas-starter-kit')
     expect(content).toContain('VBL Professional')
@@ -177,6 +177,6 @@ describe('Monetization Templates - README Quality', () => {
     const content = readFileSync(readmePath, 'utf8')
 
     expect(content).toContain('MIT License')
-    expect(content).toContain('Vibe Build Lab LLC')
+    expect(content).toContain('BuildProven LLC')
   })
 })

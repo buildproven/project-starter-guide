@@ -2,7 +2,7 @@
 
 ## Reporting Security Vulnerabilities
 
-If you discover a security vulnerability in this project, please report it responsibly by emailing **<security@vibebuildlab.com>** instead of using the public issue tracker.
+If you discover a security vulnerability in this project, please report it responsibly by emailing **<security@buildproven.ai>** instead of using the public issue tracker.
 
 ### What to Include in Your Report
 
@@ -32,7 +32,7 @@ Security updates are provided for:
 
 ## Security Advisories
 
-Security advisories will be published on the [GitHub Security Advisories](https://github.com/vibebuildlab/project-starter-guide/security/advisories) page.
+Security advisories will be published on the [GitHub Security Advisories](https://github.com/buildproven/project-starter-guide/security/advisories) page.
 
 ## Additional Security Resources
 
@@ -42,4 +42,4 @@ Security advisories will be published on the [GitHub Security Advisories](https:
 
 ---
 
-For questions about security, contact **<security@vibebuildlab.com>**.
+For questions about security, contact **<security@buildproven.ai>**.
