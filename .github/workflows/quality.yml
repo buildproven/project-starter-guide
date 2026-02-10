@@ -21,7 +21,7 @@ on:
   pull_request:
     branches: [main, master, develop]
   schedule:
-    - cron: '0 0 * * 0' # Weekly on Sunday (security scans)
+    - cron: '0 0 1 * *' # Monthly on 1st (security scans)
   workflow_dispatch: # Manual trigger
 
 # Prevent duplicate runs - cancel in-progress when new commit pushed
