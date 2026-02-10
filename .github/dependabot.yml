@@ -1,150 +1,83 @@
+# Dependabot configuration — optimized to reduce CI minutes
+# Monthly updates, grouped aggressively, limited PRs per template
+
 version: 2
 updates:
-  # SaaS Level 1 Template - Next.js + React
-  - package-ecosystem: "npm"
-    directory: "/templates/saas-level-1"
+  - package-ecosystem: 'npm'
+    directory: '/templates/saas-level-1'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "brettstark73"
-    assignees:
-      - "brettstark73"
+      interval: 'monthly'
+    open-pull-requests-limit: 1
     labels:
-      - "dependencies"
-      - "saas-template"
+      - 'dependencies'
+      - 'saas-template'
     commit-message:
-      prefix: "deps(saas)"
-      include: "scope"
-    # Auto-merge security patches and patch versions
-    allow:
-      - dependency-type: "direct"
-        update-type: "security"
-      - dependency-type: "indirect"
-        update-type: "security"
-    # Group minor updates for related packages
+      prefix: 'deps(saas)'
+      include: 'scope'
     groups:
-      next-ecosystem:
+      all-dependencies:
         patterns:
-          - "next*"
-          - "eslint-config-next"
-      react-ecosystem:
-        patterns:
-          - "react*"
-          - "@types/react*"
-          - "@testing-library/react*"
-      stripe-ecosystem:
-        patterns:
-          - "stripe"
-          - "@stripe/*"
+          - '*'
 
-  # API Service Template - Express + TypeScript
-  - package-ecosystem: "npm"
-    directory: "/templates/api-service"
+  - package-ecosystem: 'npm'
+    directory: '/templates/api-service'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "brettstark73"
-    assignees:
-      - "brettstark73"
+      interval: 'monthly'
+    open-pull-requests-limit: 1
     labels:
-      - "dependencies"
-      - "api-template"
+      - 'dependencies'
+      - 'api-template'
     commit-message:
-      prefix: "deps(api)"
-      include: "scope"
-    allow:
-      - dependency-type: "direct"
-        update-type: "security"
-      - dependency-type: "indirect"
-        update-type: "security"
+      prefix: 'deps(api)'
+      include: 'scope'
     groups:
-      express-ecosystem:
+      all-dependencies:
         patterns:
-          - "express*"
-          - "@types/express*"
-      prisma-ecosystem:
-        patterns:
-          - "prisma"
-          - "@prisma/*"
-      testing-ecosystem:
-        patterns:
-          - "jest*"
-          - "@types/jest"
-          - "supertest"
-          - "@types/supertest"
+          - '*'
 
-  # Mobile App Template - React Native + Expo
-  - package-ecosystem: "npm"
-    directory: "/templates/mobile-app"
+  - package-ecosystem: 'npm'
+    directory: '/templates/mobile-app'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "brettstark73"
-    assignees:
-      - "brettstark73"
+      interval: 'monthly'
+    open-pull-requests-limit: 1
     labels:
-      - "dependencies"
-      - "mobile-template"
+      - 'dependencies'
+      - 'mobile-template'
     commit-message:
-      prefix: "deps(mobile)"
-      include: "scope"
-    allow:
-      - dependency-type: "direct"
-        update-type: "security"
-      - dependency-type: "indirect"
-        update-type: "security"
+      prefix: 'deps(mobile)'
+      include: 'scope'
     groups:
-      expo-ecosystem:
+      all-dependencies:
         patterns:
-          - "expo*"
-          - "@expo/*"
-      react-native-ecosystem:
-        patterns:
-          - "react-native*"
-          - "@react-native*"
-          - "@react-navigation/*"
-      testing-ecosystem:
-        patterns:
-          - "jest*"
-          - "@testing-library/*"
+          - '*'
 
-  # Root project dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 3
-    reviewers:
-      - "brettstark73"
+      interval: 'monthly'
+    open-pull-requests-limit: 1
     labels:
-      - "dependencies"
-      - "root"
+      - 'dependencies'
+      - 'root'
     commit-message:
-      prefix: "deps(root)"
-      include: "scope"
+      prefix: 'deps(root)'
+      include: 'scope'
+    groups:
+      all-dependencies:
+        patterns:
+          - '*'
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    reviewers:
-      - "brettstark73"
+      interval: 'monthly'
+    open-pull-requests-limit: 1
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'
     commit-message:
-      prefix: "deps(actions)"
+      prefix: 'deps(actions)'
+    groups:
+      all-actions:
+        patterns:
+          - '*'
