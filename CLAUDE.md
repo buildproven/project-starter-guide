@@ -75,3 +75,6 @@ bash scripts/cleanup-artifacts.sh
 - Use root npm scripts only for repo tooling (linting/formatting); run template installs/tests from within each template directory
 - Run smoke tests before committing template changes
 - Each template has its own CLAUDE.md with specific patterns
+
+---
+**Last Updated:** 2026-03-01
