@@ -65,3 +65,6 @@ router.get('/protected', authenticateToken, handler)
 ---
 
 _90% line coverage, 90% functions, 65% branch. Global rules in `~/.claude/CLAUDE.md`._
+
+---
+**Last Updated:** 2026-03-01

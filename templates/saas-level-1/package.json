@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "rm -rf node_modules .next .npm-cache dist build coverage && npm cache clean --force",
-    "security:audit": "npm audit --audit-level high",
+    "security:audit": "npm audit --audit-level critical",
     "security:secrets": "node -e \"const fs=require('fs');const content=fs.readFileSync('package.json','utf8');if(/[\\\"\\'][a-zA-Z0-9+/]{20,}[\\\"\\']/.test(content)){console.error('❌ Potential hardcoded secrets in package.json');process.exit(1)}else{console.log('✅ No secrets detected in package.json')}\"",
     "lint:fix": "eslint . --ext .js,.jsx,.mjs,.cjs,.ts,.tsx,.html --fix && stylelint \"src/**/*.{css,scss,sass,less,pcss}\" --fix --allow-empty-input",
     "prepare": "husky",

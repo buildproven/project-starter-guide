@@ -62,3 +62,6 @@ if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 ---
 
 _Server Components by default. Global rules in `~/.claude/CLAUDE.md`._
+
+---
+**Last Updated:** 2026-03-01

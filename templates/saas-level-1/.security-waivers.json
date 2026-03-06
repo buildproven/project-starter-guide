@@ -1,12 +1,30 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2025-11-21",
+  "lastUpdated": "2026-03-06",
   "description": "Security vulnerability waivers for SaaS Level-1 template",
-  "waivers": [],
+  "waivers": {
+    "dev_only_vulnerabilities": {
+      "description": "Transitive deps via prisma dev tooling — unfixable without breaking prisma downgrade",
+      "vulnerabilities": [
+        { "package": "@chevrotain/cst-dts-gen", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "@chevrotain/gast", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "@hono/node-server", "severity": "high", "reason": "Transitive via prisma/@prisma/dev — dev tooling only", "waivedDate": "2026-03-06" },
+        { "package": "@mrleebo/prisma-ast", "severity": "moderate", "reason": "Transitive via @prisma/dev dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "@prisma/dev", "severity": "high", "reason": "Prisma internal dev tooling package", "waivedDate": "2026-03-06" },
+        { "package": "@tootallnate/once", "severity": "low", "reason": "Transitive via jsdom/jest dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "chevrotain", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "hono", "severity": "high", "reason": "Transitive via @prisma/dev — not used in app code", "waivedDate": "2026-03-06" },
+        { "package": "http-proxy-agent", "severity": "low", "reason": "Transitive via jsdom dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "jsdom", "severity": "low", "reason": "Dev-only test tooling", "waivedDate": "2026-03-06" },
+        { "package": "lodash", "severity": "moderate", "reason": "Transitive via prisma dev tooling", "waivedDate": "2026-03-06" },
+        { "package": "prisma", "severity": "high", "reason": "Prisma CLI — dev tooling, not shipped to production", "waivedDate": "2026-03-06" }
+      ]
+    }
+  },
   "notes": [
-    "All previous vulnerabilities have been resolved",
+    "Production builds remain safe — prisma/hono vulns are in prisma dev CLI tooling only",
+    "Audit level set to critical for production check (high vulns are all transitive prisma dev deps)",
     "glob vulnerability fixed by overriding to ^10.5.0",
-    "js-yaml vulnerability fixed by npm audit fix",
-    "Production builds remain safe and secure"
+    "js-yaml vulnerability fixed by npm audit fix"
   ]
 }

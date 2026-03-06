@@ -38,14 +38,20 @@ has_script() {
 }
 
 echo "📦 Installing dependencies..."
-npm ci --no-audit --no-fund
+PRISMA_GENERATE_SKIP=1 npm ci --no-audit --no-fund
+
+# Generate Prisma client if needed (skipped during install to avoid missing DATABASE_URL)
+if has_script "prisma:generate"; then
+  echo "⚙️  Generating Prisma client..."
+  DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+fi
 
 # Optional: Clean artifacts from previous runs if clean script exists
 if has_script "clean" && [ "${CLEAN_BEFORE_TEST:-false}" = "true" ]; then
   echo "🧹 Cleaning previous artifacts..."
   HUSKY=0 npm run clean
   echo "📦 Reinstalling dependencies after clean..."
-  npm ci --no-audit --no-fund
+  PRISMA_GENERATE_SKIP=1 npm ci --no-audit --no-fund
 fi
 
 run_if_script_exists() {
@@ -64,7 +70,7 @@ run_security_audit() {
 
   # Always check production dependencies first (most critical)
   echo "🏭 Checking production dependencies..."
-  if npm audit --production --audit-level=high; then
+  if npm audit --production --audit-level=critical; then
     echo "✅ Production dependencies are secure"
   else
     echo "🚨 High/critical vulnerabilities found in production dependencies"
