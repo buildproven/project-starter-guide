@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "description": "Security vulnerability resolution tracking",
-  "lastUpdated": "2025-11-20",
-  "status": "ALL_RESOLVED",
-  "currentVulnerabilities": 0,
+  "lastUpdated": "2026-03-06",
+  "status": "DEV_ONLY_WAIVERS",
+  "currentVulnerabilities": 5,
   "resolvedAdvisories": [
     {
       "id": "1109627",
@@ -56,10 +56,46 @@
       "status": "RESOLVED"
     }
   ],
+  "waivers": {
+    "dev_only_vulnerabilities": {
+      "description": "Low-severity vulnerabilities in dev/test tooling only",
+      "vulnerabilities": [
+        {
+          "package": "@tootallnate/once",
+          "severity": "low",
+          "reason": "Dev-only transitive dep via jest-expo/jsdom. No production exposure.",
+          "waivedDate": "2026-03-06"
+        },
+        {
+          "package": "http-proxy-agent",
+          "severity": "low",
+          "reason": "Dev-only transitive dep via jest-expo/jsdom. No production exposure.",
+          "waivedDate": "2026-03-06"
+        },
+        {
+          "package": "jest-environment-jsdom",
+          "severity": "low",
+          "reason": "Dev-only transitive dep via jest-expo. No production exposure.",
+          "waivedDate": "2026-03-06"
+        },
+        {
+          "package": "jest-expo",
+          "severity": "low",
+          "reason": "Dev-only direct dep (test framework). No production exposure.",
+          "waivedDate": "2026-03-06"
+        },
+        {
+          "package": "jsdom",
+          "severity": "low",
+          "reason": "Dev-only transitive dep via jest-expo. No production exposure.",
+          "waivedDate": "2026-03-06"
+        }
+      ]
+    }
+  },
   "notes": [
-    "All previously documented vulnerabilities have been resolved",
-    "Package overrides in package.json enforce secure versions",
-    "npm audit shows 0 vulnerabilities as of 2025-11-20",
+    "All production vulnerabilities resolved via package overrides",
+    "5 low-severity dev-only vulnerabilities waived (test tooling)",
     "This file maintained for audit trail and resolution tracking"
   ]
 }

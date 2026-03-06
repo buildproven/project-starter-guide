@@ -66,3 +66,6 @@ Or use file extensions: `Component.ios.tsx`, `Component.android.tsx`
 ---
 
 _Use ThemedView/ThemedText for consistency. Global rules in `~/.claude/CLAUDE.md`._
+
+---
+**Last Updated:** 2026-03-01
