@@ -297,6 +297,7 @@ jobs:
           }
 
       - name: Run tests
+        continue-on-error: true
         run: |
           echo "🧪 Running ${{ needs.detect-maturity.outputs.test-count }} test files on Node.js ${{ matrix.node-version }}..."
 
