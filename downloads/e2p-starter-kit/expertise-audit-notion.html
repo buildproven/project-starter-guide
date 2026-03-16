@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expertise Audit Worksheet — BuildProven</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #ffffff;
+        color: #1a1a2e;
+        line-height: 1.6;
+        padding: 40px 20px;
+      }
+
+      .page {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .header {
+        border-bottom: 3px solid #b3703b;
+        padding-bottom: 24px;
+        margin-bottom: 36px;
+      }
+
+      .brand {
+        font-family: 'Sora', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #b3703b;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        font-family: 'Sora', sans-serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a2e;
+        line-height: 1.2;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #4a5568;
+        font-style: italic;
+      }
+
+      .intro-box {
+        background: #f8f4ef;
+        border-left: 4px solid #b3703b;
+        padding: 20px 24px;
+        margin: 28px 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .intro-box p {
+        font-size: 15px;
+        color: #1a1a2e;
+        line-height: 1.7;
+      }
+
+      h2 {
+        font-family: 'Sora', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 40px 0 8px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      h3 {
+        font-family: 'Sora', sans-serif;
+        font-size: 17px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin: 28px 0 12px;
+      }
+
+      p {
+        font-size: 15px;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+
+      .exercise-block {
+        background: #fafafa;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px 24px;
+        margin: 16px 0 24px;
+      }
+
+      .exercise-block p {
+        margin-bottom: 0;
+      }
+
+      .fill-field {
+        border: none;
+        border-bottom: 1.5px solid #4a5568;
+        width: 100%;
+        background: transparent;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #1a1a2e;
+        padding: 6px 2px;
+        margin: 6px 0 14px;
+        outline: none;
+      }
+
+      .fill-field::placeholder {
+        color: #a0aec0;
+      }
+
+      .fill-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4a5568;
+        display: block;
+        margin-bottom: 2px;
+        margin-top: 14px;
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 10px 0 16px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: #1a1a2e;
+      }
+
+      .checkbox-item input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        accent-color: #b3703b;
+        flex-shrink: 0;
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 10px 0;
+      }
+
+      .radio-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 14px;
+        color: #1a1a2e;
+      }
+
+      .radio-item input[type='radio'] {
+        width: 16px;
+        height: 16px;
+        accent-color: #b3703b;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .tip-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 20px 0;
+        font-size: 14px;
+        color: #1e40af;
+      }
+
+      .summary-box {
+        background: #1a1a2e;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 28px 32px;
+        margin: 40px 0;
+      }
+
+      .summary-box h3 {
+        color: #b3703b;
+        margin-top: 0;
+        font-size: 18px;
+      }
+
+      .summary-box .fill-label {
+        color: #e2e8f0;
+      }
+      .summary-box .fill-field {
+        border-bottom-color: #4a5568;
+        color: #ffffff;
+      }
+      .summary-box .fill-field::placeholder {
+        color: #718096;
+      }
+
+      .next-steps {
+        background: #f8f4ef;
+        border: 1.5px solid #b3703b;
+        border-radius: 8px;
+        padding: 24px 28px;
+        margin: 32px 0;
+      }
+
+      .next-steps h3 {
+        color: #b3703b;
+        margin-top: 0;
+      }
+
+      .next-steps ol {
+        padding-left: 20px;
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        color: #4a5568;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+        margin-top: 40px;
+      }
+
+      .footer a {
+        color: #b3703b;
+        text-decoration: none;
+      }
+
+      .problem-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: #b3703b;
+        color: #ffffff;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 700;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+
+      .problem-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .problem-header h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      @media print {
+        body {
+          padding: 0;
+        }
+        .page {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="header">
+        <div class="brand">BuildProven — buildproven.ai</div>
+        <h1>Expertise Audit Worksheet</h1>
+        <div class="subtitle">Turn Your Career Knowledge Into a Product</div>
+      </div>
+
+      <div class="intro-box">
+        <p>
+          Most domain experts don't recognise what they know as valuable. They
+          call it "just common sense." It isn't. It's years of hard-won pattern
+          recognition — and someone out there will pay for it.
+        </p>
+        <p style="margin-top: 10px">
+          This worksheet is a 30-minute audit of your career expertise. Do it
+          with a coffee. Be honest with yourself. The goal isn't perfection —
+          it's identifying at least one problem worth building around.
+        </p>
+      </div>
+
+      <!-- PART 1 -->
+      <h2>Part 1: The Problem Inventory</h2>
+      <p>
+        You've spent years solving problems. Most of them you've solved so often
+        they feel automatic. That's where the product is.
+      </p>
+      <h3>Exercise 1.1 — The Repeat Problems</h3>
+      <p>
+        Write down 5 problems you've solved repeatedly in your career that most
+        people in your industry still struggle with. Don't filter. Don't judge.
+        Just write.
+      </p>
+
+      <!-- Problem 1 -->
+      <div class="exercise-block">
+        <div class="problem-header">
+          <span class="problem-number">1</span>
+          <h3>Problem One</h3>
+        </div>
+        <span class="fill-label">The problem:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Describe the problem you've solved repeatedly..."
+        />
+        <span class="fill-label"
+          >How long did it take you to figure this out?</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 3 years of trial and error, multiple failed projects first..."
+        />
+        <div
+          class="checkbox-group"
+          style="flex-direction: row; gap: 24px; margin-top: 8px"
+        >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've taught this to others</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've been paid to solve this</label
+          >
+        </div>
+      </div>
+
+      <!-- Problem 2 -->
+      <div class="exercise-block">
+        <div class="problem-header">
+          <span class="problem-number">2</span>
+          <h3>Problem Two</h3>
+        </div>
+        <span class="fill-label">The problem:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Describe the problem you've solved repeatedly..."
+        />
+        <span class="fill-label"
+          >How long did it take you to figure this out?</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 3 years of trial and error, multiple failed projects first..."
+        />
+        <div
+          class="checkbox-group"
+          style="flex-direction: row; gap: 24px; margin-top: 8px"
+        >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've taught this to others</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've been paid to solve this</label
+          >
+        </div>
+      </div>
+
+      <!-- Problem 3 -->
+      <div class="exercise-block">
+        <div class="problem-header">
+          <span class="problem-number">3</span>
+          <h3>Problem Three</h3>
+        </div>
+        <span class="fill-label">The problem:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Describe the problem you've solved repeatedly..."
+        />
+        <span class="fill-label"
+          >How long did it take you to figure this out?</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 3 years of trial and error, multiple failed projects first..."
+        />
+        <div
+          class="checkbox-group"
+          style="flex-direction: row; gap: 24px; margin-top: 8px"
+        >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've taught this to others</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've been paid to solve this</label
+          >
+        </div>
+      </div>
+
+      <!-- Problem 4 -->
+      <div class="exercise-block">
+        <div class="problem-header">
+          <span class="problem-number">4</span>
+          <h3>Problem Four</h3>
+        </div>
+        <span class="fill-label">The problem:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Describe the problem you've solved repeatedly..."
+        />
+        <span class="fill-label"
+          >How long did it take you to figure this out?</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 3 years of trial and error, multiple failed projects first..."
+        />
+        <div
+          class="checkbox-group"
+          style="flex-direction: row; gap: 24px; margin-top: 8px"
+        >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've taught this to others</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've been paid to solve this</label
+          >
+        </div>
+      </div>
+
+      <!-- Problem 5 -->
+      <div class="exercise-block">
+        <div class="problem-header">
+          <span class="problem-number">5</span>
+          <h3>Problem Five</h3>
+        </div>
+        <span class="fill-label">The problem:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Describe the problem you've solved repeatedly..."
+        />
+        <span class="fill-label"
+          >How long did it take you to figure this out?</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 3 years of trial and error, multiple failed projects first..."
+        />
+        <div
+          class="checkbox-group"
+          style="flex-direction: row; gap: 24px; margin-top: 8px"
+        >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've taught this to others</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> I've been paid to solve this</label
+          >
+        </div>
+      </div>
+
+      <!-- PART 2 -->
+      <h2>Part 2: The Market Check</h2>
+      <p>
+        For your top 2 problems, answer these questions. Pick the problems that
+        felt most instinctive in Part 1.
+      </p>
+
+      <h3>Exercise 2.1 — Who Else Has This Problem?</h3>
+
+      <div class="exercise-block">
+        <span class="fill-label"
+          >Which problem from Part 1? (write it briefly here)</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="Problem #___ — ..."
+        />
+        <span class="fill-label" style="margin-top: 16px"
+          >Who else faces this problem?</span
+        >
+        <div class="checkbox-group">
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Companies in my industry</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Smaller companies who can't afford
+            full-time experts like me</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Companies in adjacent industries</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Individuals in my profession</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> People earlier in their career</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Companies entering this industry for the
+            first time</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Other:
+            <input
+              type="text"
+              style="
+                border: none;
+                border-bottom: 1px solid #4a5568;
+                font-size: 14px;
+                width: 200px;
+                margin-left: 4px;
+              "
+          /></label>
+        </div>
+        <span class="fill-label" style="margin-top: 16px"
+          >How many potential customers exist?</span
+        >
+        <div class="radio-group">
+          <label class="radio-item"
+            ><input type="radio" name="market1" /> Less than 100 — niche is too
+            small, consider a different problem</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="market1" /> 100–1,000 — small but viable
+            if they pay well</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="market1" /> 1,000–10,000 — solid sweet
+            spot</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="market1" /> More than 10,000 — strong
+            opportunity</label
+          >
+        </div>
+      </div>
+
+      <h3>Exercise 2.2 — The Willingness-to-Pay Test</h3>
+
+      <div class="exercise-block">
+        <span class="fill-label"
+          >Are people currently paying for a solution to this problem?</span
+        >
+        <div class="radio-group">
+          <label class="radio-item"
+            ><input type="radio" name="wtp1" /> Yes, but the solutions are
+            expensive/consultant-heavy</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="wtp1" /> Yes, but the solutions are
+            bad</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="wtp1" /> No — they're winging it or doing
+            nothing</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="wtp1" /> No — I've never seen a product
+            for this</label
+          >
+        </div>
+        <span class="fill-label" style="margin-top: 16px"
+          >Have you ever been paid (directly or indirectly) to solve this?</span
+        >
+        <div class="radio-group">
+          <label class="radio-item"
+            ><input type="radio" name="paid1" /> Yes — clients paid me or my
+            employer specifically for this</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="paid1" /> Yes — it was part of my job but
+            a high-value part</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="paid1" /> No — but I can see how they
+            would pay</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="paid1" /> No — and I'm not sure they
+            would</label
+          >
+        </div>
+        <span class="fill-label" style="margin-top: 16px"
+          >If a tool existed that gave you this expertise on tap, what would a
+          business pay per month?</span
+        >
+        <div class="radio-group">
+          <label class="radio-item"
+            ><input type="radio" name="price1" /> Less than $50/month — consumer
+            territory, hard to scale</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="price1" /> $50–$200/month — B2B SaaS
+            sweet spot</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="price1" /> $200–$1,000/month — premium,
+            needs clear ROI</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="price1" /> More than $1,000/month —
+            enterprise, longer sales cycle</label
+          >
+        </div>
+      </div>
+
+      <!-- PART 3 -->
+      <h2>Part 3: The AI Buildability Check</h2>
+      <p>
+        The reason AI changes the game for domain experts: your expertise is the
+        hard part. The software is now the easy part.
+      </p>
+
+      <div class="exercise-block">
+        <h3 style="margin-top: 0">
+          What does solving this problem actually involve?
+        </h3>
+        <div class="checkbox-group">
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Reading documents and extracting key
+            information</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Comparing against a standard, checklist,
+            or framework</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Generating reports or summaries from
+            structured data</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Answering questions based on expert
+            knowledge</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Walking someone through a process step by
+            step</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Flagging risks or issues in complex
+            material</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Translating expert language into plain
+            language</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" /> Other:
+            <input
+              type="text"
+              style="
+                border: none;
+                border-bottom: 1px solid #4a5568;
+                font-size: 14px;
+                width: 200px;
+                margin-left: 4px;
+              "
+          /></label>
+        </div>
+
+        <div class="tip-box" style="margin-top: 20px">
+          <strong>Quick AI fit guide:</strong> Mostly analytical (reading,
+          comparing, flagging)? Strong AI fit. Mostly generative (drafting,
+          writing, advising)? Strong AI fit. Requires physical presence or legal
+          liability sign-off? More complex — doable, but adds friction.
+        </div>
+
+        <span class="fill-label" style="margin-top: 20px"
+          >AI could automate:</span
+        >
+        <div class="radio-group">
+          <label class="radio-item"
+            ><input type="radio" name="ai1" /> Most of it (80%+)</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="ai1" /> About half</label
+          >
+          <label class="radio-item"
+            ><input type="radio" name="ai1" /> A small part (25% or less)</label
+          >
+        </div>
+
+        <span class="fill-label" style="margin-top: 16px"
+          >What AI cannot replace (where your expertise is
+          non-negotiable):</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. understanding the political context of a failed audit..."
+        />
+
+        <span class="fill-label"
+          >What your specific expertise adds that AI alone can't deliver:</span
+        >
+        <input
+          class="fill-field"
+          type="text"
+          placeholder="e.g. 20 years of knowing what actually causes projects to fail vs. what gets blamed..."
+        />
+      </div>
+
+      <!-- PART 4 -->
+      <div class="summary-box">
+        <h3>Part 4: Your Product Opportunity Summary</h3>
+        <p style="color: #e2e8f0; font-size: 14px; margin-bottom: 20px">
+          Fill this in after Parts 1–3. This is your hypothesis to test.
+        </p>
+
+        <span class="fill-label"
+          >The problem I'm most confident building around:</span
+        >
+        <input class="fill-field" type="text" placeholder="..." />
+
+        <span class="fill-label">Who experiences it:</span>
+        <input class="fill-field" type="text" placeholder="..." />
+
+        <span class="fill-label">How they currently solve it (badly):</span>
+        <input class="fill-field" type="text" placeholder="..." />
+
+        <span class="fill-label"
+          >Why my expertise gives me an unfair advantage:</span
+        >
+        <input class="fill-field" type="text" placeholder="..." />
+
+        <span class="fill-label">How AI could automate most of the work:</span>
+        <input class="fill-field" type="text" placeholder="..." />
+
+        <span class="fill-label">My rough revenue hypothesis:</span>
+        <input
+          class="fill-field"
+          type="text"
+          placeholder='e.g. "500 companies at $99/month = $50K MRR ceiling"'
+        />
+      </div>
+
+      <!-- NEXT STEPS -->
+      <div class="next-steps">
+        <h3>What Next?</h3>
+        <ol>
+          <li>
+            <strong
+              >Check your hypothesis against the Product Archetype Cheat
+              Sheet</strong
+            >
+            — which of the 7 patterns fits your problem best?
+          </li>
+          <li>
+            <strong
+              >Run your idea through the "Is This a Product?" Scorecard</strong
+            >
+            — a 10-question framework that tells you if it's worth building.
+          </li>
+          <li>
+            <strong>If you score 60+</strong> — you've got something. Don't wait
+            for perfect. Start building.
+          </li>
+        </ol>
+      </div>
+
+      <div class="footer">
+        <p>
+          BuildProven — Helping domain experts turn career knowledge into
+          AI-powered products.
+        </p>
+        <p><a href="https://buildproven.ai">buildproven.ai</a></p>
+      </div>
+    </div>
+  </body>
+</html>
