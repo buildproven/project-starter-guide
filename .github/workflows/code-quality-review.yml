@@ -9,6 +9,7 @@ on:
 jobs:
   quality-review:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' || github.event_name != 'pull_request'
     strategy:
       fail-fast: false
       matrix:

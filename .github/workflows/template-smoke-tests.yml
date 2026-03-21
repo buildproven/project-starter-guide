@@ -7,6 +7,7 @@ on:
 jobs:
   smoke-test:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' || github.event_name != 'pull_request'
     strategy:
       fail-fast: false
       matrix:
