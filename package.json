@@ -50,7 +50,11 @@
     "size:why": "size-limit --why",
     "test:a11y": "vitest run tests/accessibility.test.js",
     "test:coverage:check": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.functions=70",
-    "test:changed": "vitest run --changed HEAD~1 --passWithNoTests"
+    "test:changed": "vitest run --changed HEAD~1 --passWithNoTests",
+    "dead-code": "knip --no-exit-code || echo \"Dead code found (non-blocking)\"",
+    "dead-code:strict": "knip",
+    "pattern-check": "bash scripts/pattern-check.sh",
+    "test:patterns": "bash scripts/pattern-check.sh --all"
   },
   "keywords": [
     "web-development",
@@ -75,9 +79,11 @@
     "axe-core": "^4.10.0",
     "commitlint": "^20.4.1",
     "eslint": "^9.12.0",
+    "eslint-plugin-n": "^17.24.0",
     "eslint-plugin-security": "^3.0.1",
     "globals": "^15.9.0",
     "husky": "^9.1.4",
+    "knip": "^6.0.1",
     "lint-staged": "^15.2.10",
     "markdown-link-check": "^3.12.1",
     "markdownlint-cli": "^0.48.0",

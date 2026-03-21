@@ -78,3 +78,18 @@ if grep -rE "eval\(.*\$\{" src/ app/ lib/ --include="*.js" --include="*.jsx" --i
 fi
 
 echo "✅ Security scans passed!"
+
+# AI pattern checks (defensive coding)
+if [ -f "scripts/pattern-check.sh" ]; then
+  echo "  Running AI pattern checks..."
+  bash scripts/pattern-check.sh --all || {
+    echo "Pattern check failed!"
+    exit 1
+  }
+fi
+
+# Dead code detection (knip) — non-blocking warning
+if command -v npx &> /dev/null && grep -q '"knip"' package.json 2>/dev/null; then
+  echo "  Checking for dead code..."
+  npx knip --no-exit-code 2>/dev/null || true
+fi
