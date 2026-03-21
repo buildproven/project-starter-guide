@@ -10,7 +10,7 @@ name: Quality Checks
 # This avoids redundant work and reduces CI costs
 
 on:
-  push:
+  push: # Kept: catches direct pushes and scheduled scans
     branches: [main, master, develop]
     paths-ignore:
       - '**.md'
