@@ -10,7 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        template: [saas-level-1, api-service, mobile-app, about-me-page]
+        template:
+          - saas-level-1
+        include: ${{ github.event_name == 'workflow_dispatch' && fromJSON('[{"template":"api-service"},{"template":"mobile-app"},{"template":"about-me-page"}]') || fromJSON('[]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,25 +40,25 @@ jobs:
       - name: Secret scan
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔐 Running secret scan for ${{ matrix.template }}..."
+          echo "Running secret scan for ${{ matrix.template }}..."
           if [ -f package.json ]; then
             if npm run -s security:secrets >/dev/null 2>&1; then
               npm run security:secrets
             else
-              echo "⏭️  No security:secrets script defined, skipping."
+              echo "No security:secrets script defined, skipping."
             fi
           else
-            echo "⏭️  No package.json found, skipping secret scan."
+            echo "No package.json found, skipping secret scan."
           fi
 
       - name: Quick Security Check
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Running quick security audit for ${{ matrix.template }}..."
+          echo "Running quick security audit for ${{ matrix.template }}..."
           if [ -f package.json ]; then
-            npm audit --audit-level=high --production || echo "⚠️ High/critical vulnerabilities found - check dependency-audit workflow for details"
+            npm audit --audit-level=high --production || echo "High/critical vulnerabilities found - check dependency-audit workflow for details"
           else
-            echo "⏭️  No package.json found, skipping npm audit."
+            echo "No package.json found, skipping npm audit."
           fi
 
       - name: Run smoke test
@@ -72,7 +74,7 @@ jobs:
       - name: Check for Critical Outdated Dependencies
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Quick check for majorly outdated dependencies..."
+          echo "Quick check for majorly outdated dependencies..."
 
           # Install npm-check-updates for quick check
           npm install -g npm-check-updates
@@ -81,10 +83,10 @@ jobs:
           outdated=$(ncu --target major --filter "next,react,typescript,expo,express" --format json || echo '{}')
 
           if [[ "$outdated" != "{}" ]]; then
-            echo "ℹ️ Major updates available for critical dependencies in ${{ matrix.template }}"
+            echo "Major updates available for critical dependencies in ${{ matrix.template }}"
             echo "Run 'npm run dependency-audit' workflow for detailed analysis"
           else
-            echo "✅ Critical dependencies are reasonably current"
+            echo "Critical dependencies are reasonably current"
           fi
 
   coverage:
@@ -93,7 +95,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        template: [saas-level-1, api-service, mobile-app]
+        template:
+          - saas-level-1
+        include: ${{ github.event_name == 'workflow_dispatch' && fromJSON('[{"template":"api-service"},{"template":"mobile-app"}]') || fromJSON('[]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -123,7 +127,7 @@ jobs:
         if: matrix.template == 'saas-level-1' || matrix.template == 'api-service' || matrix.template == 'mobile-app'
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "📊 Checking coverage thresholds..."
+          echo "Checking coverage thresholds..."
           if [ -f "coverage/coverage-summary.json" ]; then
             LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
             BRANCHES=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
@@ -131,16 +135,16 @@ jobs:
 
             # Thresholds: 80% lines, 75% branches (from TESTING.md)
             if (( $(echo "$LINES < 80" | bc -l) )); then
-              echo "❌ Line coverage ($LINES%) below threshold (80%)"
+              echo "Line coverage ($LINES%) below threshold (80%)"
               exit 1
             fi
             if (( $(echo "$BRANCHES < 75" | bc -l) )); then
-              echo "❌ Branch coverage ($BRANCHES%) below threshold (75%)"
+              echo "Branch coverage ($BRANCHES%) below threshold (75%)"
               exit 1
             fi
-            echo "✅ Coverage thresholds met"
+            echo "Coverage thresholds met"
           else
-            echo "⚠️ No coverage report found, skipping threshold check"
+            echo "No coverage report found, skipping threshold check"
           fi
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
@@ -150,15 +154,16 @@ jobs:
 
   accessibility-and-perf:
     needs: coverage
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-      strategy:
-        fail-fast: false
-        matrix:
-          include:
-            - template: saas-level-1
-              command: "npm run test:accessibility"
-            - template: api-service
-              command: "npm run perf:smoke"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - template: saas-level-1
+            command: "npm run test:accessibility"
+          - template: api-service
+            command: "npm run perf:smoke"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

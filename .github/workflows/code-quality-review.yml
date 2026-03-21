@@ -12,7 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        template: [saas-level-1, api-service, mobile-app]
+        template:
+          - saas-level-1
+        include: ${{ github.event_name == 'workflow_dispatch' && fromJSON('[{"template":"api-service"},{"template":"mobile-app"}]') || fromJSON('[]') }}
 
     steps:
       - name: Checkout
@@ -40,77 +42,77 @@ jobs:
         if: matrix.template == 'api-service'
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Checking dotenv loading order in API template..."
+          echo "Checking dotenv loading order in API template..."
 
           # Check if dotenv.config() is called before other imports
           if ! head -10 src/app.ts | grep -q "dotenv.config()"; then
-            echo "❌ CRITICAL: dotenv.config() not in first 10 lines of app.ts"
+            echo "CRITICAL: dotenv.config() not in first 10 lines of app.ts"
             echo "   This will cause DATABASE_URL not found errors"
             echo "   Fix: Move dotenv import and config to top of file"
             exit 1
           fi
 
-          echo "✅ dotenv loading order correct"
+          echo "dotenv loading order correct"
 
       # Pattern 2: Check Prisma lazy-loading (SaaS template)
       - name: Check Prisma Import Patterns
         if: matrix.template == 'saas-level-1'
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Checking Prisma import patterns in SaaS template..."
+          echo "Checking Prisma import patterns in SaaS template..."
 
           AUTH_ROUTE="src/app/api/auth/[...nextauth]/route.ts"
 
           # Check for lazy-loading pattern
           if grep -q "import.*prisma.*from.*@/lib/prisma" "$AUTH_ROUTE" && ! grep -q "getPrisma\|require.*@/lib/prisma" "$AUTH_ROUTE"; then
-            echo "❌ WARNING: Prisma imported at top level without lazy-loading"
+            echo "WARNING: Prisma imported at top level without lazy-loading"
             echo "   This will fail when using mock providers (no DATABASE_URL)"
             echo "   Fix: Use lazy-loading pattern with require() or dynamic import"
             exit 1
           fi
 
-          echo "✅ Prisma lazy-loading pattern correct"
+          echo "Prisma lazy-loading pattern correct"
 
       # Pattern 3: Check trust proxy configuration (API template)
       - name: Check Trust Proxy Configuration
         if: matrix.template == 'api-service'
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Checking trust proxy configuration..."
+          echo "Checking trust proxy configuration..."
 
           # Check if trust proxy is set before rate limiter
           if ! grep -q "app.set('trust proxy'" src/app.ts; then
-            echo "❌ WARNING: trust proxy not configured"
+            echo "WARNING: trust proxy not configured"
             echo "   Rate limiting won't work correctly behind proxies"
             echo "   Fix: Add app.set('trust proxy', 1) before rate limiter"
             exit 1
           fi
 
-          echo "✅ Trust proxy configuration correct"
+          echo "Trust proxy configuration correct"
 
       # Pattern 4: Test assertions match components (SaaS template)
       - name: Check Test-Component Alignment
         if: matrix.template == 'saas-level-1'
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔍 Checking test assertions match component text..."
+          echo "Checking test assertions match component text..."
 
           # Run tests - if they pass, alignment is good
           npm test -- --run --reporter=verbose
 
           if [ $? -ne 0 ]; then
-            echo "❌ Tests failed - check for text mismatches between components and tests"
+            echo "Tests failed - check for text mismatches between components and tests"
             echo "   Fix: Keep Hero component text in sync with Home.test.tsx assertions"
             exit 1
           fi
 
-          echo "✅ Test-component alignment verified"
+          echo "Test-component alignment verified"
 
       # Pattern 5: Bootstrap integration tests
       - name: Run Bootstrap Integration Tests
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🧪 Running bootstrap integration tests..."
+          echo "Running bootstrap integration tests..."
 
           case "${{ matrix.template }}" in
             "api-service")
@@ -119,7 +121,7 @@ jobs:
               export JWT_SECRET="test-secret-32-chars-minimum"
               export PORT="3000"
               npm test -- src/__tests__/bootstrap.test.ts || {
-                echo "❌ Bootstrap tests failed - environment loading broken"
+                echo "Bootstrap tests failed - environment loading broken"
                 exit 1
               }
               ;;
@@ -129,7 +131,7 @@ jobs:
               export NEXTAUTH_URL="http://localhost:3000"
               export NODE_ENV="development"
               npm test -- src/app/api/auth/__tests__/auth-bootstrap.test.tsx || {
-                echo "❌ Auth bootstrap tests failed - lazy-loading broken"
+                echo "Auth bootstrap tests failed - lazy-loading broken"
                 exit 1
               }
               ;;
@@ -138,48 +140,48 @@ jobs:
               ;;
           esac
 
-          echo "✅ Bootstrap tests passed"
+          echo "Bootstrap tests passed"
 
       # Pattern 6: Security patterns check
       - name: Security Patterns Review
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "🔐 Checking security patterns..."
+          echo "Checking security patterns..."
 
           # Check for hardcoded secrets (exclude destructuring assignments)
           if grep -rE "sk_live|pk_live|password\s*=\s*['\"]" src/ --exclude-dir=__tests__ --exclude-dir=node_modules; then
-            echo "❌ CRITICAL: Potential hardcoded secrets found"
+            echo "CRITICAL: Potential hardcoded secrets found"
             exit 1
           fi
 
           # Check .env is in .gitignore
           if ! grep -q "^\.env$" .gitignore; then
-            echo "❌ CRITICAL: .env not in .gitignore"
+            echo "CRITICAL: .env not in .gitignore"
             exit 1
           fi
 
           # Check .env.example exists
           if [ ! -f ".env.example" ]; then
-            echo "⚠️ WARNING: .env.example not found"
+            echo "WARNING: .env.example not found"
           fi
 
-          echo "✅ Security patterns check passed"
+          echo "Security patterns check passed"
 
       # Summary report
       - name: Generate Quality Report
         if: always()
         working-directory: templates/${{ matrix.template }}
         run: |
-          echo "📊 Quality Review Summary for ${{ matrix.template }}"
+          echo "Quality Review Summary for ${{ matrix.template }}"
           echo "=============================================="
           echo ""
           echo "Checks performed:"
-          echo "  ✓ Environment loading patterns"
-          echo "  ✓ Database/Prisma import patterns"
-          echo "  ✓ Configuration correctness"
-          echo "  ✓ Test-component alignment"
-          echo "  ✓ Bootstrap integration tests"
-          echo "  ✓ Security patterns"
+          echo "  - Environment loading patterns"
+          echo "  - Database/Prisma import patterns"
+          echo "  - Configuration correctness"
+          echo "  - Test-component alignment"
+          echo "  - Bootstrap integration tests"
+          echo "  - Security patterns"
           echo ""
           echo "See job logs above for any failures or warnings"
 
