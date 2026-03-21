@@ -1,0 +1,8 @@
+{
+  "description": "Defensive pattern configuration",
+  "authMiddleware": ["withAuth", "requireAuth", "authenticate", "getSession", "getServerSession", "clerkMiddleware", "auth"],
+  "safeParseHelpers": ["safeJsonParse", "safeParse", ".safeParse"],
+  "publicRoutes": [],
+  "excludePaths": ["**/test/**", "**/__tests__/**", "**/*.test.*", "**/*.spec.*"],
+  "disabled": []
+}
