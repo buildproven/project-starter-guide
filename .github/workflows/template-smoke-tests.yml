@@ -4,9 +4,14 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: smoke-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -90,6 +95,7 @@ jobs:
   coverage:
     needs: smoke-test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -151,6 +157,7 @@ jobs:
   accessibility-and-perf:
     needs: coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 10
       strategy:
         fail-fast: false
         matrix:

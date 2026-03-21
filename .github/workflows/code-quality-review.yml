@@ -3,12 +3,23 @@ name: Code Quality & Review
 on:
   push:
     branches: [ master, main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.editorconfig'
   pull_request:
   workflow_dispatch:  # Allow manual triggering
+
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality-review:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -186,6 +197,7 @@ jobs:
   # Create issue if quality checks fail
   create-issue-on-failure:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: quality-review
     if: failure() && github.event_name == 'push'
     steps:
