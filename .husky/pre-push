@@ -59,7 +59,7 @@ elif [ -f "yarn.lock" ]; then
     exit 1
   }
 else
-  npm audit --audit-level=high || {
+  npm audit --audit-level=high --omit=dev || {
     echo "❌ Vulnerable dependencies found! Run 'npm audit fix' to resolve."
     exit 1
   }

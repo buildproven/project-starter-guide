@@ -422,7 +422,8 @@ check_inline_handlers() {
 
     # Count inline arrow functions in event handlers
     local inline_count
-    inline_count=$(grep -c -E 'on[A-Z][a-zA-Z]*=\{[^}]*\(\s*\)\s*=>' "$file" 2>/dev/null || echo "0")
+    inline_count=$(grep -c -E 'on[A-Z][a-zA-Z]*=\{[^}]*\(\s*\)\s*=>' "$file" 2>/dev/null || true)
+    inline_count=${inline_count:-0}
 
     if [[ "$inline_count" -gt 3 ]]; then
         # Report first occurrence

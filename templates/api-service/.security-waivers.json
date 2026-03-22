@@ -335,6 +335,30 @@
           "description": "Dev/transitive dependency — no production exposure",
           "impact": "Dev tooling only",
           "mitigation": "Not applicable to production builds"
+        },
+        {
+          "package": "@prisma/config",
+          "severity": "high",
+          "source": "Transitive via prisma dev tooling",
+          "description": "Dev/transitive dependency — no production exposure",
+          "impact": "Dev tooling only",
+          "mitigation": "Not applicable to production builds"
+        },
+        {
+          "package": "effect",
+          "severity": "high",
+          "source": "Transitive via @prisma/config dev tooling",
+          "description": "Dev/transitive dependency — no production exposure",
+          "impact": "Dev tooling only",
+          "mitigation": "Not applicable to production builds"
+        },
+        {
+          "package": "flatted",
+          "severity": "low",
+          "source": "Transitive via dev-only test deps",
+          "description": "Dev/transitive dependency — no production exposure",
+          "impact": "Dev tooling only",
+          "mitigation": "Not applicable to production builds"
         }
       ],
       "total_vulnerabilities": 8,

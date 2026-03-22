@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "description": "Security vulnerability resolution tracking",
-  "lastUpdated": "2026-03-06",
+  "lastUpdated": "2026-03-21",
   "status": "DEV_ONLY_WAIVERS",
-  "currentVulnerabilities": 5,
+  "currentVulnerabilities": 6,
   "resolvedAdvisories": [
     {
       "id": "1109627",
@@ -89,13 +89,19 @@
           "severity": "low",
           "reason": "Dev-only transitive dep via jest-expo. No production exposure.",
           "waivedDate": "2026-03-06"
+        },
+        {
+          "package": "flatted",
+          "severity": "low",
+          "reason": "Dev-only transitive dep via test tooling. No production exposure.",
+          "waivedDate": "2026-03-21"
         }
       ]
     }
   },
   "notes": [
     "All production vulnerabilities resolved via package overrides",
-    "5 low-severity dev-only vulnerabilities waived (test tooling)",
+    "6 low-severity dev-only vulnerabilities waived (test tooling)",
     "This file maintained for audit trail and resolution tracking"
   ]
 }

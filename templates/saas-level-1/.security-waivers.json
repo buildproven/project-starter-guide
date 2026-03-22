@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-03-06",
+  "lastUpdated": "2026-03-21",
   "description": "Security vulnerability waivers for SaaS Level-1 template",
   "waivers": {
     "dev_only_vulnerabilities": {
@@ -17,7 +17,11 @@
         { "package": "http-proxy-agent", "severity": "low", "reason": "Transitive via jsdom dev tooling", "waivedDate": "2026-03-06" },
         { "package": "jsdom", "severity": "low", "reason": "Dev-only test tooling", "waivedDate": "2026-03-06" },
         { "package": "lodash", "severity": "moderate", "reason": "Transitive via prisma dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "prisma", "severity": "high", "reason": "Prisma CLI — dev tooling, not shipped to production", "waivedDate": "2026-03-06" }
+        { "package": "prisma", "severity": "high", "reason": "Prisma CLI — dev tooling, not shipped to production", "waivedDate": "2026-03-06" },
+        { "package": "@prisma/config", "severity": "high", "reason": "Transitive via prisma dev tooling", "waivedDate": "2026-03-21" },
+        { "package": "effect", "severity": "high", "reason": "Transitive via @prisma/config dev tooling", "waivedDate": "2026-03-21" },
+        { "package": "flatted", "severity": "low", "reason": "Dev-only transitive dep via test tooling", "waivedDate": "2026-03-21" },
+        { "package": "undici", "severity": "moderate", "reason": "Dev-only transitive dep via test tooling", "waivedDate": "2026-03-21" }
       ]
     }
   },

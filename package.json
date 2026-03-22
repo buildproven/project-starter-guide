@@ -43,7 +43,7 @@
     "quality:ci": "npm run quality:check && npm run security:audit",
     "prepare": "husky",
     "test:fast": "vitest run --reporter=basic --coverage=false",
-    "test:medium": "vitest run --reporter=basic --testPathIgnorePatterns=e2e,integration",
+    "test:medium": "vitest run --reporter=basic --exclude='**/e2e/**' --exclude='**/integration/**'",
     "test:comprehensive": "vitest run && npm run lint && npm run format:check && npm run security:audit 2>/dev/null || true",
     "test:smart": "bash scripts/smart-test-strategy.sh",
     "size": "size-limit",
