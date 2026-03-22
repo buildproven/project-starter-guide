@@ -1,0 +1,356 @@
+rules:
+  # =============================================================================
+  # Defensive Patterns Semgrep Rules (CS-090)
+  # =============================================================================
+  # Security-focused rules that complement ESLint defensive patterns.
+  # Run with: semgrep --config .semgrep/defensive-patterns.yaml
+  #
+  # These rules catch patterns that are difficult or impossible to detect
+  # with ESLint alone.
+  # =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # PROTOTYPE POLLUTION
+  # ---------------------------------------------------------------------------
+  - id: prototype-pollution-json-parse
+    message: |
+      JSON.parse on user input can lead to prototype pollution if the parsed
+      object has __proto__ properties. Use a safe parse function that strips
+      dangerous properties.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: JSON.parse($REQ.body)
+      - pattern: JSON.parse($REQ.query.$PARAM)
+      - pattern: JSON.parse($REQ.params.$PARAM)
+      - pattern: JSON.parse(await $REQ.json())
+    metadata:
+      category: security
+      cwe: "CWE-1321"
+      owasp: "A03:2021"
+      references:
+        - https://portswigger.net/web-security/prototype-pollution
+
+  - id: prototype-pollution-object-assign
+    message: |
+      Object.assign with user-controlled input can lead to prototype pollution.
+      Sanitize input or use a safer merge function.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: Object.assign($OBJ, $REQ.body)
+      - pattern: Object.assign($OBJ, ...$USER_INPUT)
+    metadata:
+      category: security
+      cwe: "CWE-1321"
+
+  - id: prototype-pollution-spread
+    message: |
+      Spreading user input directly into an object can lead to prototype
+      pollution. Validate keys before spreading.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern: "{ ...$REQ.body }"
+    metadata:
+      category: security
+      cwe: "CWE-1321"
+
+  # ---------------------------------------------------------------------------
+  # SQL INJECTION
+  # ---------------------------------------------------------------------------
+  - id: sql-injection-template-string
+    message: |
+      SQL query built with template string containing user input. Use
+      parameterized queries instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: $DB.query(`...${$USER_INPUT}...`)
+      - pattern: $DB.raw(`...${$USER_INPUT}...`)
+      - pattern: $PRISMA.$queryRaw(`...${$USER_INPUT}...`)
+    metadata:
+      category: security
+      cwe: "CWE-89"
+      owasp: "A03:2021"
+
+  - id: sql-injection-string-concat
+    message: |
+      SQL query built with string concatenation. Use parameterized queries.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: $DB.query("..." + $USER_INPUT + "...")
+    metadata:
+      category: security
+      cwe: "CWE-89"
+
+  # ---------------------------------------------------------------------------
+  # AUTHENTICATION BYPASS
+  # ---------------------------------------------------------------------------
+  - id: auth-bypass-or-condition
+    message: |
+      OR condition in authentication check may allow bypass. Use AND conditions
+      for security checks.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: if ($AUTH || $OTHER) { ... }
+      - pattern: |
+          $AUTH || $OTHER ? $TRUE : $FALSE
+    metadata:
+      category: security
+      cwe: "CWE-287"
+
+  - id: auth-skip-on-dev
+    message: |
+      Authentication skipped in development mode. This pattern can accidentally
+      reach production. Use environment-specific auth instead.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: |
+          if (process.env.NODE_ENV !== "production") {
+            return $ALLOW;
+          }
+    metadata:
+      category: security
+      cwe: "CWE-287"
+
+  # ---------------------------------------------------------------------------
+  # INSECURE RANDOMNESS
+  # ---------------------------------------------------------------------------
+  - id: insecure-random-token
+    message: |
+      Math.random() is not cryptographically secure. Use crypto.randomBytes()
+      or crypto.randomUUID() for tokens, IDs, and secrets.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: Math.random().toString($BASE)
+      - pattern: Math.random().toString($BASE).slice($N)
+      - pattern: Math.random().toString($BASE).substring($N)
+    metadata:
+      category: security
+      cwe: "CWE-330"
+      fix: "Use crypto.randomBytes(32).toString('hex') or crypto.randomUUID()"
+
+  - id: insecure-random-array
+    message: |
+      Using Math.random() for shuffling or selection in security-sensitive
+      context. Use crypto.getRandomValues() instead.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern: Math.floor(Math.random() * $ARR.length)
+    metadata:
+      category: security
+      cwe: "CWE-330"
+
+  # ---------------------------------------------------------------------------
+  # COMMAND INJECTION
+  # ---------------------------------------------------------------------------
+  # Note: These rules detect DANGEROUS patterns that should be flagged.
+  # The patterns below are what we want to WARN about, not examples to follow.
+
+  - id: command-injection-template
+    message: |
+      User input in shell command template string. Use child_process.execFile
+      with argument array or validate/escape input.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: child_process.execSync(`...${$USER_INPUT}...`)
+    metadata:
+      category: security
+      cwe: "CWE-78"
+      owasp: "A03:2021"
+      fix: "Use execFile() with argument array instead of template strings"
+
+  - id: command-injection-shell-option
+    message: |
+      spawn() with shell: true can lead to command injection. Use shell: false
+      and pass arguments as array.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern: "spawn($CMD, $ARGS, { ..., shell: true, ... })"
+    metadata:
+      category: security
+      cwe: "CWE-78"
+
+  # ---------------------------------------------------------------------------
+  # PATH TRAVERSAL
+  # ---------------------------------------------------------------------------
+  - id: path-traversal-join
+    message: |
+      User input in path.join() without validation can lead to path traversal.
+      Validate that the result stays within intended directory.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: path.join($BASE, $REQ.params.$PARAM)
+      - pattern: path.join($BASE, $REQ.query.$PARAM)
+      - pattern: path.join($BASE, $USER_INPUT)
+    metadata:
+      category: security
+      cwe: "CWE-22"
+
+  - id: path-traversal-resolve
+    message: |
+      path.resolve() with user input may escape intended directory. Use
+      path.join() and verify result with startsWith().
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern: path.resolve($USER_INPUT)
+    metadata:
+      category: security
+      cwe: "CWE-22"
+
+  # ---------------------------------------------------------------------------
+  # HARDCODED SECRETS
+  # ---------------------------------------------------------------------------
+  - id: hardcoded-jwt-secret
+    message: |
+      JWT secret appears to be hardcoded. Use environment variables for secrets.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: jwt.sign($PAYLOAD, "...")
+      - pattern: jwt.verify($TOKEN, "...")
+    metadata:
+      category: security
+      cwe: "CWE-798"
+
+  - id: hardcoded-api-key
+    message: |
+      API key appears to be hardcoded. Use environment variables for secrets.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: |
+          { ..., apiKey: "...", ... }
+      - pattern: |
+          headers: { ..., "x-api-key": "...", ... }
+    metadata:
+      category: security
+      cwe: "CWE-798"
+
+  # ---------------------------------------------------------------------------
+  # UNSAFE DESERIALIZATION
+  # ---------------------------------------------------------------------------
+  - id: unsafe-eval
+    message: |
+      eval() with dynamic input is dangerous. Use safer alternatives.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: eval($USER_INPUT)
+      - pattern: new Function($USER_INPUT)
+    metadata:
+      category: security
+      cwe: "CWE-95"
+
+  # ---------------------------------------------------------------------------
+  # MISSING SECURITY HEADERS
+  # ---------------------------------------------------------------------------
+  - id: cors-allow-all
+    message: |
+      CORS configured to allow all origins. This may expose APIs to
+      unauthorized cross-origin requests.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: |
+          cors({ origin: "*" })
+      - pattern: |
+          cors({ origin: true })
+      - pattern: |
+          res.setHeader("Access-Control-Allow-Origin", "*")
+    metadata:
+      category: security
+      cwe: "CWE-942"
+
+  # ---------------------------------------------------------------------------
+  # DENIAL OF SERVICE
+  # ---------------------------------------------------------------------------
+  - id: unbounded-array-growth
+    message: |
+      Array grows unboundedly in loop. Add size limits to prevent memory
+      exhaustion.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    pattern: |
+      while (...) {
+        ...
+        $ARR.push(...)
+        ...
+      }
+    metadata:
+      category: security
+      cwe: "CWE-400"
+
+  # ---------------------------------------------------------------------------
+  # REACT SECURITY
+  # ---------------------------------------------------------------------------
+  - id: react-dangerous-html
+    message: |
+      dangerouslySetInnerHTML with user input can lead to XSS. Sanitize HTML
+      with DOMPurify or similar library.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-regex: "dangerouslySetInnerHTML\\s*=\\s*\\{\\{\\s*__html"
+    metadata:
+      category: security
+      cwe: "CWE-79"
+      owasp: "A07:2021"
+
+  - id: react-href-javascript
+    message: |
+      javascript: URLs in href can lead to XSS. Validate URLs or use
+      onClick handlers instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern-either:
+      - pattern: <a href={`javascript:${$CODE}`} />
+      - pattern: <a href="javascript:..." />
+    metadata:
+      category: security
+      cwe: "CWE-79"

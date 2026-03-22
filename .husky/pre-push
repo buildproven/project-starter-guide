@@ -93,3 +93,16 @@ if command -v npx &> /dev/null && grep -q '"knip"' package.json 2>/dev/null; the
   echo "  Checking for dead code..."
   npx knip --no-exit-code 2>/dev/null || true
 fi
+
+# Security scan (semgrep if installed, pattern-check fallback) — non-blocking unless SEMGREP_STRICT=1
+if [ -f "scripts/run-semgrep.sh" ]; then
+  echo "  Running security scan..."
+  if [ "${SEMGREP_STRICT:-0}" = "1" ]; then
+    bash scripts/run-semgrep.sh --ci || {
+      echo "Security scan found issues!"
+      exit 1
+    }
+  else
+    bash scripts/run-semgrep.sh || true
+  fi
+fi
