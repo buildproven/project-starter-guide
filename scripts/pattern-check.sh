@@ -568,7 +568,7 @@ record_metrics() {
 
     # Also check claude-setup location
     if [[ ! -f "$metrics_script" ]]; then
-        metrics_script="${HOME}/Projects/claude-setup/scripts/pattern-metrics.sh"
+        metrics_script="${HOME}/Projects/internal/claude-setup/scripts/pattern-metrics.sh"
     fi
 
     if [[ ! -f "$metrics_script" ]] || [[ ! -x "$metrics_script" ]]; then
