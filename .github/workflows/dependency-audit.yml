@@ -1,9 +1,9 @@
 name: Critical Dependency Audit
 
 on:
-  # Run weekly on Monday mornings
+  # Run monthly on 1st at 9am
   schedule:
-    - cron: '0 9 * * MON'
+    - cron: '0 9 1 * *'
   # Allow manual triggering
   workflow_dispatch:
   # Run on dependency-related PRs
@@ -16,6 +16,7 @@ on:
 jobs:
   audit-dependencies:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -161,6 +162,7 @@ jobs:
   notify-on-critical-updates:
     needs: audit-dependencies
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: failure() && github.event_name == 'schedule'
 
     steps:
