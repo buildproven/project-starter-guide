@@ -1,8 +1,6 @@
 name: Code Quality & Review
 
 on:
-  push:
-    branches: [ master, main ]
   pull_request:
   workflow_dispatch:  # Allow manual triggering
 
