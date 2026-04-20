@@ -1,0 +1,42 @@
+name: Stale PR Cleanup
+
+on:
+  schedule:
+    # Daily at 6am CT (11:00 UTC)
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  stale:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          # PRs only — skip issues entirely
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+
+          # Warn at 24h, close at 48h
+          days-before-pr-stale: 1
+          days-before-pr-close: 1
+
+          stale-pr-label: stale
+          stale-pr-message: >
+            This PR is 24h old. Please merge or close to avoid merge conflicts.
+          close-pr-message: >
+            Auto-closed: PR exceeded 48h without merge. Re-open and rebase if still needed.
+
+          # Exemptions
+          exempt-pr-labels: 'do-not-close,wip'
+          exempt-all-pr-assignees: false
+
+          # Exempt dependabot PRs (author filter)
+          exempt-pr-authors: 'dependabot[bot],dependabot'
+
+          # CI minutes budget: process max 10 PRs per run
+          operations-per-run: 10
