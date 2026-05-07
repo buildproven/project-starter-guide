@@ -70,11 +70,29 @@ bash scripts/cleanup-artifacts.sh
 | saas-level-1 | `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (DB/OAuth optional in dev) |
 | mobile-app   | None required                                                |
 
+## Additional Template Commands (saas-level-1)
+
+```bash
+npm run dev:full           # Disable fast render for full rebuild
+npm run test:smoke         # Smoke tests
+npm run test:accessibility # Accessibility checks (axe CLI)
+npm run lint:fix           # Auto-fix ESLint issues
+npm audit --production --audit-level=high  # Security audit (also via smoke-test.sh)
+```
+
+## Coding Style
+
+- Components and pages: PascalCase (`PricingTable.tsx`); functions/vars: camelCase
+- Environment helpers live in `src/lib`
+- CSS via Tailwind utility classes; shared styles in `src/styles` or component-local modules
+- Slugs/filenames: kebab-case; front matter dates: ISO (`YYYY-MM-DD`)
+
 ## Constraints
 
 - Use root npm scripts only for repo tooling (linting/formatting); run template installs/tests from within each template directory
-- Run smoke tests before committing template changes
+- Run smoke tests before committing template changes (`bash scripts/template-smoke-test.sh <template>`)
 - Each template has its own CLAUDE.md with specific patterns
+- When modifying auth/payment flows (NextAuth, Stripe), update `SECURITY.md` and template READMEs
 
 ---
 **Last Updated:** 2026-03-01
