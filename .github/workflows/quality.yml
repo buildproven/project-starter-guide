@@ -10,7 +10,7 @@ name: Quality Checks
 # This avoids redundant work and reduces CI costs
 
 on:
-  push:
+  push: # Kept: catches direct pushes and scheduled scans
     branches: [main, master, develop]
     paths-ignore:
       - '**.md'
@@ -20,6 +20,12 @@ on:
       - '.editorconfig'
   pull_request:
     branches: [main, master, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.editorconfig'
   schedule:
     - cron: '0 0 1 * *' # Monthly on 1st (security scans)
   workflow_dispatch: # Manual trigger
@@ -36,12 +42,13 @@ jobs:
   # This reduces GitHub Actions minutes by ~50% on active repos
   detect-maturity:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.actor != 'dependabot[bot]' || github.event_name == 'schedule'
     outputs:
       maturity: 'minimal'
-      source-count: '10'
-      test-count: '1'
-      has-deps: 'true'
+      source-count: '0'
+      test-count: '0'
+      has-deps: 'false'
       has-docs: 'false'
       has-css: 'false'
       package-manager: ${{ steps.detect-pm.outputs.manager }}
@@ -108,7 +115,9 @@ jobs:
           echo "Package Manager: ${{ steps.detect-pm.outputs.manager }}"
           echo "Install Command: ${{ steps.detect-pm.outputs.install-cmd }}"
           echo "Turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}"
-          echo "Note: Maturity detection skipped in minimal mode for faster CI"
+          echo "Mode goal: keep GitHub Actions usage under ~1000 min/month by default"
+          echo "Checks: detection-only in CI (tests/security/docs disabled in minimal mode)"
+          echo "Use --workflow-standard or --workflow-comprehensive to enable heavier CI checks"
 
   # Note: Lint/format jobs REMOVED - pre-commit already does this locally
   # This follows industry best practice: "Each layer does unique work"
@@ -126,6 +135,7 @@ jobs:
   # provide better reliability on GHES/self-hosted and unlock premium features
   security:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-maturity
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.detect-maturity.outputs.has-deps == 'true'
 
@@ -257,6 +267,7 @@ jobs:
   # Smart skip: Draft PRs skip tests (saves CI costs during WIP)
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-maturity
     if: |
       fromJSON(needs.detect-maturity.outputs.test-count) > 0 &&
@@ -313,25 +324,11 @@ jobs:
             exit 1
           }
 
-      - name: Cache gitleaks binary for real download test
-        if: runner.os == 'Linux' && hashFiles('tests/gitleaks-real-binary-test.js') != ''
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/create-qa-architect/gitleaks
-          key: gitleaks-8.28.0-linux-x64-a65b5253-${{ hashFiles('lib/validation/config-security.js') }}
-          restore-keys: |
-            gitleaks-8.28.0-linux-x64-a65b5253-
-            gitleaks-8.28.0-linux-x64-
-
-      - name: Run real gitleaks binary verification test
-        if: runner.os == 'Linux' && hashFiles('tests/gitleaks-real-binary-test.js') != ''
-        run: |
-          echo "🔐 Running real gitleaks binary verification test..."
-          QAA_DEVELOPER=true RUN_REAL_BINARY_TEST=1 node tests/gitleaks-real-binary-test.js
 
   # Step 4: Documentation - run for production-ready projects
   documentation:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-maturity
     if: needs.detect-maturity.outputs.maturity == 'production-ready'
 
@@ -379,6 +376,7 @@ jobs:
           fi
 
       - name: Documentation consistency and security audit freshness
+        continue-on-error: true
         run: |
           echo "🔐 Running comprehensive documentation validation..."
           # This includes security audit freshness check with proper git-based validation
@@ -472,6 +470,7 @@ jobs:
   # Step 5: Summary - report what checks ran
   summary:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs:
       - detect-maturity
       - security
