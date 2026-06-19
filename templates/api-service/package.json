@@ -63,7 +63,7 @@
     "@types/node": "^20.0.0",
     "@types/pg": "^8.10.0",
     "@types/supertest": "^2.0.0",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/coverage-v8": "^4.1.9",
     "autocannon": "^7.14.1",
     "eslint": "^8.52.0",
     "eslint-plugin-security": "^3.0.1",
@@ -79,7 +79,7 @@
     "ts-node": "^10.9.0",
     "typescript": "^5.2.0",
     "typescript-eslint": "^8.51.0",
-    "vitest": "^4.0.15"
+    "vitest": "^4.1.9"
   },
   "keywords": [
     "api",
