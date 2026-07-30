@@ -61,6 +61,19 @@ bash scripts/cleanup-artifacts.sh
 - `templates/` - Self-contained starter projects (each has own CLAUDE.md)
 - `scripts/` - CI smoke tests, cleanup utilities
 - `docs/` - Architecture guides, project-type guides
+- Root `landing-page*.html` files are lightweight static showcases
+
+## Conventions
+
+- TypeScript/React components use PascalCase; functions and variables use
+  camelCase.
+- Keep environment helpers in `src/lib`.
+- Prefer Tailwind utilities; shared CSS belongs in `src/styles` or local modules.
+- Tests use Vitest/React Testing Library or Jest according to the template.
+- For core-flow changes, run coverage and document any risk-based test omission
+  in the PR.
+- PRs include impact, verification evidence, linked issues, and UI screenshots
+  when applicable.
 
 ## Template Env Requirements
 
@@ -75,6 +88,5 @@ bash scripts/cleanup-artifacts.sh
 - Use root npm scripts only for repo tooling (linting/formatting); run template installs/tests from within each template directory
 - Run smoke tests before committing template changes
 - Each template has its own CLAUDE.md with specific patterns
-
----
-**Last Updated:** 2026-03-01
+- Never commit secrets; update `SECURITY.md` and template READMEs when auth or
+  payment configuration changes
