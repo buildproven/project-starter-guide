@@ -41,7 +41,7 @@
     "next": "^16.1.7",
     "next-auth": "^4.24.0",
     "nodemailer": "^7.0.10",
-    "postcss": "^8.4.0",
+    "postcss": "^8.5.18",
     "prisma": "^7.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
