@@ -4,10 +4,13 @@ import { describe, expect, it } from 'vitest'
 
 const root = resolve(import.meta.dirname, '..')
 const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
+const eslintConfig = readFileSync(resolve(root, 'eslint.config.cjs'), 'utf8')
 
 describe('root quality contract', () => {
   it('uses the root ESLint configuration without loading template-local configs', () => {
     expect(packageJson.scripts.lint).toContain('--config eslint.config.cjs')
+    expect(eslintConfig).toContain('**/templates/**/eslint.config.*')
+    expect(eslintConfig).toContain("'n/no-missing-require': 'off'")
   })
 
   it('leaves template formatting to each generated project', () => {
