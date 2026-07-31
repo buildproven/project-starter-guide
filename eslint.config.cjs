@@ -46,6 +46,9 @@ const configs = [
       '**/.claude-setup/**',
       // Template files with placeholders (not valid JS until processed)
       '**/templates/monetization/**',
+      // Each template owns its own flat-config dependencies. The root lint
+      // pass checks template source, not nested lint configuration modules.
+      '**/templates/**/eslint.config.*',
     ],
   },
   js.configs.recommended,
@@ -140,6 +143,16 @@ if (nPlugin) {
       'n/no-missing-require': 'error',
       'n/no-missing-import': 'off', // Often handled by bundlers
       'n/no-unpublished-require': 'off',
+    },
+  })
+
+  // Templates have independent package manifests and dependency trees. The
+  // root lint run still checks their source, but it cannot resolve a template
+  // dependency (for example React in the Expo starter) from root node_modules.
+  configs.push({
+    files: ['templates/**/*.{js,mjs,cjs}'],
+    rules: {
+      'n/no-missing-require': 'off',
     },
   })
 }
