@@ -142,6 +142,16 @@ if (nPlugin) {
       'n/no-unpublished-require': 'off',
     },
   })
+
+  // Templates have independent package manifests and dependency trees. The
+  // root lint run still checks their source, but it cannot resolve a template
+  // dependency (for example React in the Expo starter) from root node_modules.
+  configs.push({
+    files: ['templates/**/*.{js,mjs,cjs}'],
+    rules: {
+      'n/no-missing-require': 'off',
+    },
+  })
 }
 
 module.exports = configs

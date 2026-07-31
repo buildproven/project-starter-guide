@@ -5,6 +5,9 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['tests/**/*.test.{js,mjs,ts,tsx}'],
+    // This file is an executable QA suite invoked by `npm run test:qa`; it
+    // manages its own exit status and is not a Vitest module.
+    exclude: ['tests/integration/qa-integration.test.mjs'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
