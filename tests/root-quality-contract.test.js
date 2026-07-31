@@ -25,6 +25,7 @@ describe('root quality contract', () => {
 
   it('uses maintained root audit tooling and has no phantom type-check project', () => {
     expect(packageJson.engines.node).toBe('>=24')
+    expect(packageJson.engines.npm).toBe('>=11.0.0')
     expect(
       packageJson.devDependencies['license-checker-rseidelsohn']
     ).toBeDefined()
@@ -39,6 +40,12 @@ describe('root quality contract', () => {
   it('does not run medium-test fallbacks after a successful test command', () => {
     expect(smartTestStrategy).toContain(
       'npm run test:medium 2>/dev/null || (npm run lint && npm run spell:check --if-present)'
+    )
+  })
+
+  it('keeps staged JavaScript linting on the root ESLint boundary', () => {
+    expect(packageJson['lint-staged']['**/*.{js,jsx,mjs,cjs,html}']).toContain(
+      'eslint --config eslint.config.cjs --fix'
     )
   })
 })
