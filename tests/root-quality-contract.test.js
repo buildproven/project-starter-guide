@@ -3,8 +3,14 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const root = resolve(import.meta.dirname, '..')
-const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
+const packageJson = JSON.parse(
+  readFileSync(resolve(root, 'package.json'), 'utf8')
+)
 const eslintConfig = readFileSync(resolve(root, 'eslint.config.cjs'), 'utf8')
+const smartTestStrategy = readFileSync(
+  resolve(root, 'scripts/smart-test-strategy.sh'),
+  'utf8'
+)
 
 describe('root quality contract', () => {
   it('uses the root ESLint configuration without loading template-local configs', () => {
@@ -18,10 +24,21 @@ describe('root quality contract', () => {
   })
 
   it('uses maintained root audit tooling and has no phantom type-check project', () => {
-    expect(packageJson.devDependencies['license-checker-rseidelsohn']).toBeDefined()
+    expect(packageJson.engines.node).toBe('>=24')
+    expect(
+      packageJson.devDependencies['license-checker-rseidelsohn']
+    ).toBeDefined()
     expect(packageJson.devDependencies['@lhci/cli']).toBeUndefined()
     expect(packageJson.devDependencies['license-checker']).toBeUndefined()
     expect(packageJson.scripts['type-check:all']).toBeUndefined()
     expect(packageJson.scripts['type-check:tests']).toBeUndefined()
+    expect(packageJson.scripts['test:fast']).not.toContain('--reporter=basic')
+    expect(packageJson.scripts['test:medium']).not.toContain('--reporter=basic')
+  })
+
+  it('does not run medium-test fallbacks after a successful test command', () => {
+    expect(smartTestStrategy).toContain(
+      'npm run test:medium 2>/dev/null || (npm run lint && npm run spell:check --if-present)'
+    )
   })
 })

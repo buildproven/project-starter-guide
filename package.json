@@ -4,7 +4,7 @@
   "description": "Comprehensive guide for choosing the right architecture and technology stack for any project type",
   "private": true,
   "engines": {
-    "node": ">=20",
+    "node": ">=24",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -34,11 +34,11 @@
     "validate:pre-push": "npm run test:patterns --if-present && npm run lint && npm run format:check && npm run test:commands --if-present && npm test --if-present",
     "lint": "eslint . --config eslint.config.cjs && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --allow-empty-input --ignore-path .gitignore",
     "lint:fix": "eslint . --config eslint.config.cjs --fix && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --fix --allow-empty-input --ignore-path .gitignore",
-    "quality:check": "npm run type-check:all && npm run lint && npm run test",
+    "quality:check": "npm run lint && npm run test",
     "quality:ci": "npm run quality:check && npm run security:audit",
     "prepare": "husky",
-    "test:fast": "vitest run --reporter=basic --coverage=false",
-    "test:medium": "vitest run --reporter=basic --exclude='**/e2e/**' --exclude='**/integration/**'",
+    "test:fast": "vitest run --coverage=false",
+    "test:medium": "vitest run --exclude='**/e2e/**' --exclude='**/integration/**'",
     "test:comprehensive": "vitest run && npm run lint && npm run format:check && npm run security:audit 2>/dev/null || true",
     "test:smart": "bash scripts/smart-test-strategy.sh",
     "size": "size-limit",
@@ -113,8 +113,8 @@
     ]
   },
   "volta": {
-    "node": "20.11.1",
-    "npm": "10.2.4"
+    "node": "24.18.0",
+    "npm": "11.7.0"
   },
   "size-limit": [
     {
