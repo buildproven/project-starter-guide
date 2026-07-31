@@ -6,7 +6,7 @@ const security = require('eslint-plugin-security')
 module.exports = [
   {
     plugins: {
-      security
+      security,
     },
     rules: {
       // Critical security rules (errors)
@@ -25,7 +25,7 @@ module.exports = [
       // Warning-level security rules
       'security/detect-bidi-characters': 'warn',
       'security/detect-non-literal-fs-filename': 'warn',
-      'security/detect-non-literal-require': 'warn'
-    }
-  }
+      'security/detect-non-literal-require': 'warn',
+    },
+  },
 ]

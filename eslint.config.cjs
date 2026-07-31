@@ -46,6 +46,9 @@ const configs = [
       '**/.claude-setup/**',
       // Template files with placeholders (not valid JS until processed)
       '**/templates/monetization/**',
+      // Each template owns its own flat-config dependencies. The root lint
+      // pass checks template source, not nested lint configuration modules.
+      '**/templates/**/eslint.config.*',
     ],
   },
   js.configs.recommended,

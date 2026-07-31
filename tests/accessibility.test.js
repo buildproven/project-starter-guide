@@ -16,7 +16,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 // For component testing, use @axe-core/react or @axe-core/playwright
 // This example uses puppeteer for full page testing
 
-let browser
+let browser = null
 
 describe('Accessibility Tests', () => {
   beforeAll(async () => {
@@ -24,7 +24,6 @@ describe('Accessibility Tests', () => {
     // const puppeteer = require('puppeteer')
     // browser = await puppeteer.launch()
     // const page = await browser.newPage()
-
     // For now, this is a placeholder that passes
     // Replace with actual implementation based on your framework
   })

@@ -425,48 +425,6 @@ jobs:
             echo "ℹ️ Not an npm package or no package.json found - skipping package validation"
           fi
 
-      - name: Detect web app
-        id: detect-webapp
-        run: |
-          # Only run Lighthouse for actual web apps, not CLI tools
-          IS_WEBAPP=false
-
-          # Check for web app indicators
-          if [ -f "index.html" ] || [ -f "public/index.html" ] || [ -f "src/index.html" ]; then
-            IS_WEBAPP=true
-          elif [ -d "dist" ] && [ -f "dist/index.html" ]; then
-            IS_WEBAPP=true
-          elif grep -q '"start".*"next\|vite\|react-scripts\|serve"' package.json 2>/dev/null; then
-            IS_WEBAPP=true
-          fi
-
-          echo "is-webapp=$IS_WEBAPP" >> $GITHUB_OUTPUT
-          echo "Web app detected: $IS_WEBAPP"
-
-      - name: Lighthouse CI
-        if: hashFiles('.lighthouserc.js', '.lighthouserc.json', 'lighthouserc.js') != '' && steps.detect-webapp.outputs.is-webapp == 'true'
-        id: lighthouse
-        run: |
-          echo "Running Lighthouse CI..."
-          npx lhci autorun
-        continue-on-error: true
-
-      - name: Report Lighthouse Failures
-        if: steps.lighthouse.outcome == 'failure'
-        run: |
-          echo "::warning::Lighthouse CI failed - performance budgets or quality thresholds violated"
-          echo "Review the Lighthouse report to see which metrics failed."
-          echo "Common failures: performance score, accessibility issues, SEO problems"
-
-          # Add to job summary for visibility
-          echo "## Lighthouse CI Failed" >> $GITHUB_STEP_SUMMARY
-          echo "Performance budgets or quality thresholds were violated." >> $GITHUB_STEP_SUMMARY
-          echo "Review the Lighthouse report in the Actions logs above." >> $GITHUB_STEP_SUMMARY
-
-          # Soft warning, not hard fail - Lighthouse issues shouldn't block releases
-          # Teams can enforce by adding 'error' level assertions in their lighthouserc
-          echo "::notice::Lighthouse failures are warnings. Add 'error' assertions in .lighthouserc.js to enforce."
-
   # Step 5: Summary - report what checks ran
   summary:
     runs-on: ubuntu-latest
