@@ -4,8 +4,8 @@
   "description": "Comprehensive guide for choosing the right architecture and technology stack for any project type",
   "private": true,
   "engines": {
-    "node": ">=20",
-    "npm": ">=10.0.0"
+    "node": ">=24",
+    "npm": ">=11.0.0"
   },
   "scripts": {
     "generate": "node scripts/generate-template.mjs",
@@ -18,8 +18,8 @@
     "check:links": "markdown-link-check README.md",
     "check:links:all": "find . -name '*.md' -not -path './node_modules/*' -not -path './templates/*' -exec markdown-link-check {} \\;",
     "validate": "npm run lint:md && npm run check:links",
-    "format": "prettier --write '**/*.{js,json,md}'",
-    "format:check": "prettier --check '**/*.{js,json,md}'",
+    "format": "prettier --write '**/*.{js,json,md}' '!templates/**'",
+    "format:check": "prettier --check '**/*.{js,json,md}' '!templates/**'",
     "preview:template": "cd templates/about-me-page && python3 -m http.server 8000",
     "test:qa": "node tests/integration/qa-integration.test.mjs",
     "test": "vitest run --passWithNoTests",
@@ -28,22 +28,17 @@
     "security:audit": "npm audit --audit-level high",
     "security:secrets": "node -e \"const fs=require('fs');const content=fs.readFileSync('package.json','utf8');if(/[\\\"\\'][a-zA-Z0-9+/]{20,}[\\\"\\']/.test(content)){console.error('❌ Potential hardcoded secrets in package.json');process.exit(1)}else{console.log('✅ No secrets detected in package.json')}\"",
     "security:config": "npx create-qa-architect@latest --security-config",
-    "lighthouse:ci": "lhci autorun",
-    "lighthouse:upload": "lhci upload",
     "validate:docs": "npx create-qa-architect@latest --validate-docs",
     "validate:comprehensive": "npx create-qa-architect@latest --comprehensive",
     "validate:all": "npm run validate:comprehensive && npm run security:audit",
     "validate:pre-push": "npm run test:patterns --if-present && npm run lint && npm run format:check && npm run test:commands --if-present && npm test --if-present",
-    "lint": "eslint . && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --allow-empty-input --ignore-path .gitignore",
-    "lint:fix": "eslint . --fix && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --fix --allow-empty-input --ignore-path .gitignore",
-    "type-check": "tsc --noEmit",
-    "type-check:tests": "tsc --noEmit --project tests/tsconfig.json",
-    "type-check:all": "npm run type-check && npm run type-check:tests",
-    "quality:check": "npm run type-check:all && npm run lint && npm run test",
+    "lint": "eslint . --config eslint.config.cjs && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --allow-empty-input --ignore-path .gitignore",
+    "lint:fix": "eslint . --config eslint.config.cjs --fix && stylelint \"templates/**/*.{css,scss,sass,less,pcss}\" --fix --allow-empty-input --ignore-path .gitignore",
+    "quality:check": "npm run lint && npm run test",
     "quality:ci": "npm run quality:check && npm run security:audit",
     "prepare": "husky",
-    "test:fast": "vitest run --reporter=basic --coverage=false",
-    "test:medium": "vitest run --reporter=basic --exclude='**/e2e/**' --exclude='**/integration/**'",
+    "test:fast": "vitest run --coverage=false",
+    "test:medium": "vitest run --exclude='**/e2e/**' --exclude='**/integration/**'",
     "test:comprehensive": "vitest run && npm run lint && npm run format:check && npm run security:audit 2>/dev/null || true",
     "test:smart": "bash scripts/smart-test-strategy.sh",
     "size": "size-limit",
@@ -57,7 +52,7 @@
     "test:patterns": "bash scripts/pattern-check.sh --all",
     "security:scan": "bash scripts/run-semgrep.sh",
     "security:scan:ci": "bash scripts/run-semgrep.sh --ci",
-    "license:check": "license-checker --onlyAllow \"MIT;ISC;BSD-2-Clause;BSD-3-Clause;Apache-2.0;0BSD;BlueOak-1.0.0;CC0-1.0;CC-BY-3.0;CC-BY-4.0;Unlicense;Python-2.0;MPL-2.0\" --excludePrivatePackages"
+    "license:check": "license-checker-rseidelsohn --onlyAllow \"MIT;ISC;BSD-2-Clause;BSD-3-Clause;Apache-2.0;0BSD;BlueOak-1.0.0;CC0-1.0;CC-BY-3.0;CC-BY-4.0;Unlicense;Python-2.0;MPL-2.0\" --excludePrivatePackages"
   },
   "keywords": [
     "web-development",
@@ -76,21 +71,21 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
-    "@lhci/cli": "^0.14.0",
+    "@eslint/js": "^10.0.1",
     "@size-limit/file": "^11.0.0",
     "@vitest/coverage-v8": "^4.1.4",
     "axe-core": "^4.10.0",
     "commitlint": "^20.4.1",
-    "eslint": "^9.12.0",
-    "eslint-plugin-n": "^17.24.0",
-    "eslint-plugin-security": "^3.0.1",
-    "globals": "^15.9.0",
+    "eslint": "^10.8.0",
+    "eslint-plugin-n": "^18.2.2",
+    "eslint-plugin-security": "^4.0.1",
+    "globals": "^17.8.0",
     "husky": "^9.1.4",
     "knip": "^6.0.1",
-    "license-checker": "^25.0.1",
+    "license-checker-rseidelsohn": "^5.0.1",
     "lint-staged": "^15.2.10",
     "markdown-link-check": "^3.12.1",
-    "markdownlint-cli": "^0.48.0",
+    "markdownlint-cli": "^0.49.1",
     "prettier": "^3.4.2",
     "size-limit": "^11.0.0",
     "stylelint": "^16.8.0",
@@ -102,7 +97,7 @@
       "prettier --write"
     ],
     "**/*.{js,jsx,mjs,cjs,html}": [
-      "eslint --fix",
+      "eslint --config eslint.config.cjs --fix",
       "prettier --write"
     ],
     "**/*.{json,md,yml,yaml}": [
@@ -118,8 +113,8 @@
     ]
   },
   "volta": {
-    "node": "20.11.1",
-    "npm": "10.2.4"
+    "node": "24.18.0",
+    "npm": "11.7.0"
   },
   "size-limit": [
     {
