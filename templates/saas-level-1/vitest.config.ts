@@ -37,10 +37,6 @@ export default defineConfig({
       'react-dom/test-utils': resolve(__dirname, 'test-utils-shim.ts'),
     },
   },
-  esbuild: {
-    jsx: 'automatic',
-    jsxImportSource: 'react',
-  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

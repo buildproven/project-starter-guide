@@ -1,11 +1,12 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import type { PrismaClient } from '@prisma/client'
 import type { NextAuthOptions } from 'next-auth'
-import type { Provider } from 'next-auth/providers'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 import { env } from '@/lib/env'
+
+type Provider = NextAuthOptions['providers'][number]
 
 let prisma: PrismaClient | null = null
 function getPrisma(): PrismaClient {
@@ -47,29 +48,6 @@ function createGoogleProvider(): Provider | null {
   })
 }
 
-function createEmailProvider(): Provider | null {
-  const hasConnectionString = env.EMAIL_SERVER && env.EMAIL_FROM
-  const hasServerParts =
-    env.EMAIL_SERVER_HOST &&
-    env.EMAIL_SERVER_PORT &&
-    env.EMAIL_SERVER_USER &&
-    env.EMAIL_SERVER_PASSWORD &&
-    env.EMAIL_FROM
-
-  if (!hasConnectionString && !hasServerParts) return null
-
-  const EmailProvider = require('next-auth/providers/email').default
-  const server = hasConnectionString
-    ? env.EMAIL_SERVER
-    : {
-        host: env.EMAIL_SERVER_HOST,
-        port: Number(env.EMAIL_SERVER_PORT),
-        auth: { user: env.EMAIL_SERVER_USER, pass: env.EMAIL_SERVER_PASSWORD },
-      }
-
-  return EmailProvider({ server, from: env.EMAIL_FROM })
-}
-
 function buildProviders(): Provider[] {
   const providers: Provider[] = []
 
@@ -85,13 +63,6 @@ function buildProviders(): Provider[] {
     'GOOGLE_CLIENT_ID and/or GOOGLE_CLIENT_SECRET not set.',
     createGoogleProvider
   )
-  tryAddProvider(
-    providers,
-    'Email',
-    'set EMAIL_SERVER + EMAIL_FROM, or EMAIL_SERVER_HOST/PORT/USER/PASSWORD + EMAIL_FROM.',
-    createEmailProvider
-  )
-
   return providers
 }
 
@@ -102,21 +73,23 @@ if (providers.length === 0) {
   if (env.NODE_ENV === 'production') {
     throw new Error(
       '[auth] FATAL: No authentication providers configured in production. ' +
-      'Set environment variables for at least one provider (GitHub, Google, Email). ' +
-      'Application startup aborted.'
+        'Set environment variables for at least one provider (GitHub or Google). ' +
+        'Application startup aborted.'
     )
   }
 
   // Development only: add fallback mock provider
   console.warn('[auth] No authentication providers configured!')
-  console.warn('[auth] Using fallback mock provider - configure real providers for production!')
-  console.warn('[auth] Available providers: GitHub, Google, Email')
+  console.warn(
+    '[auth] Using fallback mock provider - configure real providers for production!'
+  )
+  console.warn('[auth] Available providers: GitHub, Google')
 
   providers.push(
     CredentialsProvider({
       name: 'Mock Auth',
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: 'Email', type: 'email' },
       },
       async authorize(credentials) {
         return {
@@ -133,14 +106,14 @@ if (providers.length === 0) {
 if (env.NODE_ENV === 'production' && !env.NEXTAUTH_SECRET) {
   throw new Error(
     '[auth] FATAL: NEXTAUTH_SECRET is required in production. ' +
-    'Generate one with: openssl rand -base64 32. ' +
-    'Missing secret will cause session invalidation across serverless instances.'
+      'Generate one with: openssl rand -base64 32. ' +
+      'Missing secret will cause session invalidation across serverless instances.'
   )
 }
 
 // Determine if we have any OAuth/email providers (require database)
-const hasOAuthProviders = providers.some(p =>
-  p.id === 'github' || p.id === 'google' || p.id === 'email'
+const hasOAuthProviders = providers.some(
+  p => p.id === 'github' || p.id === 'google' || p.id === 'email'
 )
 
 export const authOptions: NextAuthOptions = {

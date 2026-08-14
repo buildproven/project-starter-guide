@@ -57,7 +57,9 @@ function test(name, fn) {
 
 function assertEqual(actual, expected, message) {
   if (actual !== expected) {
-    throw new Error(`${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`)
+    throw new Error(
+      `${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`
+    )
   }
 }
 
@@ -96,7 +98,12 @@ function runCommand(command, args, options = {}) {
 function testTemplateConfigs() {
   console.log(color('\n--- Template Configuration Tests ---', colors.bold))
 
-  const templates = ['about-me-page', 'api-service', 'mobile-app', 'saas-level-1']
+  const templates = [
+    'about-me-page',
+    'api-service',
+    'mobile-app',
+    'saas-level-1',
+  ]
 
   for (const template of templates) {
     const templateDir = join(TEMPLATES_DIR, template)
@@ -138,9 +145,23 @@ function testScriptAvailability() {
 
   // Different templates use different script names
   const requiredScripts = {
-    'api-service': ['dev', 'build', 'test', 'lint', 'type-check', 'quality:check'],
+    'api-service': [
+      'dev',
+      'build',
+      'test',
+      'lint',
+      'type-check',
+      'quality:check',
+    ],
     'mobile-app': ['start', 'test', 'lint', 'type-check', 'quality:check'], // Expo uses 'start' not 'dev'
-    'saas-level-1': ['dev', 'build', 'test', 'lint', 'type-check', 'quality:check'],
+    'saas-level-1': [
+      'dev',
+      'build',
+      'test',
+      'lint',
+      'type-check',
+      'quality:check',
+    ],
   }
 
   for (const [template, scripts] of Object.entries(requiredScripts)) {
@@ -158,7 +179,10 @@ function testScriptAvailability() {
   test('mobile-app: has Expo build scripts', () => {
     const pkgPath = join(TEMPLATES_DIR, 'mobile-app', 'package.json')
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
-    assertTrue(pkg.scripts['build:ios'] || pkg.scripts['build:android'], 'Missing EAS build scripts')
+    assertTrue(
+      pkg.scripts['build:ios'] || pkg.scripts['build:android'],
+      'Missing EAS build scripts'
+    )
   })
 }
 
@@ -186,7 +210,10 @@ function testSecurityWaivers() {
       // Accept either 'waivers' field (active waivers) or 'resolvedAdvisories' (all resolved)
       const hasWaivers = waivers.waivers !== undefined
       const hasResolved = waivers.resolvedAdvisories !== undefined
-      assertTrue(hasWaivers || hasResolved, 'Missing waivers or resolvedAdvisories field')
+      assertTrue(
+        hasWaivers || hasResolved,
+        'Missing waivers or resolvedAdvisories field'
+      )
     })
   }
 }
@@ -196,7 +223,13 @@ function testEnvValidation() {
 
   // API Service env validation
   test('api-service: validates required env vars on startup', () => {
-    const configPath = join(TEMPLATES_DIR, 'api-service', 'src', 'config', 'env.ts')
+    const configPath = join(
+      TEMPLATES_DIR,
+      'api-service',
+      'src',
+      'config',
+      'env.ts'
+    )
     if (!existsSync(configPath)) {
       throw new Error('env.ts config not found')
     }
@@ -208,12 +241,22 @@ function testEnvValidation() {
   // SaaS Level 1 NextAuth validation
   test('saas-level-1: validates NEXTAUTH_SECRET in production', () => {
     // NEXTAUTH_SECRET validation is in auth-options.ts
-    const authOptionsPath = join(TEMPLATES_DIR, 'saas-level-1', 'src', 'lib', 'auth-options.ts')
+    const authOptionsPath = join(
+      TEMPLATES_DIR,
+      'saas-level-1',
+      'src',
+      'lib',
+      'auth-options.ts'
+    )
     if (!existsSync(authOptionsPath)) {
       throw new Error('auth-options.ts not found')
     }
     const content = readFileSync(authOptionsPath, 'utf8')
-    assertContains(content, 'NEXTAUTH_SECRET', 'Should validate NEXTAUTH_SECRET')
+    assertContains(
+      content,
+      'NEXTAUTH_SECRET',
+      'Should validate NEXTAUTH_SECRET'
+    )
     assertContains(content, 'production', 'Should check production environment')
   })
 }
@@ -229,7 +272,9 @@ function testLintConfigs() {
       const eslintJsPath = join(TEMPLATES_DIR, template, 'eslint.config.mjs')
       const eslintJsPath2 = join(TEMPLATES_DIR, template, 'eslint.config.js')
       assertTrue(
-        existsSync(eslintPath) || existsSync(eslintJsPath) || existsSync(eslintJsPath2),
+        existsSync(eslintPath) ||
+          existsSync(eslintJsPath) ||
+          existsSync(eslintJsPath2),
         'No ESLint config found'
       )
     })
@@ -237,7 +282,10 @@ function testLintConfigs() {
     test(`${template}: has Prettier config`, () => {
       const prettierPath = join(TEMPLATES_DIR, template, '.prettierrc')
       const prettierJsonPath = join(TEMPLATES_DIR, template, '.prettierrc.json')
-      assertTrue(existsSync(prettierPath) || existsSync(prettierJsonPath), 'No Prettier config found')
+      assertTrue(
+        existsSync(prettierPath) || existsSync(prettierJsonPath),
+        'No Prettier config found'
+      )
     })
 
     test(`${template}: has TypeScript config`, () => {
@@ -268,7 +316,11 @@ function testHuskyHooks() {
       const preCommitPath = join(huskyDir, 'pre-commit')
       if (!existsSync(preCommitPath)) return
       const content = readFileSync(preCommitPath, 'utf8')
-      assertContains(content, 'lint-staged', 'pre-commit should run lint-staged')
+      assertContains(
+        content,
+        'lint-staged',
+        'pre-commit should run lint-staged'
+      )
     })
   }
 }
@@ -297,7 +349,10 @@ function testGeneratorIntegration() {
     const content = readFileSync(configPath, 'utf8')
     const config = JSON.parse(content)
     assertTrue(config.templates, 'Missing templates field')
-    assertTrue(Object.keys(config.templates).length >= 4, 'Should have at least 4 templates')
+    assertTrue(
+      Object.keys(config.templates).length >= 4,
+      'Should have at least 4 templates'
+    )
   })
 
   test('generator: can generate API template in non-interactive mode', () => {
@@ -309,16 +364,29 @@ function testGeneratorIntegration() {
       `--output=${outputDir}`,
     ])
 
-    assertTrue(result.status === 0 || result.stdout.includes('Done'), `Generator failed: ${result.stderr}`)
-    assertTrue(existsSync(join(outputDir, 'package.json')), 'package.json not generated')
-    assertTrue(existsSync(join(outputDir, '.env.example')), '.env.example not generated')
+    assertTrue(
+      result.status === 0 || result.stdout.includes('Done'),
+      `Generator failed: ${result.stderr}`
+    )
+    assertTrue(
+      existsSync(join(outputDir, 'package.json')),
+      'package.json not generated'
+    )
+    assertTrue(
+      existsSync(join(outputDir, '.env.example')),
+      '.env.example not generated'
+    )
   })
 
   test('generator: generated package.json has correct project name', () => {
     const pkgPath = join(TEST_OUTPUT_DIR, 'test-api', 'package.json')
     if (!existsSync(pkgPath)) return
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
-    assertEqual(pkg.name, 'my-api-service', 'Project name should be my-api-service')
+    assertEqual(
+      pkg.name,
+      'my-api-service',
+      'Project name should be my-api-service'
+    )
     assertEqual(pkg.version, '0.1.0', 'Version should be 0.1.0')
   })
 
@@ -342,7 +410,21 @@ function testSmokeTestScript() {
   test('smoke-test: has waiver support', () => {
     const scriptPath = join(ROOT_DIR, 'scripts', 'template-smoke-test.sh')
     const content = readFileSync(scriptPath, 'utf8')
-    assertContains(content, 'security-waivers', 'Should support security waivers')
+    assertContains(
+      content,
+      'security-waivers',
+      'Should support security waivers'
+    )
+    assertContains(
+      content,
+      'build_only_vulnerabilities',
+      'Should separate build-only findings from dev-only findings'
+    )
+    assertContains(
+      content,
+      'expiresDate',
+      'Should reject expired dependency waivers'
+    )
   })
 }
 
@@ -380,18 +462,33 @@ function testQualityAutomationRunner() {
   console.log(color('\n--- Quality Automation Runner Tests ---', colors.bold))
 
   test('qa-runner: create-quality-automation-runner.mjs exists', () => {
-    const scriptPath = join(ROOT_DIR, 'scripts', 'create-quality-automation-runner.mjs')
-    assertTrue(existsSync(scriptPath), 'create-quality-automation-runner.mjs not found')
+    const scriptPath = join(
+      ROOT_DIR,
+      'scripts',
+      'create-quality-automation-runner.mjs'
+    )
+    assertTrue(
+      existsSync(scriptPath),
+      'create-quality-automation-runner.mjs not found'
+    )
   })
 
   test('qa-runner: supports --smoke flag', () => {
-    const scriptPath = join(ROOT_DIR, 'scripts', 'create-quality-automation-runner.mjs')
+    const scriptPath = join(
+      ROOT_DIR,
+      'scripts',
+      'create-quality-automation-runner.mjs'
+    )
     const content = readFileSync(scriptPath, 'utf8')
     assertContains(content, '--smoke', 'Should support --smoke flag')
   })
 
   test('qa-runner: default templates include all main templates', () => {
-    const scriptPath = join(ROOT_DIR, 'scripts', 'create-quality-automation-runner.mjs')
+    const scriptPath = join(
+      ROOT_DIR,
+      'scripts',
+      'create-quality-automation-runner.mjs'
+    )
     const content = readFileSync(scriptPath, 'utf8')
     assertContains(content, 'saas-level-1', 'Should include saas-level-1')
     assertContains(content, 'api-service', 'Should include api-service')
@@ -418,13 +515,15 @@ function parseArgs() {
 }
 
 function printSummary() {
-  console.log('\n' + color('=' .repeat(50), colors.cyan))
+  console.log('\n' + color('='.repeat(50), colors.cyan))
   console.log(color('  QA Integration Test Summary', colors.bold))
-  console.log(color('=' .repeat(50), colors.cyan))
+  console.log(color('='.repeat(50), colors.cyan))
 
   console.log(`\n  Total:  ${totalTests}`)
   console.log(`  ${color(`Passed: ${passedTests}`, colors.green)}`)
-  console.log(`  ${color(`Failed: ${failedTests}`, failedTests > 0 ? colors.red : colors.green)}`)
+  console.log(
+    `  ${color(`Failed: ${failedTests}`, failedTests > 0 ? colors.red : colors.green)}`
+  )
 
   if (failures.length > 0) {
     console.log(color('\n  Failures:', colors.red))
@@ -463,7 +562,7 @@ async function main() {
   process.exit(failedTests > 0 ? 1 : 0)
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error(color('Error:', colors.red), error.message)
   process.exit(1)
 })

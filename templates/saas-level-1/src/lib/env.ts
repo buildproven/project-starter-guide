@@ -25,7 +25,7 @@ const envSchema = z.object({
     .string()
     .min(1, 'DATABASE_URL is required')
     .refine(
-      (url) =>
+      url =>
         url.startsWith('postgresql://') ||
         url.startsWith('postgres://') ||
         url.startsWith('file:'), // Allow SQLite for testing
@@ -36,28 +36,22 @@ const envSchema = z.object({
   NEXTAUTH_SECRET: z
     .string()
     .min(1, 'NEXTAUTH_SECRET is required')
-    .refine(
-      (secret) => {
-        // In production, require strong secret
-        if (process.env.NODE_ENV === 'production') {
-          return secret.length >= 32
-        }
-        return true
-      },
-      'NEXTAUTH_SECRET must be at least 32 characters in production'
-    ),
+    .refine(secret => {
+      // In production, require strong secret
+      if (process.env.NODE_ENV === 'production') {
+        return secret.length >= 32
+      }
+      return true
+    }, 'NEXTAUTH_SECRET must be at least 32 characters in production'),
 
-  NEXTAUTH_URL: z
-    .string()
-    .url('NEXTAUTH_URL must be a valid URL')
-    .optional(),
+  NEXTAUTH_URL: z.string().url('NEXTAUTH_URL must be a valid URL').optional(),
 
   // Stripe - always required, no defaults (secrets should never have placeholders)
   STRIPE_SECRET_KEY: z
     .string()
     .min(1, 'STRIPE_SECRET_KEY is required')
     .refine(
-      (key) => key.startsWith('sk_'),
+      key => key.startsWith('sk_'),
       'STRIPE_SECRET_KEY must start with sk_'
     ),
 
@@ -65,7 +59,7 @@ const envSchema = z.object({
     .string()
     .min(1, 'STRIPE_WEBHOOK_SECRET is required')
     .refine(
-      (key) => key.startsWith('whsec_'),
+      key => key.startsWith('whsec_'),
       'STRIPE_WEBHOOK_SECRET must start with whsec_'
     ),
 
@@ -73,23 +67,9 @@ const envSchema = z.object({
     .string()
     .min(1, 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required')
     .refine(
-      (key) => key.startsWith('pk_'),
+      key => key.startsWith('pk_'),
       'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must start with pk_'
     ),
-
-  // Optional: Email (for NextAuth email provider)
-  EMAIL_SERVER: z.string().optional(),
-  EMAIL_SERVER_HOST: z.string().optional(),
-  EMAIL_SERVER_PORT: z
-    .string()
-    .optional()
-    .refine(
-      (value) => value === undefined || (!Number.isNaN(Number(value)) && Number(value) > 0),
-      'EMAIL_SERVER_PORT must be a valid port number'
-    ),
-  EMAIL_SERVER_USER: z.string().optional(),
-  EMAIL_SERVER_PASSWORD: z.string().optional(),
-  EMAIL_FROM: z.string().email().optional(),
 
   // Optional: OAuth providers
   GOOGLE_CLIENT_ID: z.string().optional(),
@@ -115,7 +95,9 @@ function validateEnv(): Env {
     console.error('❌ Invalid environment variables:')
     console.error(JSON.stringify(errors, null, 2))
     console.error('')
-    console.error('💡 Hint: Copy .env.example to .env and fill in required values')
+    console.error(
+      '💡 Hint: Copy .env.example to .env and fill in required values'
+    )
 
     // Always fail fast - secrets should never have placeholders
     throw new Error(
