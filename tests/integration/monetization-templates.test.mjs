@@ -114,6 +114,24 @@ describe('Monetization Templates - Placeholder Consistency', () => {
       expect(content).not.toMatch(/whsec_[a-zA-Z0-9]{32,}/)
     })
   })
+
+  it('uses fixed same-origin routes for browser upgrade links', () => {
+    const landingPage = readFileSync(
+      join(monetizationDir, 'marketing/landing-page.html'),
+      'utf8'
+    )
+    const dashboard = readFileSync(
+      join(monetizationDir, 'billing/dashboard.html'),
+      'utf8'
+    )
+
+    for (const content of [landingPage, dashboard]) {
+      expect(content).not.toContain('{{UPGRADE_URL}}')
+      expect(content).not.toContain('{{ENTERPRISE_UPGRADE_URL}}')
+      expect(content).toContain('/upgrade')
+      expect(content).toContain('/enterprise')
+    }
+  })
 })
 
 describe('Monetization Templates - Configuration', () => {
