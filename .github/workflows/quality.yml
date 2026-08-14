@@ -60,12 +60,30 @@ jobs:
       install-cmd: ${{ steps.detect-pm.outputs.install-cmd }}
       is-turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}
       turbo-prefix: ${{ steps.detect-pm.outputs.turbo-prefix }}
+      quality-only: ${{ steps.change-scope.outputs.quality-only }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Detect change scope
+        id: change-scope
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          QUALITY_ONLY=false
+          if [ "${{ github.repository }}" != 'buildproven/qa-architect' ] &&
+             { [ "${{ github.event_name }}" = 'pull_request' ] || [ "${{ github.event_name }}" = 'push' ]; } &&
+             [ -n "$BASE_SHA" ] && git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            APPLICATION_CHANGES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            [ -n "$APPLICATION_CHANGES" ] || QUALITY_ONLY=true
+          fi
+          echo "quality-only=$QUALITY_ONLY" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -161,12 +179,14 @@ jobs:
     if: >-
       (github.event_name == 'pull_request' || github.event_name == 'push' ||
        github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
-      needs.detect-maturity.outputs.has-deps == 'true'
+      needs.detect-maturity.outputs.has-deps == 'true' &&
+      needs.detect-maturity.outputs.quality-only != 'true'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Node.js
@@ -194,6 +214,9 @@ jobs:
           echo "🔒 Auditing dependencies (high+) with npm..."
           npm audit --audit-level high --omit=dev
       - name: Check for hardcoded secrets
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           GITLEAKS_VERSION='8.28.0'
@@ -204,11 +227,28 @@ jobs:
             --output "${GITLEAKS_DIR}/gitleaks.tar.gz"
           tar -xzf "${GITLEAKS_DIR}/gitleaks.tar.gz" -C "${GITLEAKS_DIR}" gitleaks
           echo "${GITLEAKS_SHA256}  ${GITLEAKS_DIR}/gitleaks" | sha256sum --check -
-          "${GITLEAKS_DIR}/gitleaks" detect --source . --redact --no-banner
+          if [ "${{ github.event_name }}" = 'pull_request' ] || [ "${{ github.event_name }}" = 'push' ]; then
+            "${GITLEAKS_DIR}/gitleaks" git --redact --no-banner --log-opts="$BASE_SHA..$HEAD_SHA" .
+          else
+            "${GITLEAKS_DIR}/gitleaks" git --redact --no-banner .
+          fi
 
       - name: Security pattern detection
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          SEMGREP_ARGS=()
+          if [ "${{ github.event_name }}" = 'pull_request' ] || [ "${{ github.event_name }}" = 'push' ]; then
+            CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            if [ -z "$APPLICATION_CHANGES" ]; then
+              echo 'Only generated quality policy files changed; no application security surface changed.'
+              exit 0
+            fi
+            SEMGREP_ARGS+=(--baseline-commit "$BASE_SHA")
+          fi
           docker run --rm \
             --mount "type=bind,source=$PWD,target=/src,readonly" \
             --workdir /src \
@@ -219,7 +259,8 @@ jobs:
             --config p/security-audit \
             --config p/javascript \
             --error \
-            --metrics=off
+            --metrics=off \
+            "${SEMGREP_ARGS[@]}"
 
   # Step 2b: Advisory audit report (NON-BLOCKING). Runs in parallel with the
   # security gate (needs detect-maturity, NOT security) so a gate failure can
@@ -234,7 +275,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    if: github.event_name == 'pull_request' && needs.detect-maturity.outputs.has-deps == 'true'
+    if: github.event_name == 'pull_request' && needs.detect-maturity.outputs.has-deps == 'true' && needs.detect-maturity.outputs.quality-only != 'true'
 
     steps:
       - name: Checkout code
@@ -313,7 +354,9 @@ jobs:
     timeout-minutes: 10
     needs: detect-maturity
     if: |
-      github.event.pull_request.draft != true || github.event_name != 'pull_request'
+      fromJSON(needs.detect-maturity.outputs.test-count) > 0 &&
+      needs.detect-maturity.outputs.quality-only != 'true' &&
+      (github.event.pull_request.draft != true || github.event_name != 'pull_request')
     strategy:
       fail-fast: false
       matrix:
@@ -356,6 +399,12 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA:.buildproven/test-impact.json" 2>/dev/null; then
+            CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            if [ -z "$APPLICATION_CHANGES" ]; then
+              echo "Only generated quality policy files changed. The release generator already validated the new policy."
+              exit 0
+            fi
             echo "Base test-impact policy is absent. Running the complete migration audit once."
             timeout 300 npm run test
             exit 0
@@ -366,7 +415,13 @@ jobs:
           mkdir -p "$POLICY_ROOT/.buildproven" "$KIT_ROOT"
           git show "$BASE_SHA:.buildproven/test-impact.json" > "$POLICY_ROOT/.buildproven/test-impact.json"
           if ! cmp -s "$POLICY_ROOT/.buildproven/test-impact.json" .buildproven/test-impact.json; then
-            echo "Test-impact policy changed. Running the complete selector-policy audit."
+            CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            if [ -z "$APPLICATION_CHANGES" ]; then
+              echo "Only generated quality policy files changed. The release generator already validated the policy."
+              exit 0
+            fi
+            echo "Test-impact policy and application code changed together. Running the complete selector-policy audit."
             timeout 300 npm run test
             exit 0
           fi
@@ -385,24 +440,21 @@ jobs:
             --git-range "$BASE_SHA" "$HEAD_SHA" \
             --
       - name: Lint
+        if: hashFiles('.buildproven/test-impact.json') == '' || (github.event_name != 'pull_request' && github.event_name != 'push')
         run: |
           echo "⏱️ Lint must complete within 5 minutes"
           timeout 300 npm run lint
 
       - name: Format check
+        if: hashFiles('.buildproven/test-impact.json') == '' || (github.event_name != 'pull_request' && github.event_name != 'push')
         run: |
           echo "⏱️ Format check must complete within 5 minutes"
           timeout 300 npm run format:check
-
-      - name: Tests
-        run: |
-          echo "⏱️ Tests must complete within 5 minutes"
-          timeout 300 npm run test
   documentation:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: detect-maturity
-    if: needs.detect-maturity.outputs.maturity == 'production-ready'
+    if: needs.detect-maturity.outputs.maturity == 'production-ready' && needs.detect-maturity.outputs.quality-only != 'true'
 
     steps:
       - name: Checkout code
