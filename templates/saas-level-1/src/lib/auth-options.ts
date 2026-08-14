@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 import { env } from '@/lib/env'
+import { assertProductionProviders } from '@/lib/auth-policy'
 
 type Provider = NextAuthOptions['providers'][number]
 
@@ -67,17 +68,9 @@ function buildProviders(): Provider[] {
 }
 
 const providers = buildProviders()
+assertProductionProviders(env.NODE_ENV, providers.length)
 
 if (providers.length === 0) {
-  // Fail fast in production - don't boot with no real providers
-  if (env.NODE_ENV === 'production') {
-    throw new Error(
-      '[auth] FATAL: No authentication providers configured in production. ' +
-        'Set environment variables for at least one provider (GitHub or Google). ' +
-        'Application startup aborted.'
-    )
-  }
-
   // Development only: add fallback mock provider
   console.warn('[auth] No authentication providers configured!')
   console.warn(

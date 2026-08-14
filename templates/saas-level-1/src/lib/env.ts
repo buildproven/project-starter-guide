@@ -13,6 +13,7 @@
 
 import 'server-only'
 import { z } from 'zod'
+import { isValidAuthSecret } from '@/lib/auth-policy'
 
 const envSchema = z.object({
   // Node environment
@@ -36,13 +37,11 @@ const envSchema = z.object({
   NEXTAUTH_SECRET: z
     .string()
     .min(1, 'NEXTAUTH_SECRET is required')
-    .refine(secret => {
-      // In production, require strong secret
-      if (process.env.NODE_ENV === 'production') {
-        return secret.length >= 32
-      }
-      return true
-    }, 'NEXTAUTH_SECRET must be at least 32 characters in production'),
+    .refine(
+      secret =>
+        isValidAuthSecret(process.env.NODE_ENV || 'development', secret),
+      'NEXTAUTH_SECRET must be at least 32 characters in production'
+    ),
 
   NEXTAUTH_URL: z.string().url('NEXTAUTH_URL must be a valid URL').optional(),
 
