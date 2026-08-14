@@ -7,6 +7,7 @@ const packageJson = JSON.parse(
   readFileSync(resolve(root, 'package.json'), 'utf8')
 )
 const eslintConfig = readFileSync(resolve(root, 'eslint.config.cjs'), 'utf8')
+const nodeVersion = readFileSync(resolve(root, '.nvmrc'), 'utf8').trim()
 const smartTestStrategy = readFileSync(
   resolve(root, 'scripts/smart-test-strategy.sh'),
   'utf8'
@@ -24,7 +25,9 @@ describe('root quality contract', () => {
   })
 
   it('uses maintained root audit tooling and has no phantom type-check project', () => {
-    expect(packageJson.engines.node).toBe('>=24')
+    expect(nodeVersion).toBe('24.18.0')
+    expect(packageJson.engines.node).toBe(`>=${nodeVersion} <25`)
+    expect(packageJson.volta.node).toBe(nodeVersion)
     expect(packageJson.engines.npm).toBe('>=11.0.0')
     expect(
       packageJson.devDependencies['license-checker-rseidelsohn']
