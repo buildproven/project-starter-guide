@@ -1,393 +1,98 @@
 {
-  "audit_date": "2026-03-06",
-  "template_version": "1.0.0",
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "Reviewed dependency findings that are not shipped in the API runtime.",
+  "lastUpdated": "2026-08-14",
+  "status": "DEV_ONLY_WAIVERS",
   "waivers": {
+    "build_only_vulnerabilities": {
+      "description": "No production-graph waivers.",
+      "vulnerabilities": []
+    },
     "dev_only_vulnerabilities": {
-      "rationale": "These vulnerabilities are in development dependencies only and do not affect production builds or runtime security",
-      "audit_command": "npm audit --json (run 2025-12-07)",
+      "description": "Lighthouse, browser, and load-test tooling used only during development and CI.",
       "vulnerabilities": [
         {
-          "package": "@vitest/coverage-v8",
-          "severity": "low",
-          "source": "Direct development dependency",
-          "description": "Vitest coverage tool with transitive vulnerabilities in esbuild",
-          "impact": "Development tool only - test coverage reporting",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@vitest/mocker",
-          "severity": "low",
-          "source": "vitest -> @vitest/mocker",
-          "description": "Vitest mocking utilities",
-          "impact": "Development tool only - test mocking",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "esbuild",
-          "severity": "low",
-          "source": "vitest -> esbuild",
-          "description": "JavaScript bundler used by Vitest",
-          "impact": "Development tool only - test bundling",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "vite",
-          "severity": "low",
-          "source": "vitest -> vite",
-          "description": "Build tool used by Vitest",
-          "impact": "Development tool only - test runner",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "vite-node",
-          "severity": "low",
-          "source": "vitest -> vite-node",
-          "description": "Vite Node.js runtime for Vitest",
-          "impact": "Development tool only - test execution",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "vitest",
-          "severity": "low",
-          "source": "Direct development dependency",
-          "description": "Test framework",
-          "impact": "Development tool only - test runner",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
           "package": "@lhci/cli",
-          "severity": "low",
-          "source": "Direct development dependency",
-          "description": "Development tool dependency with transitive vulnerabilities",
-          "impact": "Development tool only - Lighthouse CI performance auditing",
-          "mitigation": "Not applicable to production builds"
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
           "package": "@lhci/utils",
-          "severity": "low",
-          "source": "@lhci/cli -> @lhci/utils",
-          "description": "Lighthouse CI utility package",
-          "impact": "Development tool only",
-          "mitigation": "Not applicable to production builds"
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "@sentry/node",
-          "severity": "low",
-          "source": "@lhci/cli -> lighthouse -> @sentry/node",
-          "description": "Sentry error tracking package",
-          "impact": "Development tool only - within Lighthouse",
-          "mitigation": "Not applicable to production builds"
+          "package": "@puppeteer/browsers",
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "cookie",
-          "severity": "low",
-          "source": "@lhci/cli -> lighthouse -> @sentry/node -> cookie",
-          "cve": "GHSA-pxg6-pf52-xh8x",
-          "description": "cookie accepts cookie name, path, and domain with out of bounds characters",
-          "impact": "Development tool only - Lighthouse CI performance auditing",
-          "mitigation": "Not applicable to production builds"
+          "package": "autocannon",
+          "severity": "moderate",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
           "package": "external-editor",
-          "severity": "low",
-          "source": "@lhci/cli -> inquirer -> external-editor",
-          "description": "External editor utility for inquirer",
-          "impact": "Development tool only - Lighthouse CI interactive prompts",
-          "mitigation": "Not applicable to production builds"
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "inquirer",
-          "severity": "low",
-          "source": "@lhci/cli -> inquirer",
-          "description": "Interactive command line user interfaces",
-          "impact": "Development tool only - Lighthouse CI prompts",
-          "mitigation": "Not applicable to production builds"
+          "package": "extract-zip",
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "hyperid",
+          "severity": "moderate",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
           "package": "lighthouse",
-          "severity": "low",
-          "source": "@lhci/cli -> lighthouse",
-          "description": "Google Lighthouse performance auditing tool",
-          "impact": "Development tool only",
-          "mitigation": "Not applicable to production builds"
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "puppeteer-core",
+          "severity": "high",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
           "package": "tmp",
-          "severity": "low",
-          "source": "@lhci/cli -> inquirer -> external-editor -> tmp",
-          "cve": "GHSA-52f5-9888-hmc6",
-          "description": "tmp allows arbitrary temporary file / directory write via symbolic link dir parameter",
-          "impact": "Development tool only - Lighthouse CI interactive prompts",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@chevrotain/cst-dts-gen",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@chevrotain/gast",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@hono/node-server",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@mrleebo/prisma-ast",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@prisma/dev",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@tootallnate/once",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "ajv",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "basic-ftp",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "body-parser",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "cacache",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "chevrotain",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "diff",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "express",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "formidable",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "hono",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "http-proxy-agent",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "lodash",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "make-fetch-happen",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "minimatch",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "node-gyp",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "prisma",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "qs",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "rollup",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "sqlite3",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "superagent",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "supertest",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "tar",
-          "severity": "varies",
-          "source": "Transitive via prisma dev tooling or dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "@prisma/config",
           "severity": "high",
-          "source": "Transitive via prisma dev tooling",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "effect",
-          "severity": "high",
-          "source": "Transitive via @prisma/config dev tooling",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
-        },
-        {
-          "package": "flatted",
-          "severity": "low",
-          "source": "Transitive via dev-only test deps",
-          "description": "Dev/transitive dependency — no production exposure",
-          "impact": "Dev tooling only",
-          "mitigation": "Not applicable to production builds"
+          "package": "uuid",
+          "severity": "moderate",
+          "reason": "Development or CI tooling only; excluded from npm audit --omit=dev and from the deployed API runtime.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         }
-      ],
-      "total_vulnerabilities": 8,
-      "breakdown": {
-        "low": 8,
-        "moderate": 0,
-        "high": 0,
-        "critical": 0
-      }
+      ]
     }
   },
-  "production_status": {
-    "production_dependencies": "clean",
-    "production_audit": "0 vulnerabilities",
-    "last_production_audit": "2025-11-22"
-  },
-  "tool_justification": {
-    "@lhci/cli": {
-      "purpose": "Lighthouse CI for automated performance auditing",
-      "alternatives_considered": [
-        "Manual Lighthouse",
-        "Other CI tools"
-      ],
-      "decision": "Keep for automated performance monitoring in CI/CD pipeline"
-    }
-  },
-  "review_schedule": {
-    "next_review": "2025-12-22",
-    "frequency": "monthly",
-    "upgrade_check": "Check for @lhci/cli updates that resolve vulnerabilities"
-  }
+  "notes": [
+    "The production dependency graph has zero known audit findings.",
+    "Waivers expire in 31 days and must be removed or reviewed again."
+  ]
 }

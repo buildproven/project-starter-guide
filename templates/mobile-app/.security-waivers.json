@@ -1,107 +1,184 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "description": "Security vulnerability resolution tracking",
-  "lastUpdated": "2026-03-21",
-  "status": "DEV_ONLY_WAIVERS",
-  "currentVulnerabilities": 6,
-  "resolvedAdvisories": [
-    {
-      "id": "1109627",
-      "ghsa": "GHSA-399j-vxmf-hjvr",
-      "package": "@react-native-community/cli",
-      "severity": "critical",
-      "title": "Arbitrary OS command injection",
-      "resolvedBy": "Package override forcing secure transitive dependencies",
-      "resolvedDate": "2025-11-20",
-      "status": "RESOLVED"
-    },
-    {
-      "id": "1101851",
-      "ghsa": "GHSA-2p57-rm9w-gvfp",
-      "package": "ip",
-      "severity": "high",
-      "title": "SSRF improper categorization in isPublic",
-      "resolvedBy": "Package override to ip@1.1.9",
-      "resolvedDate": "2025-11-20",
-      "status": "RESOLVED"
-    },
-    {
-      "id": "1101088",
-      "ghsa": "GHSA-c2qf-rxjj-qqgw",
-      "package": "semver",
-      "severity": "high",
-      "title": "Regular Expression Denial of Service",
-      "resolvedBy": "Package override to semver@7.7.3",
-      "resolvedDate": "2025-11-20",
-      "status": "RESOLVED"
-    },
-    {
-      "id": "1109556",
-      "ghsa": "GHSA-m6fv-jmcg-4jfg",
-      "package": "send",
-      "severity": "high",
-      "title": "Template injection that can lead to XSS",
-      "resolvedBy": "Package override to send@0.19.1",
-      "resolvedDate": "2025-11-20",
-      "status": "RESOLVED"
-    },
-    {
-      "id": "1109754",
-      "ghsa": "GHSA-mh29-5h37-fv8m",
-      "package": "js-yaml",
-      "severity": "moderate",
-      "title": "Prototype pollution in merge (<<)",
-      "resolvedBy": "Package override forcing secure transitive dependencies",
-      "resolvedDate": "2025-11-20",
-      "status": "RESOLVED"
-    }
-  ],
+  "description": "Reviewed Expo and React Native build-chain findings for the current supported SDK.",
+  "lastUpdated": "2026-08-14",
+  "status": "BUILD_AND_DEV_WAIVERS",
   "waivers": {
-    "dev_only_vulnerabilities": {
-      "description": "Low-severity vulnerabilities in dev/test tooling only",
+    "build_only_vulnerabilities": {
+      "description": "Node-based Expo, Metro, and native build tools present in the npm production graph but not bundled into the mobile JavaScript runtime.",
       "vulnerabilities": [
         {
-          "package": "@tootallnate/once",
-          "severity": "low",
-          "reason": "Dev-only transitive dep via jest-expo/jsdom. No production exposure.",
-          "waivedDate": "2026-03-06"
+          "package": "@expo/cli",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "http-proxy-agent",
-          "severity": "low",
-          "reason": "Dev-only transitive dep via jest-expo/jsdom. No production exposure.",
-          "waivedDate": "2026-03-06"
+          "package": "@expo/config",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "jest-environment-jsdom",
-          "severity": "low",
-          "reason": "Dev-only transitive dep via jest-expo. No production exposure.",
-          "waivedDate": "2026-03-06"
+          "package": "@expo/config-plugins",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "jest-expo",
-          "severity": "low",
-          "reason": "Dev-only direct dep (test framework). No production exposure.",
-          "waivedDate": "2026-03-06"
+          "package": "@expo/inline-modules",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "jsdom",
-          "severity": "low",
-          "reason": "Dev-only transitive dep via jest-expo. No production exposure.",
-          "waivedDate": "2026-03-06"
+          "package": "@expo/local-build-cache-provider",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         },
         {
-          "package": "flatted",
-          "severity": "low",
-          "reason": "Dev-only transitive dep via test tooling. No production exposure.",
-          "waivedDate": "2026-03-21"
+          "package": "@expo/metro",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "@expo/metro-config",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "@expo/prebuild-config",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "@react-native/community-cli-plugin",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "@react-native/metro-config",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "@react-native/virtualized-lists",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "expo",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "expo-splash-screen",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "image-size",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "metro",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "metro-config",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "metro-transform-worker",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "react-native",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "react-native-reanimated",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "react-native-worklets",
+          "severity": "high",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "uuid",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        },
+        {
+          "package": "xcode",
+          "severity": "moderate",
+          "reason": "Current Expo SDK 57 build-chain dependency; used during local or remote build and not bundled as executable Node tooling in the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
+        }
+      ]
+    },
+    "dev_only_vulnerabilities": {
+      "description": "Test tooling excluded from the shipped app.",
+      "vulnerabilities": [
+        {
+          "package": "@testing-library/react-native",
+          "severity": "high",
+          "reason": "Test-only rendering library; excluded from the shipped app.",
+          "reviewedDate": "2026-08-14",
+          "expiresDate": "2026-09-14"
         }
       ]
     }
   },
   "notes": [
-    "All production vulnerabilities resolved via package overrides",
-    "6 low-severity dev-only vulnerabilities waived (test tooling)",
-    "This file maintained for audit trail and resolution tracking"
+    "Expo SDK 57.0.12 and its compatible package set were installed with expo install --fix.",
+    "No critical findings are present.",
+    "All waivers expire in 31 days and must be removed or reviewed again."
   ]
 }

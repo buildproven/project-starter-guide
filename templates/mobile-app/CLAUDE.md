@@ -25,23 +25,23 @@ npm run test:watch    # Watch mode
 
 ```
 mobile-app/
-├── app/              # Expo Router pages (file-based)
-│   ├── (tabs)/      # Tab navigator
-│   └── _layout.tsx  # Root layout
-├── components/       # Reusable components
-├── hooks/            # Custom hooks
-├── constants/        # Colors, config
+├── App.tsx           # Root stack navigator
+├── src/screens/      # Screen components
+├── src/config/       # Runtime configuration
+├── src/types/        # Navigation types
 └── __tests__/        # Unit, integration, smoke
 ```
 
 ## Navigation
 
 ```typescript
-import { router } from 'expo-router'
+import type { StackNavigationProp } from '@react-navigation/stack'
+import type { RootStackParamList } from './src/types/navigation'
 
-router.push('/profile')
-router.push({ pathname: '/user/[id]', params: { id: '123' } })
-router.back()
+type Navigation = StackNavigationProp<RootStackParamList>
+
+navigation.navigate('Profile')
+navigation.goBack()
 ```
 
 ## Theming
@@ -68,4 +68,5 @@ Or use file extensions: `Component.ios.tsx`, `Component.android.tsx`
 _Use ThemedView/ThemedText for consistency. Global rules in `~/.claude/CLAUDE.md`._
 
 ---
+
 **Last Updated:** 2026-03-01

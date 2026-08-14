@@ -12,16 +12,16 @@ describe('ProfileScreen', () => {
     jest.clearAllMocks()
   })
 
-  it('shows account settings options', () => {
-    const { getByText } = render(<ProfileScreen />)
+  it('shows account settings options', async () => {
+    const { getByText } = await render(<ProfileScreen />)
 
     expect(getByText('Account Settings')).toBeTruthy()
     expect(getByText('Support')).toBeTruthy()
     expect(getByText('Sign Out')).toBeTruthy()
   })
 
-  it('shows sign out alert when sign out button is pressed', () => {
-    const { getByText } = render(<ProfileScreen />)
+  it('shows sign out alert when sign out button is pressed', async () => {
+    const { getByText } = await render(<ProfileScreen />)
 
     const signOutButton = getByText('Sign Out')
     fireEvent.press(signOutButton)
@@ -31,14 +31,14 @@ describe('ProfileScreen', () => {
       'Are you sure you want to sign out?',
       expect.arrayContaining([
         expect.objectContaining({ text: 'Cancel' }),
-        expect.objectContaining({ text: 'Sign Out' })
+        expect.objectContaining({ text: 'Sign Out' }),
       ])
     )
   })
 
-  it('executes sign out logic when confirmed', () => {
+  it('executes sign out logic when confirmed', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
-    const { getByText } = render(<ProfileScreen />)
+    const { getByText } = await render(<ProfileScreen />)
 
     const signOutButton = getByText('Sign Out')
     fireEvent.press(signOutButton)

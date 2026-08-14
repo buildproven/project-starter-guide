@@ -6,19 +6,24 @@ import type { StackNavigationProp } from '@react-navigation/stack'
 import type { RootStackParamList } from '../src/types/navigation'
 
 describe('HomeScreen', () => {
-  it('renders the home screen content', () => {
-    const navigation = { navigate: jest.fn() } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
-    const { getByText } = render(<HomeScreen navigation={navigation} />)
+  it('renders the home screen content', async () => {
+    const navigation = {
+      navigate: jest.fn(),
+    } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
+    const { getByText } = await render(<HomeScreen navigation={navigation} />)
 
     expect(getByText('Welcome to Your App')).toBeTruthy()
     expect(getByText('Features Included')).toBeTruthy()
     expect(getByText('✅ TypeScript support')).toBeTruthy()
   })
 
-  it('navigates to Profile screen when button is pressed', () => {
+  it('navigates to Profile screen when button is pressed', async () => {
     const navigate = jest.fn()
-    const navigation = { navigate } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
-    const { getByText } = render(<HomeScreen navigation={navigation} />)
+    const navigation = { navigate } as unknown as StackNavigationProp<
+      RootStackParamList,
+      'Home'
+    >
+    const { getByText } = await render(<HomeScreen navigation={navigation} />)
 
     const profileButton = getByText('Go to Profile')
     fireEvent.press(profileButton)
@@ -26,9 +31,11 @@ describe('HomeScreen', () => {
     expect(navigate).toHaveBeenCalledWith('Profile')
   })
 
-  it('renders all feature items', () => {
-    const navigation = { navigate: jest.fn() } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
-    const { getByText } = render(<HomeScreen navigation={navigation} />)
+  it('renders all feature items', async () => {
+    const navigation = {
+      navigate: jest.fn(),
+    } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
+    const { getByText } = await render(<HomeScreen navigation={navigation} />)
 
     expect(getByText('✅ TypeScript support')).toBeTruthy()
     expect(getByText('✅ React Navigation')).toBeTruthy()
@@ -38,9 +45,11 @@ describe('HomeScreen', () => {
     expect(getByText('✅ Jest testing setup')).toBeTruthy()
   })
 
-  it('renders the Learn More button', () => {
-    const navigation = { navigate: jest.fn() } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
-    const { getByText } = render(<HomeScreen navigation={navigation} />)
+  it('renders the Learn More button', async () => {
+    const navigation = {
+      navigate: jest.fn(),
+    } as unknown as StackNavigationProp<RootStackParamList, 'Home'>
+    const { getByText } = await render(<HomeScreen navigation={navigation} />)
 
     expect(getByText('Learn More')).toBeTruthy()
   })

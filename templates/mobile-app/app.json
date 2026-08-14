@@ -31,7 +31,6 @@
         "projectId": "your-eas-project-id"
       }
     },
-    "scheme": "mobile-app-starter",
-    "plugins": ["expo-router"]
+    "scheme": "mobile-app-starter"
   }
 }

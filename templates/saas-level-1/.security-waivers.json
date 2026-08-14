@@ -1,34 +1,19 @@
 {
-  "version": "1.0.0",
-  "lastUpdated": "2026-03-21",
-  "description": "Security vulnerability waivers for SaaS Level-1 template",
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "Reviewed dependency findings for the SaaS starter.",
+  "lastUpdated": "2026-08-14",
+  "status": "NO_ACTIVE_WAIVERS",
   "waivers": {
+    "build_only_vulnerabilities": {
+      "description": "No production-graph waivers.",
+      "vulnerabilities": []
+    },
     "dev_only_vulnerabilities": {
-      "description": "Transitive deps via prisma dev tooling — unfixable without breaking prisma downgrade",
-      "vulnerabilities": [
-        { "package": "@chevrotain/cst-dts-gen", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "@chevrotain/gast", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "@hono/node-server", "severity": "high", "reason": "Transitive via prisma/@prisma/dev — dev tooling only", "waivedDate": "2026-03-06" },
-        { "package": "@mrleebo/prisma-ast", "severity": "moderate", "reason": "Transitive via @prisma/dev dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "@prisma/dev", "severity": "high", "reason": "Prisma internal dev tooling package", "waivedDate": "2026-03-06" },
-        { "package": "@tootallnate/once", "severity": "low", "reason": "Transitive via jsdom/jest dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "chevrotain", "severity": "moderate", "reason": "Transitive via prisma/@mrleebo/prisma-ast dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "hono", "severity": "high", "reason": "Transitive via @prisma/dev — not used in app code", "waivedDate": "2026-03-06" },
-        { "package": "http-proxy-agent", "severity": "low", "reason": "Transitive via jsdom dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "jsdom", "severity": "low", "reason": "Dev-only test tooling", "waivedDate": "2026-03-06" },
-        { "package": "lodash", "severity": "moderate", "reason": "Transitive via prisma dev tooling", "waivedDate": "2026-03-06" },
-        { "package": "prisma", "severity": "high", "reason": "Prisma CLI — dev tooling, not shipped to production", "waivedDate": "2026-03-06" },
-        { "package": "@prisma/config", "severity": "high", "reason": "Transitive via prisma dev tooling", "waivedDate": "2026-03-21" },
-        { "package": "effect", "severity": "high", "reason": "Transitive via @prisma/config dev tooling", "waivedDate": "2026-03-21" },
-        { "package": "flatted", "severity": "low", "reason": "Dev-only transitive dep via test tooling", "waivedDate": "2026-03-21" },
-        { "package": "undici", "severity": "moderate", "reason": "Dev-only transitive dep via test tooling", "waivedDate": "2026-03-21" }
-      ]
+      "description": "No development-only waivers.",
+      "vulnerabilities": []
     }
   },
   "notes": [
-    "Production builds remain safe — prisma/hono vulns are in prisma dev CLI tooling only",
-    "Audit level set to critical for production check (high vulns are all transitive prisma dev deps)",
-    "glob vulnerability fixed by overriding to ^10.5.0",
-    "js-yaml vulnerability fixed by npm audit fix"
+    "npm audit reports zero findings after the August 2026 dependency refresh."
   ]
 }
