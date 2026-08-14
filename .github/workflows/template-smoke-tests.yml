@@ -152,7 +152,7 @@ jobs:
   accessibility-and-perf:
     needs: coverage
     runs-on: ubuntu-latest
-      strategy:
+    strategy:
         fail-fast: false
         matrix:
           include:
