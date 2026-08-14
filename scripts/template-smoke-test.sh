@@ -144,6 +144,8 @@ run_security_audit() {
   fi
 }
 
+run_if_script_exists "security:secrets" "npm run security:secrets"
+
 # Test 1: Minimal .env scenario (critical for production readiness)
 echo "🧪 Testing minimal .env configuration..."
 test_minimal_env() {
