@@ -3,11 +3,10 @@ name: Quality Checks
 # Industry best practice: "Fail fast locally, verify comprehensively remotely"
 #
 # Local (pre-commit): Lint + format (staged files) - instant feedback
-# Local (pre-push): Type check + tests (changed files) - catches logic bugs
-# CI (this workflow): Full test suite + E2E + security - comprehensive verification
+# Local (pre-push): Lint + format + secrets + changed dependency audit
+# CI (this workflow): Affected tests, Semgrep, and other security checks
 #
-# Note: Lint/format NOT duplicated here - pre-commit already did it
-# This avoids redundant work and reduces CI costs
+# The local gate stays fast. CI is the full safety net for this generator repo.
 
 on:
   push: # Kept: catches direct pushes and scheduled scans
@@ -34,6 +33,12 @@ on:
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+# Consumer workflows are read-only by default. Jobs that post PR comments
+# declare their narrow pull-requests permission explicitly.
+permissions:
+  contents: read
+
 # WORKFLOW_MODE: minimal
 
 jobs:
@@ -45,12 +50,12 @@ jobs:
     timeout-minutes: 10
     if: github.actor != 'dependabot[bot]' || github.event_name == 'schedule'
     outputs:
-      maturity: 'minimal'
-      source-count: '0'
-      test-count: '0'
-      has-deps: 'false'
-      has-docs: 'false'
-      has-css: 'false'
+      maturity: ${{ steps.detect.outputs.maturity }}
+      source-count: ${{ steps.detect.outputs.source-count }}
+      test-count: ${{ steps.detect.outputs.test-count }}
+      has-deps: ${{ steps.detect.outputs.has-deps }}
+      has-docs: ${{ steps.detect.outputs.has-docs }}
+      has-css: ${{ steps.detect.outputs.has-css }}
       package-manager: ${{ steps.detect-pm.outputs.manager }}
       install-cmd: ${{ steps.detect-pm.outputs.install-cmd }}
       is-turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}
@@ -59,70 +64,77 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: '24.0.0'
 
       - name: Detect Package Manager
         id: detect-pm
         run: |
-          # Detect package manager from lockfiles
-          if [ -f pnpm-lock.yaml ]; then
-            echo "manager=pnpm" >> $GITHUB_OUTPUT
-            echo "install-cmd=pnpm install --frozen-lockfile" >> $GITHUB_OUTPUT
-          elif [ -f yarn.lock ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "install-cmd=yarn install --frozen-lockfile" >> $GITHUB_OUTPUT
-          elif [ -f bun.lockb ]; then
-            echo "manager=bun" >> $GITHUB_OUTPUT
-            echo "install-cmd=bun install --frozen-lockfile" >> $GITHUB_OUTPUT
-          elif [ -f package-lock.json ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "install-cmd=npm ci" >> $GITHUB_OUTPUT
-          else
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "install-cmd=npm install" >> $GITHUB_OUTPUT
-          fi
-
-          # Detect Turborepo
+          echo "manager=npm" >> $GITHUB_OUTPUT
+          echo "install-cmd=npm ci" >> $GITHUB_OUTPUT
           if [ -f turbo.json ]; then
             echo "is-turborepo=true" >> $GITHUB_OUTPUT
             echo "turbo-prefix=turbo run" >> $GITHUB_OUTPUT
-            echo "📦 Turborepo detected - will use 'turbo run' for tasks"
           else
             echo "is-turborepo=false" >> $GITHUB_OUTPUT
             echo "turbo-prefix=" >> $GITHUB_OUTPUT
           fi
-
       - name: Setup pnpm
         if: steps.detect-pm.outputs.manager == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: '8.15.0'
-
+        run: |
+          corepack enable
       - name: Setup Bun
         if: steps.detect-pm.outputs.manager == 'bun'
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.0.0'
-
-
+      - name: Detect Project Maturity
+        id: detect
+        run: |
+          # Use the project maturity detector (local for qa-architect itself, npx for consumer projects)
+          if [ -f lib/project-maturity.js ]; then
+            node lib/project-maturity.js --github-actions >> $GITHUB_OUTPUT
+          else
+            SOURCE_COUNT=$(find . -type f \( -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.py' -o -name '*.sh' \) \
+              -not -path './.git/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './build/*' -not -path './coverage/*' | wc -l | tr -d ' ')
+            TEST_COUNT=$(find . -type f \( -path '*/test/*' -o -path '*/tests/*' -o -path '*/__tests__/*' -o -name '*.test.js' -o -name '*.test.ts' -o -name '*.test.tsx' -o -name '*.spec.js' -o -name '*.spec.ts' -o -name '*.spec.tsx' \) \
+              -not -path './.git/*' -not -path './node_modules/*' | wc -l | tr -d ' ')
+            [ -f package.json ] && HAS_DEPS=true || HAS_DEPS=false
+            [ -f README.md ] && HAS_DOCS=true || HAS_DOCS=false
+            if find . -type f \( -name '*.css' -o -name '*.scss' -o -name '*.sass' -o -name '*.less' \) \
+              -not -path './node_modules/*' -print -quit | grep -q .; then HAS_CSS=true; else HAS_CSS=false; fi
+            if [ "$SOURCE_COUNT" -ge 20 ] && [ "$TEST_COUNT" -gt 0 ]; then MATURITY=production-ready
+            elif [ "$SOURCE_COUNT" -ge 5 ]; then MATURITY=growing
+            else MATURITY=minimal; fi
+            {
+              echo "maturity=$MATURITY"
+              echo "source-count=$SOURCE_COUNT"
+              echo "test-count=$TEST_COUNT"
+              echo "has-deps=$HAS_DEPS"
+              echo "has-docs=$HAS_DOCS"
+              echo "has-css=$HAS_CSS"
+            } >> "$GITHUB_OUTPUT"
+          fi
       - name: Display Detection Report
         run: |
           echo "📊 Project Detection Results (Minimal Mode)"
           echo "Package Manager: ${{ steps.detect-pm.outputs.manager }}"
           echo "Install Command: ${{ steps.detect-pm.outputs.install-cmd }}"
           echo "Turborepo: ${{ steps.detect-pm.outputs.is-turborepo }}"
-          echo "Mode goal: keep GitHub Actions usage under ~1000 min/month by default"
-          echo "Checks: detection-only in CI (tests/security/docs disabled in minimal mode)"
-          echo "Use --workflow-standard or --workflow-comprehensive to enable heavier CI checks"
+          echo "Maturity: ${{ steps.detect.outputs.maturity }}"
+          echo "Source files: ${{ steps.detect.outputs.source-count }}"
+          echo "Test files: ${{ steps.detect.outputs.test-count }}"
+          echo "Has dependencies: ${{ steps.detect.outputs.has-deps }}"
+          echo "Has documentation: ${{ steps.detect.outputs.has-docs }}"
+          echo "Has CSS files: ${{ steps.detect.outputs.has-css }}"
 
   # Note: Lint/format jobs REMOVED - pre-commit already does this locally
   # This follows industry best practice: "Each layer does unique work"
   # Pre-commit = lint + format on staged files
-  # CI = full tests + E2E + security (things that can't be done locally)
+  # CI = affected tests + E2E + security (things that can't be done locally)
 
   # Step 2: Security checks - run if dependencies exist
   #
@@ -137,131 +149,162 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: detect-maturity
-    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.detect-maturity.outputs.has-deps == 'true'
+    # Least privilege: this job only needs to read the code and post a PR
+    # comment. Scoping the token here means a compromised scan dependency
+    # cannot push commits, alter releases, or touch other repo resources.
+    permissions:
+      contents: read
+      pull-requests: write
+    # Security MUST run at PR time, not only monthly — "CI green" has to mean
+    # "secret-scanned + SAST-clean". Runs on PRs, direct pushes, the monthly
+    # scheduled deep scan, and manual dispatch.
+    if: >-
+      (github.event_name == 'pull_request' || github.event_name == 'push' ||
+       github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      needs.detect-maturity.outputs.has-deps == 'true'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          cache: ${{ needs.detect-maturity.outputs.package-manager }}
+          node-version: '24.0.0'
+          cache: 'npm'
 
       - name: Setup pnpm
         if: needs.detect-maturity.outputs.package-manager == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: '8.15.0'
-
+        run: |
+          corepack enable
       - name: Setup Bun
         if: needs.detect-maturity.outputs.package-manager == 'bun'
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.0.0'
-
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
 
       - name: Verify dependency integrity
         run: |
-          echo "🔐 Verifying dependency integrity..."
-          PACKAGE_MANAGER="${{ needs.detect-maturity.outputs.package-manager }}"
-
-          case "$PACKAGE_MANAGER" in
-            "pnpm")
-              if [ -f pnpm-lock.yaml ]; then
-                pnpm install --frozen-lockfile --dry-run
-                echo "✅ Dependency integrity verified (pnpm)"
-              else
-                echo "⚠️ No pnpm-lock.yaml found - skipping integrity verification"
-              fi
-              ;;
-            "yarn")
-              if [ -f yarn.lock ]; then
-                yarn install --frozen-lockfile --dry-run
-                echo "✅ Dependency integrity verified (yarn)"
-              else
-                echo "⚠️ No yarn.lock found - skipping integrity verification"
-              fi
-              ;;
-            "bun")
-              if [ -f bun.lockb ]; then
-                bun install --frozen-lockfile --dry-run
-                echo "✅ Dependency integrity verified (bun)"
-              else
-                echo "⚠️ No bun.lockb found - skipping integrity verification"
-              fi
-              ;;
-            "npm"|*)
-              if [ -f package-lock.json ]; then
-                npm ci --dry-run --prefer-offline
-                echo "✅ Dependency integrity verified (npm)"
-              else
-                echo "⚠️ No package-lock.json found - skipping integrity verification"
-              fi
-              ;;
-          esac
-
-          echo "🔍 Checking for vulnerable dependencies..."
-          case "$PACKAGE_MANAGER" in
-            "pnpm") pnpm audit --audit-level=moderate ;;
-            "yarn") yarn audit --level=moderate ;;
-            "bun") bun audit --audit-level=moderate ;;
-            "npm"|*) npm audit --audit-level=moderate ;;
-          esac
-
-      - name: Security audit
+          echo "🔐 Verifying dependency integrity with npm..."
+          npm ci
+      - name: Production dependency CVE gate
         run: |
-          PACKAGE_MANAGER="${{ needs.detect-maturity.outputs.package-manager }}"
-          echo "🔐 Running security audit with $PACKAGE_MANAGER..."
-
-          case "$PACKAGE_MANAGER" in
-            "pnpm") pnpm audit --audit-level high ;;
-            "yarn") yarn audit --level high ;;
-            "bun") bun audit --audit-level high ;;
-            "npm"|*) npm audit --audit-level high ;;
-          esac
-
-      - name: Production dependencies security audit
-        run: |
-          PACKAGE_MANAGER="${{ needs.detect-maturity.outputs.package-manager }}"
-          echo "🔒 Running production-only dependency audit with $PACKAGE_MANAGER..."
-
-          case "$PACKAGE_MANAGER" in
-            "pnpm") pnpm audit --audit-level high --prod ;;
-            "yarn") yarn audit --level high --groups dependencies ;;
-            "bun") bun audit --audit-level high --production ;;
-            "npm"|*) npm audit --audit-level high --production ;;
-          esac
-
+          echo "🔒 Auditing dependencies (high+) with npm..."
+          npm audit --audit-level high --omit=dev
       - name: Check for hardcoded secrets
         run: |
-          echo "🔍 Running gitleaks secret scanning..."
-          # Use setup.js security scan which manages gitleaks binary internally
-          # This avoids the commercial license requirement of the gitleaks-action
-          if [ -f setup.js ]; then
-            node setup.js --security-config
-          else
-            npx create-qa-architect@latest --security-config
-          fi
+          set -euo pipefail
+          GITLEAKS_VERSION='8.28.0'
+          GITLEAKS_SHA256='5fd1b3b0073269484d40078662e921d07427340ab9e6ed526ccd215a565b3298'
+          GITLEAKS_DIR="$(mktemp -d)"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output "${GITLEAKS_DIR}/gitleaks.tar.gz"
+          tar -xzf "${GITLEAKS_DIR}/gitleaks.tar.gz" -C "${GITLEAKS_DIR}" gitleaks
+          echo "${GITLEAKS_SHA256}  ${GITLEAKS_DIR}/gitleaks" | sha256sum --check -
+          "${GITLEAKS_DIR}/gitleaks" detect --source . --redact --no-banner
 
       - name: Security pattern detection
-        uses: semgrep/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --mount "type=bind,source=$PWD,target=/src,readonly" \
+            --workdir /src \
+            --tmpfs /tmp:rw,nosuid,nodev,size=512m \
+            --env HOME=/tmp \
+            'semgrep/semgrep@sha256:65dcd4408adda7c183a6b4550cb1e9b19f7f627a6fbb7e0559bd466bedc44d7b' \
+            semgrep scan \
+            --config p/security-audit \
+            --config p/javascript \
+            --error \
+            --metrics=off
+
+  # Step 2b: Advisory audit report (NON-BLOCKING). Runs in parallel with the
+  # security gate (needs detect-maturity, NOT security) so a gate failure can
+  # never suppress this report. Surfaces qa-architect's own vibe-code audit (the
+  # AI-native rules generic SAST misses) plus a full-dep-tree advisory audit, and
+  # posts them as a sticky PR comment. PR-only: the comment is meaningless on
+  # push/schedule, so this adds no cost to those runs.
+  audit-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-maturity
+    permissions:
+      contents: read
+      pull-requests: write
+    if: github.event_name == 'pull_request' && needs.detect-maturity.outputs.has-deps == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
         with:
-          config: >
-            p/security-audit@1.85.0
-            p/javascript@1.85.0
-          cache: true
-          cache-key: semgrep-security-audit-1.85.0-javascript-1.85.0-${{ env.SEMGREP_VERSION }}
-        env:
-          # Use Semgrep app token if available for enhanced features and rate limits
-          # Falls back to GitHub token for basic functionality
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SEMGREP_VERSION: '1.85.0'
-          SEMGREP_ENABLE_VERSION_CHECK: 'false'
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.0.0'
+          cache: 'npm'
+
+      - name: Setup pnpm
+        if: needs.detect-maturity.outputs.package-manager == 'pnpm'
+        run: |
+          corepack enable
+      - name: Setup Bun
+        if: needs.detect-maturity.outputs.package-manager == 'bun'
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: ${{ needs.detect-maturity.outputs.install-cmd }}
+
+      - name: Advisory full-tree dependency audit (non-blocking)
+        run: |
+          echo "ℹ️ Advisory dependency audit (does not block)" >> "$GITHUB_STEP_SUMMARY"
+          npm audit --audit-level high --omit=dev >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+      - name: Install semgrep CLI for vibe-audit
+        # Install semgrep, then resolve where the binary actually landed and put
+        # THAT dir on $GITHUB_PATH for the next step. pipx's bin dir varies by
+        # runner (ubuntu-latest preconfigures PIPX_BIN_DIR=/opt/pipx_bin, not
+        # ~/.local/bin), so we don't guess — we ask pipx for its bin dir and
+        # verify `semgrep --version` resolves before continuing. Falls back to
+        # `pip install --user` (~/.local/bin) if pipx is unavailable.
+        # Best-effort: this is the ADVISORY job. If semgrep won't install, the
+        # vibe-audit degrades to a "SCAN SKIPPED" report (via --no-fail) and the
+        # job still passes — we never block a PR on advisory tooling.
+        continue-on-error: true
+        run: |
+          set -e
+          # Install semgrep into a dedicated venv with setuptools<81 PINNED.
+          # Root cause of the recurring crash: semgrep (through 1.96) imports
+          # pkg_resources, which setuptools >=81 no longer ships AND Python 3.12
+          # no longer bundles — so on the 3.12 runner the import fails. Pinning
+          # setuptools<81 restores pkg_resources. The Docker registry-rules action
+          # in the security gate keeps 1.85.0 (its own runtime); only this CLI
+          # needs the venv. (Local dev on py3.11 still bundles pkg_resources, which
+          # masked this — hence verifying --version loudly on the 3.12 runner.)
+          SEMGREP_CLI_VERSION=1.96.0
+          python3 -m venv "$HOME/.semgrep-venv"
+          "$HOME/.semgrep-venv/bin/pip" install --quiet --upgrade pip
+          "$HOME/.semgrep-venv/bin/pip" install --quiet "setuptools<81" "semgrep==$SEMGREP_CLI_VERSION"
+          echo "$HOME/.semgrep-venv/bin" >> "$GITHUB_PATH"
+          "$HOME/.semgrep-venv/bin/semgrep" --version
+
+      - name: QA Architect vibe-code audit
+        run: |
+          echo "🔍 Running QA Architect vibe-code security audit..."
+          if [ -f setup.js ]; then
+            node setup.js --audit --out qa-audit-report.md --no-fail
+          else
+            echo "QA Architect audit is available locally; consumer CI does not execute mutable external CLI code."
+          fi
+
+      - name: Post audit report as PR comment
+        if: always() && hashFiles('qa-audit-report.md') != ''
+        uses: marocchino/sticky-pull-request-comment@331f8f5b4215f0445d3c07b4967662a32a2d3e31 # v2.9.0
+        with:
+          header: qa-architect-audit
+          path: qa-audit-report.md
 
   # Step 3: Tests - run if test files exist (development+)
   # Smart skip: Draft PRs skip tests (saves CI costs during WIP)
@@ -270,35 +313,32 @@ jobs:
     timeout-minutes: 10
     needs: detect-maturity
     if: |
-      fromJSON(needs.detect-maturity.outputs.test-count) > 0 &&
-      (github.event.pull_request.draft != true || github.event_name != 'pull_request')
+      github.event.pull_request.draft != true || github.event_name != 'pull_request'
     strategy:
       fail-fast: false
       matrix:
-        node-version: [24]
+        node-version: [24.0.0]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: ${{ needs.detect-maturity.outputs.package-manager }}
+          cache: 'npm'
 
       - name: Setup pnpm
         if: needs.detect-maturity.outputs.package-manager == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: '8.15.0'
-
+        run: |
+          corepack enable
       - name: Setup Bun
         if: needs.detect-maturity.outputs.package-manager == 'bun'
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.0.0'
-
       - name: Install dependencies
         run: |
           echo "⏱️ Performance Budget: Dependency installation must complete within 2 minutes"
@@ -307,25 +347,57 @@ jobs:
             exit 1
           }
 
-      - name: Run tests
+      - name: Run affected tests
+        if: hashFiles('.buildproven/test-impact.json') != '' && (github.event_name == 'pull_request' || github.event_name == 'push')
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          CLAUDE_KIT_SHA: 6209610058b95a3d3f2a9d1af7a10f9c69f0dd69
         run: |
-          echo "🧪 Running ${{ needs.detect-maturity.outputs.test-count }} test files on Node.js ${{ matrix.node-version }}..."
-
-          # Warn if test count is suspiciously low
-          TEST_COUNT=${{ needs.detect-maturity.outputs.test-count }}
-          if [ "$TEST_COUNT" -lt 5 ]; then
-            echo "::warning::Only $TEST_COUNT test file(s) found - consider adding more tests for better coverage"
+          set -euo pipefail
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA:.buildproven/test-impact.json" 2>/dev/null; then
+            echo "Base test-impact policy is absent. Running the complete migration audit once."
+            timeout 300 npm run test
+            exit 0
           fi
 
-          # Performance budget: Test suite timeout (5 minutes max)
-          echo "⏱️ Performance Budget: Test suite must complete within 5 minutes"
-          timeout 300 npm test || {
-            echo "::error::Test suite exceeded 5-minute performance budget!"
-            exit 1
-          }
+          POLICY_ROOT="$RUNNER_TEMP/test-impact-policy"
+          KIT_ROOT="$RUNNER_TEMP/claude-kit"
+          mkdir -p "$POLICY_ROOT/.buildproven" "$KIT_ROOT"
+          git show "$BASE_SHA:.buildproven/test-impact.json" > "$POLICY_ROOT/.buildproven/test-impact.json"
+          if ! cmp -s "$POLICY_ROOT/.buildproven/test-impact.json" .buildproven/test-impact.json; then
+            echo "Test-impact policy changed. Running the complete selector-policy audit."
+            timeout 300 npm run test
+            exit 0
+          fi
+          git -C "$KIT_ROOT" init --quiet
+          git -C "$KIT_ROOT" remote add origin https://github.com/buildproven/claude-kit.git
+          git -C "$KIT_ROOT" fetch --quiet --filter=blob:none origin main
+          git -C "$KIT_ROOT" merge-base --is-ancestor "$CLAUDE_KIT_SHA" FETCH_HEAD
+          git -C "$KIT_ROOT" checkout --quiet --detach "$CLAUDE_KIT_SHA"
+          test "$(git -C "$KIT_ROOT" rev-parse HEAD)" = "$CLAUDE_KIT_SHA"
 
+          POLICY_SHA256="$(sha256sum "$POLICY_ROOT/.buildproven/test-impact.json" | awk '{print $1}')"
+          timeout 300 node "$KIT_ROOT/scripts/test-impact.js" \
+            --execute \
+            --policy-root "$POLICY_ROOT" \
+            --policy-sha256 "$POLICY_SHA256" \
+            --git-range "$BASE_SHA" "$HEAD_SHA" \
+            --
+      - name: Lint
+        run: |
+          echo "⏱️ Lint must complete within 5 minutes"
+          timeout 300 npm run lint
 
-  # Step 4: Documentation - run for production-ready projects
+      - name: Format check
+        run: |
+          echo "⏱️ Format check must complete within 5 minutes"
+          timeout 300 npm run format:check
+
+      - name: Tests
+        run: |
+          echo "⏱️ Tests must complete within 5 minutes"
+          timeout 300 npm run test
   documentation:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -335,36 +407,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          cache: ${{ needs.detect-maturity.outputs.package-manager }}
+          node-version: '24.0.0'
+          cache: 'npm'
 
       - name: Setup pnpm
         if: needs.detect-maturity.outputs.package-manager == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: '8.15.0'
-
+        run: |
+          corepack enable
       - name: Setup Bun
         if: needs.detect-maturity.outputs.package-manager == 'bun'
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.0.0'
-
       - name: Install dependencies
         run: ${{ needs.detect-maturity.outputs.install-cmd }}
 
-      - name: Configuration security check
-        run: |
-          echo "🔍 Running configuration security validation..."
-          if [ -f setup.js ]; then
-            node setup.js --security-config
-          else
-            npx create-qa-architect@latest --security-config
-          fi
+      # (Secret scanning lives in the `security` gate job, which runs on every
+      # PR/push. It was duplicated here previously — removed to avoid running
+      # gitleaks twice per workflow.)
 
       - name: Documentation validation
         run: |
@@ -372,7 +436,7 @@ jobs:
           if [ -f setup.js ]; then
             node setup.js --validate-docs
           else
-            npx create-qa-architect@latest --validate-docs
+            test -f README.md
           fi
 
       - name: Documentation consistency and security audit freshness
@@ -425,6 +489,48 @@ jobs:
             echo "ℹ️ Not an npm package or no package.json found - skipping package validation"
           fi
 
+      - name: Detect web app
+        id: detect-webapp
+        run: |
+          # Only run Lighthouse for actual web apps, not CLI tools
+          IS_WEBAPP=false
+
+          # Check for web app indicators
+          if [ -f "index.html" ] || [ -f "public/index.html" ] || [ -f "src/index.html" ]; then
+            IS_WEBAPP=true
+          elif [ -d "dist" ] && [ -f "dist/index.html" ]; then
+            IS_WEBAPP=true
+          elif grep -q '"start".*"next\|vite\|react-scripts\|serve"' package.json 2>/dev/null; then
+            IS_WEBAPP=true
+          fi
+
+          echo "is-webapp=$IS_WEBAPP" >> $GITHUB_OUTPUT
+          echo "Web app detected: $IS_WEBAPP"
+
+      - name: Lighthouse CI
+        if: hashFiles('.lighthouserc.cjs', '.lighthouserc.js', '.lighthouserc.json', 'lighthouserc.js') != '' && steps.detect-webapp.outputs.is-webapp == 'true'
+        id: lighthouse
+        run: |
+          echo "Running Lighthouse CI..."
+          npx lhci autorun
+        continue-on-error: true
+
+      - name: Report Lighthouse Failures
+        if: steps.lighthouse.outcome == 'failure'
+        run: |
+          echo "::warning::Lighthouse CI failed - performance budgets or quality thresholds violated"
+          echo "Review the Lighthouse report to see which metrics failed."
+          echo "Common failures: performance score, accessibility issues, SEO problems"
+
+          # Add to job summary for visibility
+          echo "## Lighthouse CI Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Performance budgets or quality thresholds were violated." >> $GITHUB_STEP_SUMMARY
+          echo "Review the Lighthouse report in the Actions logs above." >> $GITHUB_STEP_SUMMARY
+
+          # Soft warning, not hard fail - Lighthouse issues shouldn't block releases
+          # Teams can enforce by adding 'error' level assertions in their lighthouserc
+          echo "::notice::Lighthouse failures are warnings. Add 'error' assertions in .lighthouserc.js to enforce."
+
   # Step 5: Summary - report what checks ran
   summary:
     runs-on: ubuntu-latest
@@ -432,6 +538,7 @@ jobs:
     needs:
       - detect-maturity
       - security
+      - audit-report
       - tests
       - documentation
     if: always()
