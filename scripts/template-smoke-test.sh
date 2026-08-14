@@ -67,99 +67,80 @@ run_if_script_exists() {
 
 run_security_audit() {
   echo "🔐 Running security audit"
+  echo "🏭 Checking production dependency graph..."
 
-  # Always check production dependencies first (most critical)
-  echo "🏭 Checking production dependencies..."
-  if npm audit --production --audit-level=critical; then
-    echo "✅ Production dependencies are secure"
-  else
-    echo "🚨 High/critical vulnerabilities found in production dependencies"
-    echo "   This is a blocking issue - review SECURITY.md and fix immediately"
+  if [ ! -f ".security-waivers.json" ]; then
+    npm audit --omit=dev --audit-level=high
+    echo "✅ Production dependencies have no high or critical findings"
+    return 0
+  fi
+
+  local production_audit full_audit production_packages found_packages
+  local build_waivers dev_waivers unwaived_production unwaived_all
+  production_audit=$(npm audit --omit=dev --json 2>/dev/null || true)
+  full_audit=$(npm audit --json 2>/dev/null || true)
+
+  node -e "
+    const waivers = require('./.security-waivers.json').waivers || {};
+    const today = new Date().toISOString().slice(0, 10);
+    for (const group of Object.values(waivers)) {
+      for (const item of group.vulnerabilities || []) {
+        if (!item.reason || !item.expiresDate || item.expiresDate < today) {
+          throw new Error('Invalid or expired waiver for ' + item.package);
+        }
+      }
+    }
+  "
+
+  audit_packages() {
+    node -e "
+      const fs = require('fs');
+      const audit = JSON.parse(fs.readFileSync(0, 'utf8'));
+      console.log(Object.keys(audit.vulnerabilities || {}).sort().join(','));
+    "
+  }
+
+  production_packages=$(printf '%s' "$production_audit" | audit_packages)
+  found_packages=$(printf '%s' "$full_audit" | audit_packages)
+  build_waivers=$(node -e "
+    const w = require('./.security-waivers.json').waivers?.build_only_vulnerabilities?.vulnerabilities || [];
+    console.log(w.map(item => item.package).sort().join(','));
+  ")
+  dev_waivers=$(node -e "
+    const w = require('./.security-waivers.json').waivers?.dev_only_vulnerabilities?.vulnerabilities || [];
+    console.log(w.map(item => item.package).sort().join(','));
+  ")
+
+  unwaived_production=$(node -e "
+    const found = '$production_packages'.split(',').filter(Boolean);
+    const waived = new Set('$build_waivers'.split(',').filter(Boolean));
+    console.log(found.filter(name => !waived.has(name)).join(','));
+  ")
+  if [ -n "$unwaived_production" ]; then
+    echo "🚨 Unwaived production-graph findings: $unwaived_production"
     exit 1
   fi
 
-  # Check if there's a documented waiver file for dev dependencies
-  if [ -f ".security-waivers.json" ]; then
-    echo "ℹ️  Security waivers file found - checking dev dependencies against waivers"
+  unwaived_all=$(node -e "
+    const found = '$found_packages'.split(',').filter(Boolean);
+    const waived = new Set('$build_waivers,$dev_waivers'.split(',').filter(Boolean));
+    console.log(found.filter(name => !waived.has(name)).join(','));
+  ")
+  if [ -n "$unwaived_all" ]; then
+    echo "🚨 Unwaived dependency findings: $unwaived_all"
+    exit 1
+  fi
 
-    # Extract waived package names from our waiver structure
-    WAIVED_PACKAGES=$(node -e "
-      const waivers = require('./.security-waivers.json');
-      if (waivers.waivers && waivers.waivers.dev_only_vulnerabilities && waivers.waivers.dev_only_vulnerabilities.vulnerabilities) {
-        const packages = waivers.waivers.dev_only_vulnerabilities.vulnerabilities.map(v => v.package);
-        console.log(packages.join(','));
-      } else {
-        console.log('');
-      }
-    ")
-
-    # Run full audit (including dev) and capture JSON output
-    AUDIT_JSON=$(npm audit --json 2>/dev/null || true)
-
-    # Extract vulnerable package names from audit output
-    FOUND_PACKAGES=$(echo "$AUDIT_JSON" | node -e "
-      const fs = require('fs');
-      const stdin = fs.readFileSync(0, 'utf-8');
-      try {
-        const audit = JSON.parse(stdin);
-        const packages = new Set();
-
-        if (audit.vulnerabilities) {
-          Object.keys(audit.vulnerabilities).forEach(pkg => {
-            packages.add(pkg);
-          });
-        }
-
-        console.log(Array.from(packages).join(','));
-      } catch (e) {
-        console.error('Error parsing audit JSON:', e.message);
-        process.exit(0);
-      }
-    ")
-
-    if [ -z "$FOUND_PACKAGES" ]; then
-      echo "✅ No vulnerabilities found in dev dependencies"
-      return 0
-    fi
-
-    # Check for NEW (non-waived) vulnerable packages
-    NEW_VULNS=$(node -e "
-      const waived = '$WAIVED_PACKAGES'.split(',').filter(Boolean);
-      const found = '$FOUND_PACKAGES'.split(',').filter(Boolean);
-      const newVulns = found.filter(pkg => !waived.includes(pkg));
-      console.log(newVulns.join(','));
-    ")
-
-    if [ -n "$NEW_VULNS" ]; then
-      echo "🚨 NEW vulnerable packages found (not in .security-waivers.json):"
-      echo "   Packages: $NEW_VULNS"
-      echo "   Run 'npm audit' locally for details"
-      echo "   If these are acceptable dev-only risks, add them to .security-waivers.json"
-      exit 1
-    fi
-
-    echo "✅ All vulnerable packages are documented in .security-waivers.json"
-    WAIVED_COUNT=$(echo "$FOUND_PACKAGES" | tr ',' '\n' | grep -c . || echo "0")
-    echo "   ($WAIVED_COUNT waived packages: $FOUND_PACKAGES)"
-
+  if [ -z "$production_packages" ]; then
+    echo "✅ Production dependency graph is clear"
   else
-    # No waiver file - run audit normally
-    if has_script "security:audit"; then
-      HUSKY=0 npm run security:audit
-    else
-      npm audit --audit-level=high --production || {
-        echo "⚠️  High/critical vulnerabilities found in production dependencies"
-
-        # If SECURITY.md exists, remind to review documented issues
-        if [ -f "SECURITY.md" ]; then
-          echo "📋 SECURITY.md documents known vulnerabilities"
-          echo "   Review if these are newly introduced issues or already documented"
-        fi
-
-        echo "   Run 'npm audit' locally for details"
-        exit 1
-      }
-    fi
+    echo "✅ Production-graph findings are reviewed build-only dependencies"
+    echo "   ($production_packages)"
+  fi
+  if [ -z "$found_packages" ]; then
+    echo "✅ Full dependency graph is clear"
+  else
+    echo "✅ All remaining dependency findings have explicit waivers"
   fi
 }
 
