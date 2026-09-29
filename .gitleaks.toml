@@ -33,7 +33,6 @@ paths = [
   '''\.npm-cache''',
   '''\.next''',
   '''dist''',
-  '''\.claude-setup''',
   '''coverage''',
   '''scripts/''',
   '''\.github/workflows/''',

@@ -43,7 +43,6 @@ const configs = [
       // HTML files
       '**/*.html',
       // User config symlinks
-      '**/.claude-setup/**',
       // Template files with placeholders (not valid JS until processed)
       '**/templates/monetization/**',
       // Each template owns its own flat-config dependencies. The root lint
