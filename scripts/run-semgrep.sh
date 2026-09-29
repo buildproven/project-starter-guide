@@ -128,7 +128,7 @@ find_config() {
     return 0
   fi
 
-  # Check claude-setup
+  # Check the project-local .semgrep directory
   local setup_config="$PROJECT_ROOT/.semgrep/defensive-patterns.yaml"
   if [[ -f "$setup_config" ]]; then
     echo "$setup_config"

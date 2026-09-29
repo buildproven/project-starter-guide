@@ -566,11 +566,6 @@ record_metrics() {
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local metrics_script="$script_dir/pattern-metrics.sh"
 
-    # Also check claude-setup location
-    if [[ ! -f "$metrics_script" ]]; then
-        metrics_script="${HOME}/Projects/internal/claude-setup/scripts/pattern-metrics.sh"
-    fi
-
     if [[ ! -f "$metrics_script" ]] || [[ ! -x "$metrics_script" ]]; then
         return 0  # Silent skip if metrics not available
     fi
