@@ -80,7 +80,7 @@ jobs:
           if [ "${{ github.repository }}" != 'buildproven/qa-architect' ] &&
              { [ "${{ github.event_name }}" = 'pull_request' ] || [ "${{ github.event_name }}" = 'push' ]; } &&
              [ -n "$BASE_SHA" ] && git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-            APPLICATION_CHANGES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -vE '^(\.github/workflows/quality\.yml)$' || true)"
+            APPLICATION_CHANGES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
             [ -n "$APPLICATION_CHANGES" ] || QUALITY_ONLY=true
           fi
           echo "quality-only=$QUALITY_ONLY" >> "$GITHUB_OUTPUT"
@@ -242,7 +242,7 @@ jobs:
           SEMGREP_ARGS=()
           if [ "${{ github.event_name }}" = 'pull_request' ] || [ "${{ github.event_name }}" = 'push' ]; then
             CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
-            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml)$' || true)"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
             if [ -z "$APPLICATION_CHANGES" ]; then
               echo 'Only generated quality policy files changed; no application security surface changed.'
               exit 0
@@ -351,7 +351,9 @@ jobs:
   # Smart skip: Draft PRs skip tests (saves CI costs during WIP)
   tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Selector-policy migrations run the complete suite. Keep the normal
+    # focused-test budget below, but give that rare fail-closed path room.
+    timeout-minutes: 20
     needs: detect-maturity
     if: |
       fromJSON(needs.detect-maturity.outputs.test-count) > 0 &&
@@ -390,16 +392,63 @@ jobs:
             exit 1
           }
 
-      - name: Run tests
+      - name: Run affected tests
+        if: hashFiles('.buildproven/test-impact.json') != '' && (github.event_name == 'pull_request' || github.event_name == 'push')
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          AGENT_KIT_SHA: 6209610058b95a3d3f2a9d1af7a10f9c69f0dd69
         run: |
-          timeout 300 npm run test
+          set -euo pipefail
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA:.buildproven/test-impact.json" 2>/dev/null; then
+            CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            if [ -z "$APPLICATION_CHANGES" ]; then
+              echo "Only generated quality policy files changed. The release generator already validated the new policy."
+              exit 0
+            fi
+            echo "Base test-impact policy is absent. Running the complete migration audit once."
+            timeout 900 npm run test
+            exit 0
+          fi
 
+          POLICY_ROOT="$RUNNER_TEMP/test-impact-policy"
+          KIT_ROOT="$RUNNER_TEMP/agent-kit"
+          mkdir -p "$POLICY_ROOT/.buildproven" "$KIT_ROOT"
+          git show "$BASE_SHA:.buildproven/test-impact.json" > "$POLICY_ROOT/.buildproven/test-impact.json"
+          if ! cmp -s "$POLICY_ROOT/.buildproven/test-impact.json" .buildproven/test-impact.json; then
+            CHANGED_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+            APPLICATION_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -vE '^(\.github/workflows/quality\.yml|\.buildproven/test-impact\.json)$' || true)"
+            if [ -z "$APPLICATION_CHANGES" ]; then
+              echo "Only generated quality policy files changed. The release generator already validated the policy."
+              exit 0
+            fi
+            echo "Test-impact policy and application code changed together. Running the complete selector-policy audit."
+            timeout 900 npm run test
+            exit 0
+          fi
+          git -C "$KIT_ROOT" init --quiet
+          git -C "$KIT_ROOT" remote add origin https://github.com/buildproven/agent-kit.git
+          git -C "$KIT_ROOT" fetch --quiet --filter=blob:none origin main
+          git -C "$KIT_ROOT" merge-base --is-ancestor "$AGENT_KIT_SHA" FETCH_HEAD
+          git -C "$KIT_ROOT" checkout --quiet --detach "$AGENT_KIT_SHA"
+          test "$(git -C "$KIT_ROOT" rev-parse HEAD)" = "$AGENT_KIT_SHA"
+
+          POLICY_SHA256="$(sha256sum "$POLICY_ROOT/.buildproven/test-impact.json" | awk '{print $1}')"
+          timeout 600 node "$KIT_ROOT/scripts/test-impact.js" \
+            --execute \
+            --policy-root "$POLICY_ROOT" \
+            --policy-sha256 "$POLICY_SHA256" \
+            --git-range "$BASE_SHA" "$HEAD_SHA" \
+            --
       - name: Lint
+        if: hashFiles('.buildproven/test-impact.json') == '' || (github.event_name != 'pull_request' && github.event_name != 'push')
         run: |
           echo "⏱️ Lint must complete within 5 minutes"
           timeout 300 npm run lint
 
       - name: Format check
+        if: hashFiles('.buildproven/test-impact.json') == '' || (github.event_name != 'pull_request' && github.event_name != 'push')
         run: |
           echo "⏱️ Format check must complete within 5 minutes"
           timeout 300 npm run format:check

@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "jsRunner": "vitest",
+  "mappings": [],
+  "audits": [
+    {
+      "paths": [
+        ".buildproven/test-impact.json",
+        ".github/workflows/**/*.yml",
+        ".github/workflows/**/*.yaml",
+        ".husky/**",
+        "scripts/**",
+        "Dockerfile*",
+        "**/*.sh",
+        "**/*.sql",
+        "package.json",
+        "package-lock.json",
+        "npm-shrinkwrap.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "bun.lock",
+        "bun.lockb",
+        "pyproject.toml",
+        "pytest.ini",
+        "setup.cfg",
+        "tox.ini",
+        "requirements*.txt",
+        "vitest.config.*",
+        "jest.config.*"
+      ],
+      "reason": "test dependency, runner, workflow, or selector policy changed",
+      "commands": [
+        {
+          "executable": "npm",
+          "args": ["run", "test"]
+        }
+      ]
+    }
+  ],
+  "fallback": [
+    {
+      "executable": "npm",
+      "args": ["run", "test"]
+    }
+  ]
+}
