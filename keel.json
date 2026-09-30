@@ -1,0 +1,9 @@
+{
+  "checks": {
+    "lint": "npm run lint",
+    "test": "npm test"
+  },
+  "testCommand": "npm test",
+  "linearProject": "project-starter-guide",
+  "dailyBudgetUsd": 5
+}
