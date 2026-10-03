@@ -46,9 +46,11 @@ jobs:
           # Run audit and capture results
           if ! npm audit --audit-level=moderate --json > audit-results.json 2>/dev/null; then
             echo "⚠️ Security vulnerabilities found!"
-            echo "```json" >> $GITHUB_STEP_SUMMARY
-            cat audit-results.json >> $GITHUB_STEP_SUMMARY
-            echo "```" >> $GITHUB_STEP_SUMMARY
+            {
+              echo '```json'
+              cat audit-results.json
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           else
             echo "✅ No security vulnerabilities found"
@@ -79,22 +81,24 @@ jobs:
 
           # Parse and report updates
           if [[ "$ncu_output" != "{}" ]]; then
-            echo "🔄 Critical updates available for ${{ matrix.template }}:" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| Package | Current | Latest |" >> $GITHUB_STEP_SUMMARY
-            echo "|---------|---------|--------|" >> $GITHUB_STEP_SUMMARY
+            {
+              echo "🔄 Critical updates available for ${{ matrix.template }}:"
+              echo ""
+              echo "| Package | Current | Latest |"
+              echo "|---------|---------|--------|"
 
-            # Parse JSON and create table
-            node -e "
-              const updates = JSON.parse('$ncu_output');
-              Object.entries(updates).forEach(([pkg, version]) => {
-                const current = require('./package.json').dependencies[pkg] || require('./package.json').devDependencies[pkg] || 'unknown';
-                console.log(\`| \${pkg} | \${current} | \${version} |\`);
-              });
-            " >> $GITHUB_STEP_SUMMARY
+              # Parse JSON and create table
+              node -e "
+                const updates = JSON.parse('$ncu_output');
+                Object.entries(updates).forEach(([pkg, version]) => {
+                  const current = require('./package.json').dependencies[pkg] || require('./package.json').devDependencies[pkg] || 'unknown';
+                  console.log(\`| \${pkg} | \${current} | \${version} |\`);
+                });
+              "
 
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "💡 Consider updating these critical dependencies." >> $GITHUB_STEP_SUMMARY
+              echo ""
+              echo "💡 Consider updating these critical dependencies."
+            } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "✅ All critical dependencies are up to date for ${{ matrix.template }}"
           fi
@@ -116,12 +120,14 @@ jobs:
               dep_info=$(npm view "$package" --json 2>/dev/null || echo '{}')
               if echo "$dep_info" | jq -e '.deprecated' >/dev/null 2>&1; then
                 if [[ "$deprecated_found" == "false" ]]; then
-                  echo "⚠️ Deprecated packages found in ${{ matrix.template }}:" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
+                  {
+                    echo "⚠️ Deprecated packages found in ${{ matrix.template }}:"
+                    echo ""
+                  } >> "$GITHUB_STEP_SUMMARY"
                   deprecated_found=true
                 fi
                 deprecated_msg=$(echo "$dep_info" | jq -r '.deprecated')
-                echo "- **$package** (production): $deprecated_msg" >> $GITHUB_STEP_SUMMARY
+                echo "- **$package** (production): $deprecated_msg" >> "$GITHUB_STEP_SUMMARY"
               fi
             fi
           done < <(jq -r '.dependencies // {} | keys[]' package-list.json)
@@ -132,12 +138,14 @@ jobs:
               dep_info=$(npm view "$package" --json 2>/dev/null || echo '{}')
               if echo "$dep_info" | jq -e '.deprecated' >/dev/null 2>&1; then
                 if [[ "$deprecated_found" == "false" ]]; then
-                  echo "⚠️ Deprecated packages found in ${{ matrix.template }}:" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
+                  {
+                    echo "⚠️ Deprecated packages found in ${{ matrix.template }}:"
+                    echo ""
+                  } >> "$GITHUB_STEP_SUMMARY"
                   deprecated_found=true
                 fi
                 deprecated_msg=$(echo "$dep_info" | jq -r '.deprecated')
-                echo "- **$package** (dev): $deprecated_msg" >> $GITHUB_STEP_SUMMARY
+                echo "- **$package** (dev): $deprecated_msg" >> "$GITHUB_STEP_SUMMARY"
               fi
             fi
           done < <(jq -r '.devDependencies // {} | keys[]' package-list.json)
@@ -150,13 +158,15 @@ jobs:
         working-directory: templates/${{ matrix.template }}
         if: always()
         run: |
-          echo "## 📊 Dependency Report for ${{ matrix.template }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Total Dependencies:** $(jq '.dependencies // {} | length' package.json)" >> $GITHUB_STEP_SUMMARY
-          echo "**Dev Dependencies:** $(jq '.devDependencies // {} | length' package.json)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Node.js Version Required:** $(jq -r '.engines.node // "Not specified"' package.json)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 📊 Dependency Report for ${{ matrix.template }}"
+            echo ""
+            echo "**Total Dependencies:** $(jq '.dependencies // {} | length' package.json)"
+            echo "**Dev Dependencies:** $(jq '.devDependencies // {} | length' package.json)"
+            echo ""
+            echo "**Node.js Version Required:** $(jq -r '.engines.node // "Not specified"' package.json)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
 
   notify-on-critical-updates:
     needs: audit-dependencies

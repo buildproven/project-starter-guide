@@ -29,21 +29,23 @@ jobs:
           WORKFLOW_CHANGES=$(git log --since="$LAST_UPDATED" --name-only --pretty=format: -- .github/workflows/ scripts/ .claude/commands/ | sort -u | wc -l)
 
           # Check for template changes
-          TEMPLATE_CHANGES=$(git log --since="$LAST_UPDATED" --name-only --pretty=format: -- templates/ | grep -E "auth|config|package.json" | wc -l)
+          TEMPLATE_CHANGES=$(git log --since="$LAST_UPDATED" --name-only --pretty=format: -- templates/ | grep -cE "auth|config|package.json" || true)
 
           echo "Workflow changes: $WORKFLOW_CHANGES"
           echo "Template changes: $TEMPLATE_CHANGES"
 
           # Determine if review needed
           NEEDS_REVIEW=false
-          if [ $DAYS_OLD -gt 30 ] || [ $WORKFLOW_CHANGES -gt 5 ] || [ $TEMPLATE_CHANGES -gt 3 ]; then
+          if [ "$DAYS_OLD" -gt 30 ] || [ "$WORKFLOW_CHANGES" -gt 5 ] || [ "$TEMPLATE_CHANGES" -gt 3 ]; then
             NEEDS_REVIEW=true
           fi
 
-          echo "needs_review=$NEEDS_REVIEW" >> $GITHUB_OUTPUT
-          echo "days_old=$DAYS_OLD" >> $GITHUB_OUTPUT
-          echo "workflow_changes=$WORKFLOW_CHANGES" >> $GITHUB_OUTPUT
-          echo "template_changes=$TEMPLATE_CHANGES" >> $GITHUB_OUTPUT
+          {
+            echo "needs_review=$NEEDS_REVIEW"
+            echo "days_old=$DAYS_OLD"
+            echo "workflow_changes=$WORKFLOW_CHANGES"
+            echo "template_changes=$TEMPLATE_CHANGES"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create Issue Reminder
         if: steps.analyze.outputs.needs_review == 'true'
