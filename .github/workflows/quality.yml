@@ -93,14 +93,14 @@ jobs:
       - name: Detect Package Manager
         id: detect-pm
         run: |
-          echo "manager=npm" >> $GITHUB_OUTPUT
-          echo "install-cmd=npm ci" >> $GITHUB_OUTPUT
+          echo "manager=npm" >> "$GITHUB_OUTPUT"
+          echo "install-cmd=npm ci" >> "$GITHUB_OUTPUT"
           if [ -f turbo.json ]; then
-            echo "is-turborepo=true" >> $GITHUB_OUTPUT
-            echo "turbo-prefix=turbo run" >> $GITHUB_OUTPUT
+            echo "is-turborepo=true" >> "$GITHUB_OUTPUT"
+            echo "turbo-prefix=turbo run" >> "$GITHUB_OUTPUT"
           else
-            echo "is-turborepo=false" >> $GITHUB_OUTPUT
-            echo "turbo-prefix=" >> $GITHUB_OUTPUT
+            echo "is-turborepo=false" >> "$GITHUB_OUTPUT"
+            echo "turbo-prefix=" >> "$GITHUB_OUTPUT"
           fi
       - name: Setup pnpm
         if: steps.detect-pm.outputs.manager == 'pnpm'
@@ -114,7 +114,7 @@ jobs:
         run: |
           # Use the project maturity detector (local for qa-architect itself, npx for consumer projects)
           if [ -f lib/project-maturity.js ]; then
-            node lib/project-maturity.js --github-actions >> $GITHUB_OUTPUT
+            node lib/project-maturity.js --github-actions >> "$GITHUB_OUTPUT"
           else
             SOURCE_COUNT=$(find . -type f \( -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.py' -o -name '*.sh' \) \
               -not -path './.git/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './build/*' -not -path './coverage/*' | wc -l | tr -d ' ')
@@ -558,7 +558,7 @@ jobs:
             IS_WEBAPP=true
           fi
 
-          echo "is-webapp=$IS_WEBAPP" >> $GITHUB_OUTPUT
+          echo "is-webapp=$IS_WEBAPP" >> "$GITHUB_OUTPUT"
           echo "Web app detected: $IS_WEBAPP"
 
       - name: Lighthouse CI
@@ -577,9 +577,11 @@ jobs:
           echo "Common failures: performance score, accessibility issues, SEO problems"
 
           # Add to job summary for visibility
-          echo "## Lighthouse CI Failed" >> $GITHUB_STEP_SUMMARY
-          echo "Performance budgets or quality thresholds were violated." >> $GITHUB_STEP_SUMMARY
-          echo "Review the Lighthouse report in the Actions logs above." >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Lighthouse CI Failed"
+            echo "Performance budgets or quality thresholds were violated."
+            echo "Review the Lighthouse report in the Actions logs above."
+          } >> "$GITHUB_STEP_SUMMARY"
 
           # Soft warning, not hard fail - Lighthouse issues shouldn't block releases
           # Teams can enforce by adding 'error' level assertions in their lighthouserc
@@ -604,52 +606,54 @@ jobs:
           TESTS_RESULT: ${{ needs.tests.result }}
           DOCS_RESULT: ${{ needs.documentation.result }}
         run: |
-          echo "## Quality Checks Summary 📊" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Maturity Level:** ${{ needs.detect-maturity.outputs.maturity }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Project Statistics" >> $GITHUB_STEP_SUMMARY
-          echo "- Source files: ${{ needs.detect-maturity.outputs.source-count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Test files: ${{ needs.detect-maturity.outputs.test-count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Has dependencies: ${{ needs.detect-maturity.outputs.has-deps }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Has documentation: ${{ needs.detect-maturity.outputs.has-docs }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Checks Executed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Note: Lint/format checks run locally in pre-commit (not duplicated here)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Quality Checks Summary 📊"
+            echo ""
+            echo "**Maturity Level:** ${{ needs.detect-maturity.outputs.maturity }}"
+            echo ""
+            echo "### Project Statistics"
+            echo "- Source files: ${{ needs.detect-maturity.outputs.source-count }}"
+            echo "- Test files: ${{ needs.detect-maturity.outputs.test-count }}"
+            echo "- Has dependencies: ${{ needs.detect-maturity.outputs.has-deps }}"
+            echo "- Has documentation: ${{ needs.detect-maturity.outputs.has-docs }}"
+            echo ""
+            echo "### Checks Executed"
+            echo ""
+            echo "Note: Lint/format checks run locally in pre-commit (not duplicated here)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
 
           # Security
           if [ "$SECURITY_RESULT" == "success" ]; then
-            echo "- ✅ Security: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Security: Passed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$SECURITY_RESULT" == "failure" ]; then
-            echo "- ❌ Security: Failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Security: Failed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$SECURITY_RESULT" == "skipped" ]; then
-            echo "- ⏭️ Security: Skipped (runs on schedule/manual trigger)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ Security: Skipped (runs on schedule/manual trigger)" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "- ⚠️ Security: $SECURITY_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ Security: $SECURITY_RESULT" >> "$GITHUB_STEP_SUMMARY"
           fi
 
           # Tests
           if [ "$TESTS_RESULT" == "success" ]; then
-            echo "- ✅ Tests: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Tests: Passed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$TESTS_RESULT" == "failure" ]; then
-            echo "- ❌ Tests: Failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Tests: Failed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$TESTS_RESULT" == "skipped" ]; then
-            echo "- ⏭️ Tests: Skipped (no test files)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ Tests: Skipped (no test files)" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "- ⚠️ Tests: $TESTS_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ Tests: $TESTS_RESULT" >> "$GITHUB_STEP_SUMMARY"
           fi
 
           # Documentation
           if [ "$DOCS_RESULT" == "success" ]; then
-            echo "- ✅ Documentation: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Documentation: Passed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$DOCS_RESULT" == "failure" ]; then
-            echo "- ❌ Documentation: Failed" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Documentation: Failed" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$DOCS_RESULT" == "skipped" ]; then
-            echo "- ⏭️ Documentation: Skipped (not production-ready)" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏭️ Documentation: Skipped (not production-ready)" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "- ⚠️ Documentation: $DOCS_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ Documentation: $DOCS_RESULT" >> "$GITHUB_STEP_SUMMARY"
           fi
             # PR comment step not enabled (use --pr-comments to add)
 

@@ -96,9 +96,7 @@ jobs:
           echo "🔍 Checking test assertions match component text..."
 
           # Run tests - if they pass, alignment is good
-          npm test -- --run --reporter=verbose
-
-          if [ $? -ne 0 ]; then
+          if ! npm test -- --run --reporter=verbose; then
             echo "❌ Tests failed - check for text mismatches between components and tests"
             echo "   Fix: Keep Hero component text in sync with Home.test.tsx assertions"
             exit 1
