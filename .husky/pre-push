@@ -45,22 +45,24 @@ else
   echo "     Install: brew install gitleaks (Mac) or npm install -g gitleaks"
 fi
 
-# 2. Dependency audit
-echo "  → Checking dependencies..."
+# 2. Dependency audit (production deps only)
+# Dev-tooling CVEs don't ship to users, and blocking on them stalls pushes on
+# advisories with no consumer-side fix. Matches quality.yml's blocking gate.
+echo "  → Checking production dependencies..."
 # Detect package manager and use appropriate audit command
 if [ -f "pnpm-lock.yaml" ]; then
-  pnpm audit --audit-level=high || {
-    echo "❌ Vulnerable dependencies found! Run 'pnpm audit --fix' to resolve."
+  pnpm audit --audit-level=high --prod || {
+    echo "❌ Vulnerable production dependencies found! Run 'pnpm audit --fix' to resolve."
     exit 1
   }
 elif [ -f "yarn.lock" ]; then
-  yarn audit || {
-    echo "❌ Vulnerable dependencies found! Run 'yarn audit fix' to resolve."
+  yarn audit --level high --groups dependencies || {
+    echo "❌ Vulnerable production dependencies found! Run 'yarn audit fix' to resolve."
     exit 1
   }
 else
-  npm audit --audit-level=high || {
-    echo "❌ Vulnerable dependencies found! Run 'npm audit fix' to resolve."
+  npm audit --audit-level=high --omit=dev || {
+    echo "❌ Vulnerable production dependencies found! Run 'npm audit fix' to resolve."
     exit 1
   }
 fi
