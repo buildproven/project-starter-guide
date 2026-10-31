@@ -43,12 +43,9 @@ permissions:
 
 jobs:
   # Step 1: Detect project maturity level and package manager
-  # Skip for Dependabot PRs - they auto-merge based on their own checks
-  # This reduces GitHub Actions minutes by ~50% on active repos
   detect-maturity:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.actor != 'dependabot[bot]' || github.event_name == 'schedule'
     outputs:
       maturity: ${{ steps.detect.outputs.maturity }}
       source-count: ${{ steps.detect.outputs.source-count }}
@@ -656,5 +653,38 @@ jobs:
             echo "- ⚠️ Documentation: $DOCS_RESULT" >> "$GITHUB_STEP_SUMMARY"
           fi
             # PR comment step not enabled (use --pr-comments to add)
+
+      # summary is the required status check: it must fail when a needed job
+      # failed or was cancelled. detect-maturity must succeed — when it is
+      # skipped every job skips and the gate would pass with nothing run (BUI-1755).
+      - name: Enforce check results
+        if: always()
+        env:
+          DETECT_MATURITY_RESULT: ${{ needs.detect-maturity.result }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+          AUDIT_REPORT_RESULT: ${{ needs.audit-report.result }}
+          TESTS_RESULT: ${{ needs.tests.result }}
+          DOCUMENTATION_RESULT: ${{ needs.documentation.result }}
+        run: |
+          failed=""
+          check() {
+            case "$1:$2" in
+              detect-maturity:success) ;;
+              detect-maturity:*) failed="$failed $1($2)" ;;
+              *:success|*:skipped) ;;
+              *) failed="$failed $1($2)" ;;
+            esac
+          }
+          check detect-maturity "$DETECT_MATURITY_RESULT"
+          check security "$SECURITY_RESULT"
+          check audit-report "$AUDIT_REPORT_RESULT"
+          check tests "$TESTS_RESULT"
+          check documentation "$DOCUMENTATION_RESULT"
+          if [ -n "$failed" ]; then
+            echo "❌ Quality gate failed:$failed"
+            echo "**❌ Quality gate failed:**$failed" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "✅ Quality gate passed"
 
   # Slack alerts not enabled (use --alerts-slack to add)
